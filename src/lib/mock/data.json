@@ -1,0 +1,257 @@
+{
+  "languages": [
+    { "id": "lang-duala", "code": "duala", "name": "Duala" },
+    { "id": "lang-fr", "code": "fr", "name": "Français" },
+    { "id": "lang-en", "code": "en", "name": "English" }
+  ],
+  "authors": [
+    { "id": "author-1", "name": "Pasteur Ndedi Eyango", "bio": "Compositeur de cantiques traditionnels douala" },
+    { "id": "author-2", "name": "Mama Ngando", "bio": "Chantre de l'église de Bonabéri" },
+    { "id": "author-3", "name": "Ebenezer Moulongo", "bio": null },
+    { "id": "author-4", "name": "Chorale de Douala", "bio": null }
+  ],
+  "tags": [
+    { "id": "tag-1", "name": "spiritual", "category": "MOOD" },
+    { "id": "tag-2", "name": "praise", "category": "THEME" },
+    { "id": "tag-3", "name": "worship", "category": "THEME" },
+    { "id": "tag-4", "name": "storytelling", "category": "STYLE" },
+    { "id": "tag-5", "name": "joyful", "category": "MOOD" },
+    { "id": "tag-6", "name": "solemn", "category": "MOOD" },
+    { "id": "tag-7", "name": "traditional", "category": "ERA" },
+    { "id": "tag-8", "name": "love", "category": "MOOD" }
+  ],
+  "songs": [
+    {
+      "id": "song-1",
+      "index": 1,
+      "title": "Nya Loba",
+      "status": "FINISHED",
+      "createdAt": "2024-01-15T00:00:00Z",
+      "updatedAt": "2024-06-01T00:00:00Z",
+      "authors": [{ "id": "author-1", "name": "Pasteur Ndedi Eyango", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-2", "name": "praise" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-1-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Nya Loba, Nya Loba\nO mudi na bwam\nO mudi na bwam, Nya Loba\nNa sango na wé\n\nO ma pula mba na nyo\nO ma téyédi mba bunya\nNya Loba, Nya Loba\nNa tombédi wé",
+          "annotations": [
+            {
+              "id": "ann-1",
+              "lineNumber": 1,
+              "lineText": "Nya Loba, Nya Loba",
+              "note": "\"Nya Loba\" signifie \"Dieu\" en langue Duala. Cette ouverture est une invocation directe."
+            }
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-2",
+      "index": 2,
+      "title": "Yesu Kristu",
+      "status": "FINISHED",
+      "createdAt": "2024-01-20T00:00:00Z",
+      "updatedAt": "2024-05-15T00:00:00Z",
+      "authors": [{ "id": "author-2", "name": "Mama Ngando", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-3", "name": "worship" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-2-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Yesu Kristu, Mwané ma Loba\nO bé na bwam bwa bésé\nO pula mba na nyo\nNa tombédi wé na lèm la mba\n\nO bé Nanga na mba\nO bé Loba na mba\nYesu Kristu, a bwam bwa mba",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-3",
+      "index": 3,
+      "title": "Hosana",
+      "status": "FINISHED",
+      "createdAt": "2024-02-01T00:00:00Z",
+      "updatedAt": "2024-04-20T00:00:00Z",
+      "authors": [{ "id": "author-3", "name": "Ebenezer Moulongo", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-2", "name": "praise" }, { "id": "tag-5", "name": "joyful" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-3-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Hosana, Hosana\nNa kombo na Mulédi\nHosana na bulu ba kwédi\nHosana, Hosana\n\nA bé na nkémé\nA bé na ngéa\nMulédi ma bésé\nHosana, Hosana",
+          "annotations": []
+        }
+      ],
+      "notes": [{ "id": "note-1", "content": "Ce cantique est souvent chanté lors des entrées triomphales à l'église, inspiré par les Psaumes." }]
+    },
+    {
+      "id": "song-4",
+      "index": 4,
+      "title": "Loba a Bwam",
+      "status": "FINISHED",
+      "createdAt": "2024-02-15T00:00:00Z",
+      "updatedAt": "2024-03-10T00:00:00Z",
+      "authors": [{ "id": "author-1", "name": "Pasteur Ndedi Eyango", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-7", "name": "traditional" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-4-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Loba a bwam, Loba a bwam\nNa tèmèdi na miso ma wé\nLoba a bwam, a bwam bwa bésé\nNa nyo na é, na bunya na é\n\nO mulema mwa mba mu tomba\nNa sé ma Loba a bwam\nNa lèm la bwam la wé",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-5",
+      "index": 5,
+      "title": "Sango na Bwam",
+      "status": "FINISHED",
+      "createdAt": "2024-03-01T00:00:00Z",
+      "updatedAt": "2024-03-20T00:00:00Z",
+      "authors": [{ "id": "author-4", "name": "Chorale de Douala", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-2", "name": "praise" }, { "id": "tag-4", "name": "storytelling" }, { "id": "tag-7", "name": "traditional" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-5-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Sango na bwam, sango na bwam\nNa sango na Yesu Kristu\nA bé na bwam bwa bésé\nA bé na bwam bwa bésé\n\nBana ba musango\nBana ba ndémbédi\nMiyéngédi ma Loba\nSango na bwam",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-6",
+      "index": 6,
+      "title": "Na Tombédi Wé",
+      "status": "DRAFT",
+      "createdAt": "2024-04-01T00:00:00Z",
+      "updatedAt": "2024-04-10T00:00:00Z",
+      "authors": [{ "id": "author-2", "name": "Mama Ngando", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-6", "name": "solemn" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-6-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Na tombédi wé, Nya Loba\nNa tombédi wé na lèm la mba\nNa tombédi wé\n\nO ma tèmbédi mba bunya\nO ma téyédi mba",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-7",
+      "index": 7,
+      "title": "Bwam bwa Loba",
+      "status": "FINISHED",
+      "createdAt": "2024-04-15T00:00:00Z",
+      "updatedAt": "2024-05-01T00:00:00Z",
+      "authors": [{ "id": "author-3", "name": "Ebenezer Moulongo", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-3", "name": "worship" }, { "id": "tag-5", "name": "joyful" }, { "id": "tag-7", "name": "traditional" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-7-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Bwam bwa Loba bu na mba\nBu na mba na bunya bwésé\nBwam bwa Loba\nBu na wé, bu na mba\n\nNa miso ma Loba\nNa lèm la Loba\nBwam bwa Loba bu na mba",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-8",
+      "index": 8,
+      "title": "Prière du Soir",
+      "status": "FINISHED",
+      "createdAt": "2024-05-01T00:00:00Z",
+      "updatedAt": "2024-06-01T00:00:00Z",
+      "authors": [{ "id": "author-4", "name": "Chorale de Douala", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-6", "name": "solemn" }],
+      "languages": [{ "id": "lang-fr", "code": "fr", "name": "Français" }],
+      "versions": [
+        {
+          "id": "ver-8-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Dans le calme du soir\nJe viens vers toi, Seigneur\nMon coeur cherche ta paix\nTa lumière dans la nuit\n\nGuide mes pas demain\nProtège ceux que j'aime\nDans le calme du soir\nJe te confie ma vie",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-9",
+      "index": 9,
+      "title": "Ndolo na Loba",
+      "status": "DRAFT",
+      "createdAt": "2024-05-15T00:00:00Z",
+      "updatedAt": "2024-05-20T00:00:00Z",
+      "authors": [{ "id": "author-1", "name": "Pasteur Ndedi Eyango", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-8", "name": "love" }, { "id": "tag-1", "name": "spiritual" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-9-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Ndolo na Loba\nNa mba a bé ndolo\nNdolo na Loba na bésé\n\nWé o si pula mba\nWé o si téyédi mba",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "song-10",
+      "index": 10,
+      "title": "Alléluia Douala",
+      "status": "FINISHED",
+      "createdAt": "2024-06-01T00:00:00Z",
+      "updatedAt": "2024-06-15T00:00:00Z",
+      "authors": [{ "id": "author-2", "name": "Mama Ngando", "displayOrder": 1 }],
+      "tags": [{ "id": "tag-2", "name": "praise" }, { "id": "tag-5", "name": "joyful" }, { "id": "tag-7", "name": "traditional" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "versions": [
+        {
+          "id": "ver-10-1",
+          "versionType": "ORIGINAL",
+          "versionNumber": 1,
+          "lyrics": "Alléluia, Alléluia\nNa kombo na Loba\nAlléluia, Alléluia\nNa kombo na Yesu\n\nBésé ba tomba\nBésé ba sanga\nAlléluia na bulu ba kwédi\nAlléluia, Alléluia",
+          "annotations": []
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "collections": [
+    {
+      "id": "col-1",
+      "name": "Cantiques du Dimanche",
+      "description": "Les cantiques les plus chantés lors des cultes dominicaux",
+      "isPublic": true,
+      "status": "PUBLIC",
+      "songs": ["song-1", "song-2", "song-3", "song-5", "song-10"]
+    }
+  ],
+  "users": [
+    { "id": "user-mock-admin", "displayName": "Admin", "role": "ADMIN", "supabaseUserId": "mock-admin" },
+    { "id": "user-mock-1", "displayName": "Marie Ekambi", "role": "USER", "supabaseUserId": "mock-user-1" },
+    { "id": "user-mock-2", "displayName": "Jean Priso", "role": "USER", "supabaseUserId": "mock-user-2" }
+  ]
+}

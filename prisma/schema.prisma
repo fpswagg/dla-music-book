@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SongStatus {
+  DRAFT
+  FINISHED
+}
+
+enum VersionType {
+  ORIGINAL
+  DEMO
+  REWRITE
+}
+
+enum TagCategory {
+  MOOD
+  THEME
+  STYLE
+  ERA
+}
+
+enum CollectionStatus {
+  PRIVATE
+  PUBLIC
+  PENDING_REVIEW
+}
+
+model UserProfile {
+  id             String       @id @default(uuid())
+  supabaseUserId String       @unique
+  displayName    String
+  role           Role         @default(USER)
+  createdAt      DateTime     @default(now())
+  likes          Like[]
+  collections    Collection[]
+  annotations    Annotation[]
+  songNotes      SongNote[]
+}
+
+model Song {
+  id             String         @id @default(uuid())
+  index          Int            @unique
+  title          String
+  status         SongStatus     @default(DRAFT)
+  originalSongId String?
+  originalSong   Song?          @relation("SongOriginal", fields: [originalSongId], references: [id])
+  rewrites       Song[]         @relation("SongOriginal")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  versions       SongVersion[]
+  songAuthors    SongAuthor[]
+  songTags       SongTag[]
+  songLanguages  SongLanguage[]
+  notes          SongNote[]
+  likes          Like[]
+  collectionSongs CollectionSong[]
+}
+
+model SongVersion {
+  id            String       @id @default(uuid())
+  songId        String
+  song          Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+  versionType   VersionType  @default(ORIGINAL)
+  lyrics        String
+  versionNumber Int
+  createdAt     DateTime     @default(now())
+  previews      Preview[]
+  annotations   Annotation[]
+
+  @@unique([songId, versionNumber])
+}
+
+model Author {
+  id          String       @id @default(uuid())
+  name        String
+  bio         String?
+  songAuthors SongAuthor[]
+}
+
+model SongAuthor {
+  songId       String
+  authorId     String
+  displayOrder Int      @default(1)
+  song         Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  author       Author   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@id([songId, authorId])
+}
+
+model Tag {
+  id       String      @id @default(uuid())
+  name     String      @unique
+  category TagCategory
+  songTags SongTag[]
+}
+
+model SongTag {
+  songId String
+  tagId  String
+  song   Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([songId, tagId])
+}
+
+model Language {
+  id            String         @id @default(uuid())
+  code          String         @unique
+  name          String
+  songLanguages SongLanguage[]
+}
+
+model SongLanguage {
+  songId     String
+  languageId String
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@id([songId, languageId])
+}
+
+model Preview {
+  id              String      @id @default(uuid())
+  songVersionId   String
+  songVersion     SongVersion @relation(fields: [songVersionId], references: [id], onDelete: Cascade)
+  fileUrl         String
+  durationSeconds Int
+  uploadedAt      DateTime    @default(now())
+}
+
+model Collection {
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  isPublic        Boolean          @default(false)
+  status          CollectionStatus @default(PRIVATE)
+  userId          String
+  user            UserProfile      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  collectionSongs CollectionSong[]
+}
+
+model CollectionSong {
+  collectionId String
+  songId       String
+  displayOrder Int        @default(0)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  song         Song       @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, songId])
+}
+
+model Annotation {
+  id            String      @id @default(uuid())
+  songVersionId String
+  songVersion   SongVersion @relation(fields: [songVersionId], references: [id], onDelete: Cascade)
+  lineNumber    Int
+  lineText      String
+  note          String
+  createdById   String
+  createdBy     UserProfile @relation(fields: [createdById], references: [id])
+  createdAt     DateTime    @default(now())
+}
+
+model SongNote {
+  id          String      @id @default(uuid())
+  songId      String
+  song        Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
+  content     String
+  createdById String
+  createdBy   UserProfile @relation(fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+}
+
+model Like {
+  id        String      @id @default(uuid())
+  userId    String
+  songId    String
+  user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@unique([userId, songId])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  eventType String
+  metadata  Json     @default("{}")
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([eventType])
+  @@index([createdAt])
+}

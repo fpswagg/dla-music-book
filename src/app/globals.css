@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --color-parchment:    #f5f0e8;
+  --color-linen:        #ede8dc;
+  --color-sand:         #e8e2d4;
+  --color-stone:        #c0b89a;
+  --color-forest:       #2d5a2d;
+  --color-deep:         #1e3a1e;
+  --color-amber:        #c8941a;
+  --color-amber-light:  #fdf0d5;
+  --color-green-light:  #d8edcc;
+  --color-green-muted:  #4a6340;
+  --color-text-muted:   #7a6a50;
+  --color-text-body:    #3d4f3a;
+
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-ui:      system-ui, sans-serif;
+
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   12px;
+  --radius-pill: 20px;
+
+  --border-default: 0.5px solid var(--color-stone);
+  --border-active:  2px solid var(--color-forest);
+}
+
+@theme inline {
+  --color-parchment: var(--color-parchment);
+  --color-linen: var(--color-linen);
+  --color-sand: var(--color-sand);
+  --color-stone: var(--color-stone);
+  --color-forest: var(--color-forest);
+  --color-deep: var(--color-deep);
+  --color-amber: var(--color-amber);
+  --color-amber-light: var(--color-amber-light);
+  --color-green-light: var(--color-green-light);
+  --color-green-muted: var(--color-green-muted);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-body: var(--color-text-body);
+
+  --font-display: var(--font-display);
+  --font-ui: var(--font-ui);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-pill: var(--radius-pill);
+}
+
+body {
+  background: var(--color-parchment);
+  color: var(--color-text-body);
+  font-family: var(--font-ui);
+}
+
+@media print {
+  .no-print,
+  header,
+  footer,
+  nav,
+  aside,
+  button,
+  .search-bar,
+  .filter-pill {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: #1e3a1e !important;
+    font-size: 12pt;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  h1 {
+    font-size: 18pt !important;
+    margin-bottom: 8pt !important;
+  }
+
+  .song-lyrics-line {
+    font-family: 'Georgia', serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  a {
+    color: #1e3a1e !important;
+    text-decoration: none !important;
+  }
+
+  @page {
+    margin: 1.5cm;
+  }
+}
