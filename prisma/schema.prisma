@@ -100,7 +100,8 @@ model SongAuthor {
 
 model Tag {
   id       String      @id @default(uuid())
-  name     String      @unique
+  key      String      @unique
+  name     Json
   category TagCategory
   songTags SongTag[]
 }
@@ -117,7 +118,7 @@ model SongTag {
 model Language {
   id            String         @id @default(uuid())
   code          String         @unique
-  name          String
+  name          Json
   songLanguages SongLanguage[]
 }
 
@@ -141,8 +142,8 @@ model Preview {
 
 model Collection {
   id              String           @id @default(uuid())
-  name            String
-  description     String?
+  name            Json
+  description     Json?
   isPublic        Boolean          @default(false)
   status          CollectionStatus @default(PRIVATE)
   userId          String

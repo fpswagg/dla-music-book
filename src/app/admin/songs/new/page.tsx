@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SectionLabel } from "@/components/ui/section-label";
+import { BackLink } from "@/components/ui/back-link";
 
 export default function NewSongPage() {
   const t = useTranslations("admin");
@@ -35,6 +36,7 @@ export default function NewSongPage() {
 
   return (
     <div className="max-w-2xl">
+      <BackLink href="/admin/songs" label={tc("back")} />
       <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">{t("addSong")}</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-4">

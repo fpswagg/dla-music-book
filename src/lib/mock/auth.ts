@@ -7,7 +7,7 @@ const MOCK_USER = {
 
 export const mockAuth = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async signInWithEmail(email: string, password: string) {
+  async signInWithEmail(email: string, _password: string) {
     console.log(`[Mock Auth] Sign in with email: ${email}`);
     return { user: MOCK_USER, error: null };
   },

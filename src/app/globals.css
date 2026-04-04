@@ -55,6 +55,22 @@ body {
   font-family: var(--font-ui);
 }
 
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.skeleton {
+  background: var(--color-linen);
+  animation: pulse-subtle 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes slideDown {
+  from { max-height: 0; opacity: 0; }
+  to { max-height: 200px; opacity: 1; }
+}
+
 @media print {
   .no-print,
   header,

@@ -1,20 +1,21 @@
 "use client";
 
-import { Heart, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { Tag } from "./tag";
 import { StatusBadge } from "./status-badge";
+import { LikeButton } from "@/components/songs/like-button";
 
 interface SongCardProps {
   index: number;
   title: string;
   meta: string;
-  status: "finished" | "draft";
-  tags: Array<{ name: string; isMood?: boolean }>;
+  status?: "finished" | "draft";
+  tags: Array<{ name: string; key?: string; category?: string; isMood?: boolean }>;
   duration?: string;
   hasPreview?: boolean;
+  songId: string;
   isLiked?: boolean;
   likeCount?: number;
-  onLike?: () => void;
   onPlay?: () => void;
   onClick?: () => void;
 }
@@ -27,19 +28,19 @@ export function SongCard({
   tags,
   duration,
   hasPreview,
+  songId,
   isLiked,
   likeCount,
-  onLike,
   onPlay,
   onClick,
 }: SongCardProps) {
   return (
     <div
-      className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-lg)] overflow-hidden cursor-pointer hover:border-[var(--color-green-muted)] transition-colors"
+      className="group bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-lg)] overflow-hidden cursor-pointer hover:border-[var(--color-forest)] transition-colors"
       onClick={onClick}
     >
       <div className="flex gap-3 p-[14px_16px_10px]">
-        <div className="text-[22px] leading-none text-[var(--color-stone)] font-[var(--font-display)] min-w-[28px]">
+        <div className="text-[22px] leading-none text-[var(--color-stone)] group-hover:text-[var(--color-forest)] transition-colors font-[var(--font-display)] min-w-[28px]">
           {String(index).padStart(2, "0")}
         </div>
         <div className="flex-1 min-w-0">
@@ -50,7 +51,7 @@ export function SongCard({
             {meta}
           </div>
         </div>
-        <StatusBadge status={status} />
+        {status && <StatusBadge status={status} />}
       </div>
 
       {tags.length > 0 && (
@@ -67,7 +68,7 @@ export function SongCard({
         {hasPreview && (
           <button
             onClick={(e) => { e.stopPropagation(); onPlay?.(); }}
-            className="w-7 h-7 rounded-full bg-[var(--color-forest)] text-[var(--color-parchment)] flex items-center justify-center cursor-pointer border-none"
+            className="w-7 h-7 rounded-full bg-[var(--color-forest)] text-[var(--color-parchment)] flex items-center justify-center cursor-pointer border-none hover:bg-[var(--color-deep)] transition-colors"
           >
             <Play size={11} fill="currentColor" />
           </button>
@@ -77,15 +78,9 @@ export function SongCard({
             {duration}
           </span>
         )}
-        <button
-          onClick={(e) => { e.stopPropagation(); onLike?.(); }}
-          className="ml-auto flex items-center gap-1 text-[var(--color-text-muted)] hover:text-[var(--color-amber)] cursor-pointer bg-transparent border-none"
-        >
-          <Heart size={16} fill={isLiked ? "var(--color-amber)" : "none"} stroke={isLiked ? "var(--color-amber)" : "currentColor"} />
-          {likeCount !== undefined && likeCount > 0 && (
-            <span className="text-[11px] font-[var(--font-ui)]">{likeCount}</span>
-          )}
-        </button>
+        <div className="ml-auto">
+          <LikeButton songId={songId} initialLiked={isLiked} initialCount={likeCount} size="sm" />
+        </div>
       </div>
     </div>
   );

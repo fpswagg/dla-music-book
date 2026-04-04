@@ -1,3 +1,5 @@
+import "server-only";
+
 export type AppMode = "full" | "db-only" | "mock";
 
 export function getAppMode(): AppMode {
@@ -30,3 +32,8 @@ export const env = {
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
 };
+
+/** Canonical site origin for metadata, sitemap, and JSON-LD (no trailing slash). */
+export function getSiteUrl(): string {
+  return env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+}

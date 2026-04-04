@@ -1,10 +1,10 @@
-# Douala Hymn Book — Project Context
+# Myenge ma bonakristo — Project Context
 
 > Read this document + docs/STYLE.md before every implementation step.
 
 ## Overview
 
-- A Douala Hymn Book website for church and village use, accessible anywhere/anytime
+- **Myenge ma bonakristo** (Douala: Christian hymn book) — a hymn book site for church and village use, accessible anywhere/anytime
 - Features: song catalog with lyrics, user auth, admin dashboard, collections, analytics, backups
 - Design system: "Olive & Ink" — warm, notebook-like, literary feel (see STYLE.md)
 

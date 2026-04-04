@@ -6,17 +6,21 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { isMockMode } from "@/lib/env";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { Music } from "lucide-react";
+import { isClientMockMode } from "@/lib/env.client";
+import { mockAuth } from "@/lib/mock/auth";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
+  const tb = useTranslations("brand");
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const mock = isMockMode();
+  const mock = isClientMockMode();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +28,7 @@ export default function RegisterPage() {
     setError("");
 
     if (mock) {
-      console.log("[Mock] Register:", { name, email });
+      await mockAuth.signUp(email, password, name);
       router.push("/");
       setLoading(false);
       return;
@@ -50,8 +54,17 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--color-parchment)] px-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-[var(--color-parchment)] px-4 py-12">
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageSwitcher compact />
+      </div>
       <div className="w-full max-w-sm">
+        <div className="w-12 h-12 rounded-full bg-[var(--color-green-light)] flex items-center justify-center mx-auto mb-6">
+          <Music size={24} className="text-[var(--color-forest)]" />
+        </div>
+        <p className="text-[14px] text-[var(--color-forest)] font-[var(--font-display)] text-center mb-1">
+          {tb("name")}
+        </p>
         <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] text-center mb-1">
           {t("register")}
         </h1>

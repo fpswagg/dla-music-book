@@ -1,8 +1,8 @@
 {
   "languages": [
-    { "id": "lang-duala", "code": "duala", "name": "Duala" },
-    { "id": "lang-fr", "code": "fr", "name": "Français" },
-    { "id": "lang-en", "code": "en", "name": "English" }
+    { "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } },
+    { "id": "lang-fr", "code": "fr", "name": { "fr": "Français", "en": "French", "duala": "Frañse" } },
+    { "id": "lang-en", "code": "en", "name": { "fr": "Anglais", "en": "English", "duala": "Anglis" } }
   ],
   "authors": [
     { "id": "author-1", "name": "Pasteur Ndedi Eyango", "bio": "Compositeur de cantiques traditionnels douala" },
@@ -11,14 +11,14 @@
     { "id": "author-4", "name": "Chorale de Douala", "bio": null }
   ],
   "tags": [
-    { "id": "tag-1", "name": "spiritual", "category": "MOOD" },
-    { "id": "tag-2", "name": "praise", "category": "THEME" },
-    { "id": "tag-3", "name": "worship", "category": "THEME" },
-    { "id": "tag-4", "name": "storytelling", "category": "STYLE" },
-    { "id": "tag-5", "name": "joyful", "category": "MOOD" },
-    { "id": "tag-6", "name": "solemn", "category": "MOOD" },
-    { "id": "tag-7", "name": "traditional", "category": "ERA" },
-    { "id": "tag-8", "name": "love", "category": "MOOD" }
+    { "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" },
+    { "id": "tag-2", "key": "praise", "name": { "fr": "Louange", "en": "Praise", "duala": "Tombédi" }, "category": "THEME" },
+    { "id": "tag-3", "key": "worship", "name": { "fr": "Adoration", "en": "Worship", "duala": "Nyamsi" }, "category": "THEME" },
+    { "id": "tag-4", "key": "storytelling", "name": { "fr": "Récit", "en": "Storytelling", "duala": "Musango" }, "category": "STYLE" },
+    { "id": "tag-5", "key": "joyful", "name": { "fr": "Joyeux", "en": "Joyful", "duala": "Bisima" }, "category": "MOOD" },
+    { "id": "tag-6", "key": "solemn", "name": { "fr": "Solennel", "en": "Solemn", "duala": "Nkémé" }, "category": "MOOD" },
+    { "id": "tag-7", "key": "traditional", "name": { "fr": "Traditionnel", "en": "Traditional", "duala": "Mbassa" }, "category": "ERA" },
+    { "id": "tag-8", "key": "love", "name": { "fr": "Amour", "en": "Love", "duala": "Ndolo" }, "category": "MOOD" }
   ],
   "songs": [
     {
@@ -29,8 +29,8 @@
       "createdAt": "2024-01-15T00:00:00Z",
       "updatedAt": "2024-06-01T00:00:00Z",
       "authors": [{ "id": "author-1", "name": "Pasteur Ndedi Eyango", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-2", "name": "praise" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" }, { "id": "tag-2", "key": "praise", "name": { "fr": "Louange", "en": "Praise", "duala": "Tombédi" }, "category": "THEME" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-1-1",
@@ -57,8 +57,8 @@
       "createdAt": "2024-01-20T00:00:00Z",
       "updatedAt": "2024-05-15T00:00:00Z",
       "authors": [{ "id": "author-2", "name": "Mama Ngando", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-3", "name": "worship" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" }, { "id": "tag-3", "key": "worship", "name": { "fr": "Adoration", "en": "Worship", "duala": "Nyamsi" }, "category": "THEME" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-2-1",
@@ -78,8 +78,8 @@
       "createdAt": "2024-02-01T00:00:00Z",
       "updatedAt": "2024-04-20T00:00:00Z",
       "authors": [{ "id": "author-3", "name": "Ebenezer Moulongo", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-2", "name": "praise" }, { "id": "tag-5", "name": "joyful" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-2", "key": "praise", "name": { "fr": "Louange", "en": "Praise", "duala": "Tombédi" }, "category": "THEME" }, { "id": "tag-5", "key": "joyful", "name": { "fr": "Joyeux", "en": "Joyful", "duala": "Bisima" }, "category": "MOOD" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-3-1",
@@ -99,8 +99,8 @@
       "createdAt": "2024-02-15T00:00:00Z",
       "updatedAt": "2024-03-10T00:00:00Z",
       "authors": [{ "id": "author-1", "name": "Pasteur Ndedi Eyango", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-7", "name": "traditional" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" }, { "id": "tag-7", "key": "traditional", "name": { "fr": "Traditionnel", "en": "Traditional", "duala": "Mbassa" }, "category": "ERA" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-4-1",
@@ -120,8 +120,8 @@
       "createdAt": "2024-03-01T00:00:00Z",
       "updatedAt": "2024-03-20T00:00:00Z",
       "authors": [{ "id": "author-4", "name": "Chorale de Douala", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-2", "name": "praise" }, { "id": "tag-4", "name": "storytelling" }, { "id": "tag-7", "name": "traditional" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-2", "key": "praise", "name": { "fr": "Louange", "en": "Praise", "duala": "Tombédi" }, "category": "THEME" }, { "id": "tag-4", "key": "storytelling", "name": { "fr": "Récit", "en": "Storytelling", "duala": "Musango" }, "category": "STYLE" }, { "id": "tag-7", "key": "traditional", "name": { "fr": "Traditionnel", "en": "Traditional", "duala": "Mbassa" }, "category": "ERA" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-5-1",
@@ -141,8 +141,8 @@
       "createdAt": "2024-04-01T00:00:00Z",
       "updatedAt": "2024-04-10T00:00:00Z",
       "authors": [{ "id": "author-2", "name": "Mama Ngando", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-6", "name": "solemn" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" }, { "id": "tag-6", "key": "solemn", "name": { "fr": "Solennel", "en": "Solemn", "duala": "Nkémé" }, "category": "MOOD" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-6-1",
@@ -162,8 +162,8 @@
       "createdAt": "2024-04-15T00:00:00Z",
       "updatedAt": "2024-05-01T00:00:00Z",
       "authors": [{ "id": "author-3", "name": "Ebenezer Moulongo", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-3", "name": "worship" }, { "id": "tag-5", "name": "joyful" }, { "id": "tag-7", "name": "traditional" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-3", "key": "worship", "name": { "fr": "Adoration", "en": "Worship", "duala": "Nyamsi" }, "category": "THEME" }, { "id": "tag-5", "key": "joyful", "name": { "fr": "Joyeux", "en": "Joyful", "duala": "Bisima" }, "category": "MOOD" }, { "id": "tag-7", "key": "traditional", "name": { "fr": "Traditionnel", "en": "Traditional", "duala": "Mbassa" }, "category": "ERA" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-7-1",
@@ -183,8 +183,8 @@
       "createdAt": "2024-05-01T00:00:00Z",
       "updatedAt": "2024-06-01T00:00:00Z",
       "authors": [{ "id": "author-4", "name": "Chorale de Douala", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-1", "name": "spiritual" }, { "id": "tag-6", "name": "solemn" }],
-      "languages": [{ "id": "lang-fr", "code": "fr", "name": "Français" }],
+      "tags": [{ "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" }, { "id": "tag-6", "key": "solemn", "name": { "fr": "Solennel", "en": "Solemn", "duala": "Nkémé" }, "category": "MOOD" }],
+      "languages": [{ "id": "lang-fr", "code": "fr", "name": { "fr": "Français", "en": "French", "duala": "Frañse" } }],
       "versions": [
         {
           "id": "ver-8-1",
@@ -204,8 +204,8 @@
       "createdAt": "2024-05-15T00:00:00Z",
       "updatedAt": "2024-05-20T00:00:00Z",
       "authors": [{ "id": "author-1", "name": "Pasteur Ndedi Eyango", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-8", "name": "love" }, { "id": "tag-1", "name": "spiritual" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-8", "key": "love", "name": { "fr": "Amour", "en": "Love", "duala": "Ndolo" }, "category": "MOOD" }, { "id": "tag-1", "key": "spiritual", "name": { "fr": "Spirituel", "en": "Spiritual", "duala": "Mudi" }, "category": "MOOD" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-9-1",
@@ -225,8 +225,8 @@
       "createdAt": "2024-06-01T00:00:00Z",
       "updatedAt": "2024-06-15T00:00:00Z",
       "authors": [{ "id": "author-2", "name": "Mama Ngando", "displayOrder": 1 }],
-      "tags": [{ "id": "tag-2", "name": "praise" }, { "id": "tag-5", "name": "joyful" }, { "id": "tag-7", "name": "traditional" }],
-      "languages": [{ "id": "lang-duala", "code": "duala", "name": "Duala" }],
+      "tags": [{ "id": "tag-2", "key": "praise", "name": { "fr": "Louange", "en": "Praise", "duala": "Tombédi" }, "category": "THEME" }, { "id": "tag-5", "key": "joyful", "name": { "fr": "Joyeux", "en": "Joyful", "duala": "Bisima" }, "category": "MOOD" }, { "id": "tag-7", "key": "traditional", "name": { "fr": "Traditionnel", "en": "Traditional", "duala": "Mbassa" }, "category": "ERA" }],
+      "languages": [{ "id": "lang-duala", "code": "duala", "name": { "fr": "Duala", "en": "Duala", "duala": "Duala" } }],
       "versions": [
         {
           "id": "ver-10-1",
@@ -239,11 +239,16 @@
       "notes": []
     }
   ],
+  "likes": [
+    { "userId": "user-mock-admin", "songId": "song-1" },
+    { "userId": "user-mock-admin", "songId": "song-2" }
+  ],
   "collections": [
     {
       "id": "col-1",
-      "name": "Cantiques du Dimanche",
-      "description": "Les cantiques les plus chantés lors des cultes dominicaux",
+      "userId": "user-mock-admin",
+      "name": { "fr": "Cantiques du Dimanche", "en": "Sunday Hymns", "duala": "Bejango ba Sonde" },
+      "description": { "fr": "Les cantiques les plus chantés lors des cultes dominicaux", "en": "The most sung hymns during Sunday worship", "duala": "Bejango ba bato ba jangi na sonde" },
       "isPublic": true,
       "status": "PUBLIC",
       "songs": ["song-1", "song-2", "song-3", "song-5", "song-10"]

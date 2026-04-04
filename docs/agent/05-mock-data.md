@@ -3,7 +3,11 @@
 ## Goal
 Build a fallback system that lets the app run without any database or Supabase configuration by serving data from a JSON file.
 
-## Environment Detection (src/lib/env.ts)
+## Environment Detection — Server vs Client
+
+The app uses two separate env modules because Next.js only exposes `NEXT_PUBLIC_*` variables to client bundles. `DATABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are server-only.
+
+### Server: src/lib/env.ts (guarded by `import "server-only"`)
 ```typescript
 type AppMode = 'full' | 'db-only' | 'mock';
 
@@ -13,6 +17,21 @@ function getAppMode(): AppMode {
   return 'mock';
 }
 ```
+Used by: data-provider, auth-helpers, prisma, supabase/server, API routes, admin pages, analytics, backups.
+
+### Client: src/lib/env.client.ts
+```typescript
+function isAuthAvailable(): boolean {
+  return !!NEXT_PUBLIC_SUPABASE_URL && !!NEXT_PUBLIC_SUPABASE_ANON_KEY;
+}
+
+function isClientMockMode(): boolean {
+  return !isAuthAvailable();
+}
+```
+Used by: login-form, register page, supabase/client (browser client).
+
+**Rule:** Never import `env.ts` from a `"use client"` component or from a module used in the browser. The `server-only` guard will cause a build error if this is violated.
 
 ## Mock Data JSON (src/lib/mock/data.json)
 Contains the same structure as seed data:
@@ -34,18 +53,22 @@ Exports functions matching the Prisma query patterns:
 - etc.
 
 ## Mock Auth (src/lib/mock/auth.ts)
-- signIn(email, password) -> console.log + return mock user
-- signUp(data) -> console.log + return mock user
+Centralized mock auth used by client auth components (login-form, register page):
+- signInWithEmail(email, password) -> console.log + return mock user
+- signUp(email, password, displayName) -> console.log + return mock user
+- signInWithOAuth(provider) -> console.log + return mock user
+- signInWithPhone(phone) -> console.log + return { error: null }
+- verifyOtp(phone, token) -> console.log + return mock user
 - signOut() -> console.log
 - getUser() -> return mock admin user (for development convenience)
 
 ## Data Provider Pattern (src/lib/data-provider.ts)
 A unified data access layer that switches between Prisma and mock:
 ```typescript
-import { getAppMode } from './env';
+import { isMockMode } from './env'; // server-only
 
 export async function getSongs(filters?) {
-  if (getAppMode() === 'mock') {
+  if (isMockMode()) {
     return mockProvider.getSongs(filters);
   }
   return prisma.song.findMany({...});
@@ -56,9 +79,10 @@ export async function getSongs(filters?) {
 When in mock mode, show a subtle banner at top of page: "Running in demo mode — connect a database for full functionality"
 
 ## Files
-- src/lib/env.ts
+- src/lib/env.ts — server-only mode detection (guarded by `server-only` package)
+- src/lib/env.client.ts — client-safe mode detection (NEXT_PUBLIC_* only)
 - src/lib/mock/data.json
 - src/lib/mock/provider.ts
-- src/lib/mock/auth.ts
+- src/lib/mock/auth.ts — centralized mock auth for client components
 - src/lib/data-provider.ts
 - src/components/ui/mock-banner.tsx

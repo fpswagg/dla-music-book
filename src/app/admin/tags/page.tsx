@@ -1,31 +1,36 @@
-import { getTags } from "@/lib/data-provider";
-import { SectionLabel } from "@/components/ui/section-label";
-import { Tag } from "@/components/ui/tag";
-import { getTranslations } from "next-intl/server";
+import { getAdminTagsList } from "@/lib/data-provider";
+import { AdminTags } from "@/components/admin/admin-tags";
+import { Pagination } from "@/components/ui/pagination";
 
-export default async function AdminTagsPage() {
-  const t = await getTranslations("admin");
-  const tags = await getTags();
-  const grouped = tags.reduce((acc, tag) => {
-    const cat = tag.category || "OTHER";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(tag);
-    return acc;
-  }, {} as Record<string, typeof tags>);
+const PAGE_SIZE = 24;
+
+export default async function AdminTagsPage(props: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const searchParams = await props.searchParams;
+  const q = searchParams.q ?? "";
+  const category = searchParams.category ?? "";
+  const page = Math.max(1, parseInt(searchParams.page ?? "1", 10) || 1);
+
+  const { tags, total } = await getAdminTagsList({
+    q: q || undefined,
+    category: category === "MOOD" || category === "THEME" || category === "STYLE" || category === "ERA"
+      ? category
+      : undefined,
+    page,
+    limit: PAGE_SIZE,
+  });
 
   return (
-    <div>
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">{t("tags")}</h1>
-      {Object.entries(grouped).map(([category, categoryTags]) => (
-        <div key={category} className="mb-6">
-          <SectionLabel>{category}</SectionLabel>
-          <div className="flex flex-wrap gap-2">
-            {categoryTags.map(tag => (
-              <Tag key={tag.id} label={tag.name} variant={category === "MOOD" ? "mood" : "keyword"} />
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+    <>
+      <AdminTags initialTags={tags} />
+      <Pagination
+        pathname="/admin/tags"
+        searchParams={searchParams}
+        page={page}
+        total={total}
+        pageSize={PAGE_SIZE}
+      />
+    </>
   );
 }

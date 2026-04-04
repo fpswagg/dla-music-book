@@ -6,11 +6,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { isMockMode } from "@/lib/env";
-import { Mail, Phone, Chrome } from "lucide-react";
+import { isClientMockMode } from "@/lib/env.client";
+import { mockAuth } from "@/lib/mock/auth";
+import { Mail, Phone } from "lucide-react";
+import { FacebookLogoIcon, GoogleLogoIcon } from "@/components/auth/oauth-icons";
 
 export function LoginForm() {
   const t = useTranslations("auth");
+  const tb = useTranslations("brand");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -22,7 +25,7 @@ export function LoginForm() {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const mock = isMockMode();
+  const mock = isClientMockMode();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +33,7 @@ export function LoginForm() {
     setError("");
 
     if (mock) {
-      console.log("[Mock] Login:", email);
+      await mockAuth.signInWithEmail(email, password);
       router.push(redirect);
       setLoading(false);
       return;
@@ -57,8 +60,8 @@ export function LoginForm() {
     setError("");
 
     if (mock) {
-      if (!otpSent) { console.log("[Mock] OTP sent to:", phone); setOtpSent(true); }
-      else { console.log("[Mock] OTP verified:", otp); router.push(redirect); }
+      if (!otpSent) { await mockAuth.signInWithPhone(phone); setOtpSent(true); }
+      else { await mockAuth.verifyOtp(phone, otp); router.push(redirect); }
       setLoading(false);
       return;
     }
@@ -85,7 +88,7 @@ export function LoginForm() {
   };
 
   const handleOAuth = async (provider: "google" | "facebook") => {
-    if (mock) { console.log("[Mock] OAuth:", provider); router.push(redirect); return; }
+    if (mock) { await mockAuth.signInWithOAuth(provider); router.push(redirect); return; }
     try {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
@@ -100,7 +103,7 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-sm">
       <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] text-center mb-1">
-        Douala Hymn Book
+        {tb("name")}
       </h1>
       <p className="text-[13px] text-[var(--color-green-muted)] font-[var(--font-ui)] text-center mb-8">
         {t("signIn")}
@@ -148,10 +151,12 @@ export function LoginForm() {
       </div>
 
       <div className="flex gap-3">
-        <Button variant="secondary" className="flex-1" onClick={() => handleOAuth("google")}>
-          <Chrome size={16} /> {t("google")}
+        <Button variant="secondary" className="flex-1 gap-2" onClick={() => handleOAuth("google")}>
+          <GoogleLogoIcon className="text-[var(--color-deep)] shrink-0" />
+          {t("google")}
         </Button>
-        <Button variant="secondary" className="flex-1" onClick={() => handleOAuth("facebook")}>
+        <Button variant="secondary" className="flex-1 gap-2" onClick={() => handleOAuth("facebook")}>
+          <FacebookLogoIcon className="text-[var(--color-deep)] shrink-0" />
           {t("facebook")}
         </Button>
       </div>

@@ -3,7 +3,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { SectionLabel } from "@/components/ui/section-label";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Plus, BarChart3 } from "lucide-react";
+import { Plus, BarChart3, Music, CheckCircle, PenLine, Users } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminOverviewPage() {
@@ -21,10 +21,10 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <StatCard value={stats.totalSongs} label={t("totalSongs")} />
-        <StatCard value={stats.finishedSongs} label={t("finished")} />
-        <StatCard value={stats.draftSongs} label={t("drafts")} />
-        <StatCard value={stats.totalUsers} label={t("users")} />
+        <StatCard value={stats.totalSongs} label={t("totalSongs")} icon={<Music size={18} />} />
+        <StatCard value={stats.finishedSongs} label={t("finished")} icon={<CheckCircle size={18} />} />
+        <StatCard value={stats.draftSongs} label={t("drafts")} icon={<PenLine size={18} />} />
+        <StatCard value={stats.totalUsers} label={t("users")} icon={<Users size={18} />} />
       </div>
 
       <SectionLabel>{t("quickLinks")}</SectionLabel>

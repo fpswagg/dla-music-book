@@ -1,23 +1,47 @@
-import { getPublicCollections } from "@/lib/data-provider";
-import { SectionLabel } from "@/components/ui/section-label";
-import { getTranslations } from "next-intl/server";
+import { getAdminCollectionsList } from "@/lib/data-provider";
+import { AdminCollections } from "@/components/admin/admin-collections";
+import { isMockMode } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
+import { getMockUsers } from "@/lib/mock/provider";
+import { Pagination } from "@/components/ui/pagination";
 
-export default async function AdminCollectionsPage() {
-  const t = await getTranslations("admin");
-  const collections = await getPublicCollections();
+const PAGE_SIZE = 12;
+
+export default async function AdminCollectionsPage(props: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const searchParams = await props.searchParams;
+  const q = searchParams.q ?? "";
+  const status = searchParams.status ?? "";
+  const page = Math.max(1, parseInt(searchParams.page ?? "1", 10) || 1);
+
+  const { collections, total } = await getAdminCollectionsList({
+    q: q || undefined,
+    status: status || undefined,
+    page,
+    limit: PAGE_SIZE,
+  });
+
+  let users: Array<{ id: string; displayName: string }> = [];
+  if (isMockMode()) {
+    users = getMockUsers().map((u) => ({ id: u.id, displayName: u.displayName }));
+  } else if (prisma) {
+    users = await prisma.userProfile.findMany({
+      select: { id: true, displayName: true },
+      orderBy: { displayName: "asc" },
+    });
+  }
 
   return (
-    <div>
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">{t("collections")}</h1>
-      <SectionLabel>{t("collectionsCount", { count: collections.length })}</SectionLabel>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {collections.map(col => (
-          <div key={col.id} className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] p-4">
-            <h3 className="text-[16px] text-[var(--color-deep)] font-[var(--font-display)] mb-1">{col.name}</h3>
-            <p className="text-[12px] text-[var(--color-green-muted)] font-[var(--font-ui)]">{col._count?.collectionSongs ?? 0} {t("songs").toLowerCase()}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <>
+      <AdminCollections initialCollections={collections} users={users} />
+      <Pagination
+        pathname="/admin/collections"
+        searchParams={searchParams}
+        page={page}
+        total={total}
+        pageSize={PAGE_SIZE}
+      />
+    </>
   );
 }

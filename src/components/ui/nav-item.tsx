@@ -13,15 +13,18 @@ interface NavItemProps {
 
 export function NavItem({ href, icon: Icon, label, count }: NavItemProps) {
   const pathname = usePathname();
-  const active = pathname === href || pathname.startsWith(href + "/");
+  const active =
+    href === "/admin"
+      ? pathname === href
+      : pathname === href || pathname.startsWith(href + "/");
 
   return (
     <Link
       href={href}
       className={`flex items-center gap-2.5 px-[18px] py-[9px] text-[13px] font-[var(--font-ui)] cursor-pointer transition-colors no-underline ${
         active
-          ? "bg-[var(--color-parchment)] text-[var(--color-deep)] font-medium border-l-2 border-l-[var(--color-forest)]"
-          : "text-[var(--color-text-body)] hover:bg-[var(--color-sand)] border-l-2 border-l-transparent"
+          ? "bg-[var(--color-green-light)] text-[var(--color-forest)] font-medium border-l-2 border-l-[var(--color-forest)]"
+          : "text-[var(--color-text-body)] hover:bg-[var(--color-sand)] hover:text-[var(--color-deep)] border-l-2 border-l-transparent"
       }`}
     >
       <Icon size={16} />

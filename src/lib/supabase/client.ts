@@ -1,8 +1,8 @@
 import { createBrowserClient } from "@supabase/ssr";
-import { hasSupabase } from "../env";
+import { isAuthAvailable } from "@/lib/env.client";
 
 export function createClient() {
-  if (!hasSupabase()) {
+  if (!isAuthAvailable()) {
     console.warn("[Mock] Supabase client requested but no Supabase env vars set");
     return null;
   }
