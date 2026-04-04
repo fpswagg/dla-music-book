@@ -13,7 +13,7 @@ async function main() {
     update: {},
     create: { code: "fr", name: { fr: "Français", en: "French", duala: "Frañse" } },
   });
-  const english = await prisma.language.upsert({
+  await prisma.language.upsert({
     where: { code: "en" },
     update: {},
     create: { code: "en", name: { fr: "Anglais", en: "English", duala: "Anglis" } },
