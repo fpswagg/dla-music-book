@@ -54,8 +54,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[var(--color-parchment)] px-4 py-12">
-      <div className="absolute top-4 right-4 z-10">
+    <div className="relative min-h-[100dvh] flex items-center justify-center bg-[var(--color-parchment)] px-4 py-10 sm:py-12 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))]">
+      <div className="absolute top-[max(1rem,env(safe-area-inset-top))] right-[max(1rem,env(safe-area-inset-right))] z-10">
         <LanguageSwitcher compact />
       </div>
       <div className="w-full max-w-sm">

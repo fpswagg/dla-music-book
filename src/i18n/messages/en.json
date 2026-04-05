@@ -18,7 +18,10 @@
     "signOut": "Sign out",
     "myAccount": "My Account",
     "mySpace": "My space",
-    "accountMenu": "Account menu"
+    "accountMenu": "Account menu",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "siteNavigation": "Site navigation"
   },
   "footer": {
     "description": "Myenge ma bonakristo — Christian hymn book for worship and fellowship."

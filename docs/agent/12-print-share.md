@@ -5,8 +5,10 @@ Enable clean printing of song lyrics and rich link sharing.
 
 ## Print
 - Print button on song detail page
-- Print CSS in globals.css (@media print)
-- Hides: header, footer, sidebar, nav, buttons, audio player, filter pills
+- Print CSS in [`src/app/globals.css`](../../src/app/globals.css) (`@media print`)
+- Hides: header, footer, sidebar, nav, buttons, audio/video elements, filter pills
+- **Back navigation:** [`BackLink`](../../src/components/ui/back-link.tsx) uses the `no-print` class so “return” links do not appear on paper (anchors are not covered by `button { display: none }`).
+- **Song detail:** Language/tag pills, share/print/like row, audio previews, and multi-version chips are wrapped with `no-print` so print shows index, title, author, lyrics, and notes only.
 - Shows: song title (large Georgia), index number, author, lyrics (Georgia, generous line-height)
 - Clean margins, no backgrounds (printer-friendly)
 - One song per page
@@ -26,8 +28,9 @@ Enable clean printing of song lyrics and rich link sharing.
 - Positioned bottom-right
 
 ## Files
-- src/styles/globals.css (add @media print rules)
-- src/components/songs/share-button.tsx
-- src/components/songs/print-button.tsx
-- src/components/ui/toast.tsx
-- src/app/(public)/songs/[id]/page.tsx (add OG metadata)
+- [`src/app/globals.css`](../../src/app/globals.css) (`@media print` rules)
+- [`src/components/ui/back-link.tsx`](../../src/components/ui/back-link.tsx) (`no-print` on back links)
+- [`src/app/(public)/songs/[id]/page.tsx`](../../src/app/(public)/songs/[id]/page.tsx) (OG metadata; `no-print` wrappers for chrome)
+- `src/components/songs/share-button.tsx`
+- `src/components/songs/print-button.tsx`
+- `src/components/ui/toast.tsx`

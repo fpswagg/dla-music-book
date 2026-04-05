@@ -89,7 +89,11 @@ export function SongCatalogClient({
               placeholder={t("searchPlaceholder")}
             />
           </div>
-          <Button type="submit" variant="secondary" className="shrink-0 w-full sm:w-auto">
+          <Button
+            type="submit"
+            variant="secondary"
+            className="shrink-0 w-full sm:w-auto min-h-[44px] sm:min-h-0"
+          >
             {t("search")}
           </Button>
         </form>
@@ -122,7 +126,8 @@ export function SongCatalogClient({
             <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider mr-2">
               {t("language")}
             </span>
-            <div className="inline-flex flex-wrap gap-1.5 mt-1">
+            <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
+              <div className="flex flex-nowrap sm:flex-wrap gap-1.5 pb-0.5">
               {languages.map((l) => (
                 <FilterPill
                   key={l.code}
@@ -133,13 +138,15 @@ export function SongCatalogClient({
                   }
                 />
               ))}
+              </div>
             </div>
           </div>
           <div>
             <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider mr-2">
               {t("mood")}
             </span>
-            <div className="inline-flex flex-wrap gap-1.5 mt-1">
+            <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
+              <div className="flex flex-nowrap sm:flex-wrap gap-1.5 pb-0.5">
               {moodTags.map((tag) => {
                 const filterKey = tag.key ?? "";
                 return (
@@ -155,6 +162,7 @@ export function SongCatalogClient({
                   />
                 );
               })}
+              </div>
             </div>
           </div>
           {otherTags.length > 0 && (
@@ -162,7 +170,8 @@ export function SongCatalogClient({
               <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider mr-2">
                 {t("tagFilter")}
               </span>
-              <div className="inline-flex flex-wrap gap-1.5 mt-1">
+              <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
+                <div className="flex flex-nowrap sm:flex-wrap gap-1.5 pb-0.5">
                 {otherTags.map((tag) => {
                   const filterKey = tag.key ?? "";
                   return (
@@ -178,6 +187,7 @@ export function SongCatalogClient({
                     />
                   );
                 })}
+                </div>
               </div>
             </div>
           )}

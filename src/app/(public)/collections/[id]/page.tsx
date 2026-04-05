@@ -92,10 +92,10 @@ export default async function CollectionDetailPage({ params }: Props) {
   if (!collection) notFound();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <BackLink href="/collections" label={tc("backToCollections")} />
 
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-1">
+      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-1 text-balance">
         {getTranslatedName(collection.name, locale)}
       </h1>
       {collection.description ? (

@@ -18,7 +18,10 @@
     "signOut": "Déconnexion",
     "myAccount": "Mon compte",
     "mySpace": "Mon espace",
-    "accountMenu": "Menu du compte"
+    "accountMenu": "Menu du compte",
+    "openMenu": "Ouvrir le menu de navigation",
+    "closeMenu": "Fermer le menu de navigation",
+    "siteNavigation": "Navigation du site"
   },
   "footer": {
     "description": "Myenge ma bonakristo — recueil de cantiques chrétiens pour le culte et le partage."

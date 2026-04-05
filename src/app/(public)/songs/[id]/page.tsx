@@ -52,16 +52,16 @@ export default async function SongDetailPage({ params }: Props) {
   const isLiked = likedMap[song.id] ?? false;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <BackLink href="/songs" label={t("backToHymns")} />
 
       <div className="mb-8">
-        <div className="flex items-start gap-4 mb-3">
-          <span className="text-[32px] leading-none text-[var(--color-stone)] font-[var(--font-display)]">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 mb-3">
+          <span className="text-[26px] sm:text-[32px] leading-none text-[var(--color-stone)] font-[var(--font-display)] shrink-0">
             {String(song.index).padStart(2, "0")}
           </span>
-          <div className="flex-1">
-            <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-1">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-1 text-balance">
               {song.title}
             </h1>
             <p className="text-[14px] text-[var(--color-green-muted)] font-[var(--font-ui)]">
@@ -70,7 +70,7 @@ export default async function SongDetailPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="no-print flex flex-wrap gap-1.5 mb-4">
           {song.languages.map((l) => (
             <Tag key={l.code} label={getTranslatedName(l.name, locale)} />
           ))}
@@ -89,7 +89,7 @@ export default async function SongDetailPage({ params }: Props) {
           })}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="no-print flex flex-wrap items-center gap-2">
           <SongDetailClient songId={song.id} />
           {user && (
             <LikeButton
@@ -103,7 +103,7 @@ export default async function SongDetailPage({ params }: Props) {
       </div>
 
       {currentVersion && currentVersion.previews.length > 0 && (
-        <div className="mb-8">
+        <div className="no-print mb-8">
           <SectionLabel>{t("listen")}</SectionLabel>
           <div className="flex flex-col gap-3">
             {currentVersion.previews.map((p) => (
@@ -131,9 +131,9 @@ export default async function SongDetailPage({ params }: Props) {
       )}
 
       {song.versions.length > 1 && (
-        <div className="mb-6">
+        <div className="no-print mb-6">
           <SectionLabel>{t("versions")}</SectionLabel>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {song.versions.map((v) => (
               <span
                 key={v.id}

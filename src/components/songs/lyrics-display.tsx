@@ -28,8 +28,9 @@ export function LyricsDisplay({ lines, annotations }: LyricsDisplayProps) {
     <div>
       {annotations.length > 0 && (
         <button
+          type="button"
           onClick={() => setShowAnnotations((v) => !v)}
-          className={`mb-4 px-3 py-1.5 rounded-[var(--radius-pill)] text-[12px] font-medium font-[var(--font-ui)] border-[0.5px] cursor-pointer transition-colors ${
+          className={`mb-4 min-h-[44px] sm:min-h-0 px-4 sm:px-3 py-2.5 sm:py-1.5 rounded-[var(--radius-pill)] text-[12px] font-medium font-[var(--font-ui)] border-[0.5px] cursor-pointer transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-amber)] ${
             showAnnotations
               ? "bg-[var(--color-amber-light)] text-[var(--color-amber)] border-[var(--color-amber)]"
               : "bg-transparent text-[var(--color-amber)] border-[var(--color-stone)]"
@@ -51,24 +52,24 @@ export function LyricsDisplay({ lines, annotations }: LyricsDisplayProps) {
 
           return (
             <div key={i}>
-              <div className="flex gap-3 py-1 items-start">
-                <span className="text-[12px] text-[var(--color-stone)] font-[var(--font-ui)] w-[28px] shrink-0 text-right select-none leading-[1.6] pt-[1px]">
+              <div className="flex gap-2 sm:gap-3 py-1 items-start">
+                <span className="text-[11px] sm:text-[12px] text-[var(--color-stone)] font-[var(--font-ui)] w-6 sm:w-[28px] shrink-0 text-right select-none leading-[1.6] pt-[1px] tabular-nums">
                   {lineNum}
                 </span>
                 <div
-                  className={`min-w-0 flex-1 rounded-r-[var(--radius-sm)] py-0.5 pr-1 ${
+                  className={`min-w-0 flex-1 max-w-[min(100%,42rem)] rounded-r-[var(--radius-sm)] py-0.5 pr-1 ${
                     annotation
                       ? "bg-[var(--color-amber-light)] border-l-2 border-l-[var(--color-amber)] pl-2"
                       : ""
                   }`}
                 >
-                  <span className="text-[16px] text-[var(--color-deep)] font-[var(--font-display)] leading-[1.6] block">
+                  <span className="text-[15px] sm:text-[16px] text-[var(--color-deep)] font-[var(--font-display)] leading-[1.6] block break-words">
                     {line}
                   </span>
                 </div>
               </div>
               {annotation && showAnnotations && (
-                <div className="ml-[40px] mt-1 mb-2 overflow-hidden animate-[slideDown_200ms_ease-out]">
+                <div className="ml-8 sm:ml-[40px] mt-1 mb-2 overflow-hidden animate-[slideDown_200ms_ease-out]">
                   <AnnotationBlock
                     lineText={annotation.lineText}
                     note={annotation.note}

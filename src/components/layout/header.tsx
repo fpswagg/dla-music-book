@@ -53,11 +53,14 @@ export async function Header() {
   return (
     <>
       <MockBanner />
-      <header className="no-print border-b-[0.5px] border-b-[var(--color-stone)] bg-[var(--color-linen)] relative">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 no-underline">
-            <Music size={20} className="text-[var(--color-forest)]" />
-            <span className="text-[18px] text-[var(--color-deep)] font-[var(--font-display)]">
+      <header className="no-print border-b-[0.5px] border-b-[var(--color-stone)] bg-[var(--color-linen)] relative pt-[env(safe-area-inset-top)]">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2 min-w-0">
+          <Link
+            href="/"
+            className="flex items-center gap-2 no-underline min-w-0 flex-1 md:flex-initial"
+          >
+            <Music size={20} className="text-[var(--color-forest)] shrink-0" aria-hidden />
+            <span className="text-[16px] sm:text-[18px] text-[var(--color-deep)] font-[var(--font-display)] truncate">
               {tb("name")}
             </span>
           </Link>

@@ -18,7 +18,10 @@
     "signOut": "Ham na",
     "myAccount": "Compte a mba",
     "mySpace": "Space a mba",
-    "accountMenu": "Menu compte"
+    "accountMenu": "Menu compte",
+    "openMenu": "Yé menu ya navigation",
+    "closeMenu": "Té menu ya navigation",
+    "siteNavigation": "Navigation ya site"
   },
   "footer": {
     "description": "Myenge ma bonakristo — bejango ba bonakristo na njangi na tombédi."

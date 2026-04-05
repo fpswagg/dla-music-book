@@ -54,8 +54,8 @@ export default async function SongsPage(props: {
       : {};
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6 text-balance">
         {t("title")}
       </h1>
 

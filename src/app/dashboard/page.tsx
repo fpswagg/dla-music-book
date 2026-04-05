@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     <div>
       <BackLink href="/" label={t("backToHome")} />
 
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">
+      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6 text-balance">
         {t("title")}
       </h1>
 

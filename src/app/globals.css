@@ -78,6 +78,8 @@ body {
   nav,
   aside,
   button,
+  audio,
+  video,
   .search-bar,
   .filter-pill {
     display: none !important;

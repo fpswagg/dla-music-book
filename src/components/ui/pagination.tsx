@@ -56,9 +56,9 @@ export function Pagination({
   };
 
   const linkCls =
-    "inline-flex items-center gap-1 px-3 py-1.5 rounded-[var(--radius-md)] border-[0.5px] border-[var(--color-stone)] bg-[var(--color-linen)] text-[13px] text-[var(--color-deep)] font-[var(--font-ui)] hover:bg-[var(--color-sand)] transition-colors cursor-pointer";
+    "inline-flex items-center justify-center gap-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-4 sm:px-3 py-2.5 sm:py-1.5 rounded-[var(--radius-md)] border-[0.5px] border-[var(--color-stone)] bg-[var(--color-linen)] text-[13px] text-[var(--color-deep)] font-[var(--font-ui)] hover:bg-[var(--color-sand)] transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-forest)]";
   const disabledCls =
-    "inline-flex items-center gap-1 px-3 py-1.5 rounded-[var(--radius-md)] border-[0.5px] border-[var(--color-stone)] text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)] opacity-50 pointer-events-none";
+    "inline-flex items-center justify-center gap-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-4 sm:px-3 py-2.5 sm:py-1.5 rounded-[var(--radius-md)] border-[0.5px] border-[var(--color-stone)] text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)] opacity-50 pointer-events-none";
 
   return (
     <nav

@@ -28,6 +28,7 @@
 - Borders: 0.5px solid stone default, 2px solid forest for active only
 - No box-shadows, no gradients — flat backgrounds only
 - Spacing: xs=4px, sm=8px, md=12px, lg=16px, xl=24px, 2xl=32px
+- **Responsive:** mobile-first Tailwind breakpoints; primary controls aim for ~44px min touch height on small screens where practical; print-only chrome uses the `no-print` class with rules in `src/app/globals.css` (`@media print`).
 - File naming: kebab-case for files, PascalCase for components
 - API routes in src/app/api/
 - Components organized: ui/ (design system), songs/, admin/, layout/
