@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "sastorage.fpswagg.site",
+        pathname: "/files/**",
+      },
     ],
   },
 };

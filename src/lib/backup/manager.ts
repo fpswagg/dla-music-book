@@ -1,13 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { isMockMode, hasSupabase, env } from "@/lib/env";
-import { createClient } from "@supabase/supabase-js";
+import { isMockMode } from "@/lib/env";
+import { downloadText, hasSaStorage, listFiles, uploadFile } from "@/lib/sastorage";
 
-const BUCKET = "backups";
-
-function getStorageClient() {
-  if (!hasSupabase()) return null;
-  return createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-}
+/** Folder under the SA Storage token prefix. */
+const BACKUP_DIR = "backups/";
 
 export async function createBackup(): Promise<{ filename: string; size: number } | null> {
   if (isMockMode() || !prisma) {
@@ -56,14 +52,13 @@ export async function createBackup(): Promise<{ filename: string; size: number }
   };
 
   const json = JSON.stringify(backup, null, 2);
-  const filename = `backup-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+  // SA Storage files are publicly readable by key, so the name carries an unguessable suffix.
+  const filename = `backup-${new Date().toISOString().replace(/[:.]/g, "-")}-${crypto.randomUUID()}.json`;
 
-  const storage = getStorageClient();
-  if (storage) {
-    const { error } = await storage.storage
-      .from(BUCKET)
-      .upload(filename, json, { contentType: "application/json" });
-    if (error) {
+  if (hasSaStorage()) {
+    try {
+      await uploadFile(`${BACKUP_DIR}${filename}`, json, "application/json");
+    } catch (error) {
       console.error("Backup upload failed:", error);
       return null;
     }
@@ -80,25 +75,25 @@ export async function listBackups(): Promise<Array<{ name: string; size: number;
     ];
   }
 
-  const storage = getStorageClient();
-  if (!storage) return [];
+  if (!hasSaStorage()) return [];
 
-  const { data, error } = await storage.storage.from(BUCKET).list();
-  if (error || !data) return [];
-
-  return data.map((f) => ({
-    name: f.name,
-    size: f.metadata?.size ?? 0,
-    createdAt: f.created_at ?? new Date(0).toISOString(),
-  }));
+  try {
+    const files = await listFiles(BACKUP_DIR);
+    return files
+      .map((f) => ({
+        name: f.key.split("/").pop() ?? f.key,
+        size: f.size ?? 0,
+        createdAt: f.lastModified ?? new Date(0).toISOString(),
+      }))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  } catch (error) {
+    console.error("Listing backups failed:", error);
+    return [];
+  }
 }
 
 export async function downloadBackup(filename: string): Promise<string | null> {
-  const storage = getStorageClient();
-  if (!storage) return null;
-
-  const { data, error } = await storage.storage.from(BUCKET).download(filename);
-  if (error || !data) return null;
-
-  return await data.text();
+  if (!hasSaStorage() || !/^[\w.-]+\.json$/.test(filename)) return null;
+  const file = (await listFiles(`${BACKUP_DIR}${filename}`)).find((f) => f.key.endsWith(`/${filename}`));
+  return file ? await downloadText(file.key) : null;
 }

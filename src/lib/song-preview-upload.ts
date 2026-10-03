@@ -1,10 +1,7 @@
-import { createClient } from "@/lib/supabase/client";
 import { isClientMockMode } from "@/lib/env.client";
 
-const BUCKET = "song-previews";
-
 /**
- * Uploads an audio file to Supabase Storage and returns the public URL.
+ * Uploads an audio file to SA Storage (through the admin API route) and returns the public URL.
  * Duration is estimated from the file in the browser before upload.
  */
 export async function uploadSongPreviewFile(
@@ -31,19 +28,14 @@ export async function uploadSongPreviewFile(
     return { publicUrl: `https://example.com/mock-audio/${encodeURIComponent(file.name)}`, durationSeconds };
   }
 
-  const supabase = createClient();
-  if (!supabase) {
-    throw new Error("Supabase client unavailable");
+  const form = new FormData();
+  form.append("file", file);
+  form.append("songId", songId);
+  form.append("versionId", versionId);
+  const res = await fetch("/api/admin/uploads/preview", { method: "POST", body: form });
+  const data = (await res.json().catch(() => ({}))) as { publicUrl?: string; error?: string };
+  if (!res.ok || !data.publicUrl) {
+    throw new Error(data.error ?? `Upload failed (${res.status})`);
   }
-
-  const ext = file.name.includes(".") ? file.name.split(".").pop() : "mp3";
-  const path = `previews/${songId}/${versionId}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    cacheControl: "3600",
-    upsert: false,
-  });
-  if (error) throw error;
-
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
   return { publicUrl: data.publicUrl, durationSeconds };
 }
