@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 
 export async function getViewsOverTime(days: number = 7) {
   if (isMockMode() || !prisma) {

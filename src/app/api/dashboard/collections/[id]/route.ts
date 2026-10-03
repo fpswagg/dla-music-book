@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { Prisma } from "@prisma/client";
-import type { CollectionStatus } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
+import type { CollectionStatus } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 import { removeMockUserCollection, updateMockUserCollection } from "@/lib/mock/provider";
 
 export async function PUT(

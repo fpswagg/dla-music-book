@@ -53,11 +53,11 @@ export function AdminCollections({
   const [showCreate, setShowCreate] = useState(false);
 
   const btnPrimary =
-    "bg-[var(--color-forest)] text-[var(--color-parchment)] rounded-[var(--radius-md)] px-3 py-1.5 text-[12px] font-[var(--font-ui)] hover:bg-[var(--color-deep)] transition-colors cursor-pointer border-none";
+    "bg-[var(--color-forest)] text-[var(--color-parchment)] rounded-[var(--radius-md)] px-3 py-1.5 text-[12px] font-ui hover:bg-[var(--color-deep)] transition-colors cursor-pointer border-none";
   const btnDanger =
-    "bg-transparent border-[0.5px] border-[var(--color-amber)] text-[var(--color-amber)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-[var(--font-ui)] hover:bg-[var(--color-amber-light)] cursor-pointer";
+    "bg-transparent border-[0.5px] border-[var(--color-amber)] text-[var(--color-amber)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-ui hover:bg-[var(--color-amber-light)] cursor-pointer";
   const btnSecondary =
-    "bg-[var(--color-sand)] text-[var(--color-text-body)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-[var(--font-ui)] hover:bg-[var(--color-stone)] cursor-pointer border-none";
+    "bg-[var(--color-sand)] text-[var(--color-text-body)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-ui hover:bg-[var(--color-stone)] cursor-pointer border-none";
 
   const grouped = STATUS_ORDER.reduce(
     (acc, status) => {
@@ -157,7 +157,7 @@ export function AdminCollections({
     const s = map[status] ?? map.PRIVATE;
     return (
       <span
-        className={`inline-flex px-2 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium font-[var(--font-ui)] ${s.bg} ${s.text}`}
+        className={`inline-flex px-2 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium font-ui ${s.bg} ${s.text}`}
       >
         {s.label}
       </span>
@@ -166,7 +166,7 @@ export function AdminCollections({
 
   return (
     <div>
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">
+      <h1 className="text-[28px] text-[var(--color-deep)] font-display mb-6">
         {t("collections")}
       </h1>
 
@@ -176,7 +176,7 @@ export function AdminCollections({
         <button
           type="button"
           onClick={() => setShowCreate((s) => !s)}
-          className="text-[13px] font-[var(--font-ui)] text-[var(--color-forest)] bg-transparent border-none cursor-pointer underline-offset-2 hover:underline p-0"
+          className="text-[13px] font-ui text-[var(--color-forest)] bg-transparent border-none cursor-pointer underline-offset-2 hover:underline p-0"
         >
           {showCreate ? t("hideCreateForm") : t("showCreateForm")}
         </button>
@@ -187,11 +187,11 @@ export function AdminCollections({
         onSubmit={handleCreate}
         className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] p-4 mb-8"
       >
-        <h2 className="text-[14px] text-[var(--color-deep)] font-[var(--font-display)] mb-3 m-0">
+        <h2 className="text-[14px] text-[var(--color-deep)] font-display mb-3 m-0">
           {t("createCollectionAdmin")}
         </h2>
         <div className="mb-3">
-          <label className="text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-[var(--font-ui)] block mb-1">
+          <label className="text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-ui block mb-1">
             {t("assignUser")}
           </label>
           <select
@@ -220,7 +220,7 @@ export function AdminCollections({
           editingHint={(loc) => tf("editingLanguage", { language: langFull[loc] })}
           className="mb-1"
         />
-        <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0 mb-3">
+        <p className="text-[11px] text-[var(--color-text-muted)] font-ui m-0 mb-3">
           {tf("frenchRequiredNote")}
         </p>
         <TranslatedTextField
@@ -239,7 +239,7 @@ export function AdminCollections({
           className="mb-3"
         />
         <div className="mb-3">
-          <label className="text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-[var(--font-ui)] block mb-1">
+          <label className="text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-ui block mb-1">
             {t("collectionStatus")}
           </label>
           <select
@@ -260,7 +260,7 @@ export function AdminCollections({
       )}
 
       {initialCollections.length === 0 && (
-        <p className="text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)]">
+        <p className="text-[13px] text-[var(--color-text-muted)] font-ui">
           {t("noCollections")}
         </p>
       )}
@@ -274,7 +274,7 @@ export function AdminCollections({
 
         return (
           <div key={status} className="mb-8">
-            <h3 className="text-[12px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-[var(--font-ui)] mb-3">
+            <h3 className="text-[12px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-ui mb-3">
               {statusLabel}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -284,21 +284,21 @@ export function AdminCollections({
                   className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] p-4"
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h4 className="text-[16px] text-[var(--color-deep)] font-[var(--font-display)]">
+                    <h4 className="text-[16px] text-[var(--color-deep)] font-display">
                       {getTranslatedName(col.name, locale)}
                     </h4>
                     {statusBadge(col.status)}
                   </div>
                   {col.description && (
-                    <p className="text-[12px] text-[var(--color-green-muted)] font-[var(--font-ui)] mb-2">
+                    <p className="text-[12px] text-[var(--color-green-muted)] font-ui mb-2">
                       {getTranslatedName(col.description, locale)}
                     </p>
                   )}
-                  <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] mb-3">
+                  <p className="text-[11px] text-[var(--color-text-muted)] font-ui mb-3">
                     {col._count.collectionSongs} {t("tableSongs").toLowerCase()}
                   </p>
                   {col.status !== "PENDING_REVIEW" && (
-                    <label className="flex items-center gap-2 text-[12px] font-[var(--font-ui)] text-[var(--color-text-body)] mb-3 cursor-pointer select-none">
+                    <label className="flex items-center gap-2 text-[12px] font-ui text-[var(--color-text-body)] mb-3 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         className="accent-[var(--color-forest)]"

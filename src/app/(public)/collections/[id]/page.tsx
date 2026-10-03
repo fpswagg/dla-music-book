@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 import { prisma } from "@/lib/prisma";
 import { getMockCollections, getMockSongById } from "@/lib/mock/provider";
 import { SongCard } from "@/components/ui/song-card";
@@ -95,26 +94,25 @@ export default async function CollectionDetailPage({ params }: Props) {
     <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <BackLink href="/collections" label={tc("backToCollections")} />
 
-      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-1 text-balance">
+      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-display mb-1 text-balance">
         {getTranslatedName(collection.name, locale)}
       </h1>
       {collection.description ? (
-        <p className="text-[14px] text-[var(--color-green-muted)] font-[var(--font-ui)] mb-6">
+        <p className="text-[14px] text-[var(--color-green-muted)] font-ui mb-6">
           {getTranslatedName(collection.description, locale)}
         </p>
       ) : null}
       <SectionLabel>{collection.songs.length} {t("songs")}</SectionLabel>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {collection.songs.map((song) => (
-          <Link key={song.id} href={`/songs/${song.id}`} className="no-underline">
-            <SongCard
+          <SongCard
+              key={song.id}
               songId={song.id}
               index={song.index}
               title={song.title}
               meta={song.authors.map((a) => a.name).join(", ")}
               tags={song.tags.map((tg) => ({ name: tg.name, isMood: tg.category === "MOOD" }))}
             />
-          </Link>
         ))}
       </div>
     </div>

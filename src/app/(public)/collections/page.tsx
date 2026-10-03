@@ -34,7 +34,7 @@ export default async function CollectionsPage(props: {
 
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6 text-balance">
+      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-display mb-6 text-balance">
         {t("title")}
       </h1>
 
@@ -43,7 +43,7 @@ export default async function CollectionsPage(props: {
       {collections.length === 0 ? (
         <div className="flex flex-col items-center py-16">
           <FolderOpen size={32} className="text-[var(--color-stone)] mb-3" />
-          <p className="text-[14px] text-[var(--color-text-muted)] font-[var(--font-ui)] text-center">
+          <p className="text-[14px] text-[var(--color-text-muted)] font-ui text-center">
             {t("noPublicCollections")}
           </p>
         </div>
@@ -53,15 +53,15 @@ export default async function CollectionsPage(props: {
             {collections.map((col) => (
               <Link key={col.id} href={`/collections/${col.id}`} className="no-underline">
                 <div className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-lg)] p-4 hover:border-[var(--color-green-muted)] transition-colors">
-                  <h3 className="text-[16px] text-[var(--color-deep)] font-[var(--font-display)] mb-1">
+                  <h3 className="text-[16px] text-[var(--color-deep)] font-display mb-1">
                     {getTranslatedName(col.name as Record<string, string>, locale)}
                   </h3>
                   {col.description ? (
-                    <p className="text-[12px] text-[var(--color-green-muted)] font-[var(--font-ui)] mb-2 line-clamp-2">
+                    <p className="text-[12px] text-[var(--color-green-muted)] font-ui mb-2 line-clamp-2">
                       {getTranslatedName(col.description as Record<string, string>, locale)}
                     </p>
                   ) : null}
-                  <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)]">
+                  <span className="text-[11px] text-[var(--color-text-muted)] font-ui">
                     {t("songsCount", { count: col._count?.collectionSongs ?? 0 })}
                   </span>
                 </div>

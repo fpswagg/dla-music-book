@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { hasSaStorage, publicFileUrl, uploadFile } from "@/lib/sastorage";
+import { isMockMode } from "@/lib/config";
 
 // Vercel caps serverless request bodies at ~4.5 MB.
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -13,8 +14,11 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (isMockMode()) {
+    return NextResponse.json({ publicUrl: "https://example.com/demo-audio.mp3", key: "demo" }, { status: 201 });
+  }
   if (!hasSaStorage()) {
-    return NextResponse.json({ error: "Storage is not configured" }, { status: 503 });
+    return NextResponse.json({ error: "STORAGE_NOT_CONFIGURED" }, { status: 503 });
   }
 
   const form = await request.formData().catch(() => null);

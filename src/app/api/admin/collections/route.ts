@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { Prisma } from "@prisma/client";
-import { CollectionStatus } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
+import { CollectionStatus } from "@/generated/prisma/client";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 
 export async function POST(request: NextRequest) {
   try {

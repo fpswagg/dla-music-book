@@ -21,7 +21,7 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium font-[var(--font-ui)] whitespace-nowrap ${statusStyles[status]}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium font-ui whitespace-nowrap ${statusStyles[status]}`}
     >
       {label ?? t(status)}
     </span>

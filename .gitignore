@@ -45,13 +45,10 @@ coverage
 # Turbo (monorepos / tooling)
 .turbo
 
-# Prisma (local SQLite experiments only; PostgreSQL uses DATABASE_URL)
+# Prisma (generated client; local SQLite experiments)
+src/generated/
 *.db
 *.db-journal
-
-# Supabase CLI (local dev)
-supabase/.branches
-supabase/.temp
 
 # OS
 .DS_Store

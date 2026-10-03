@@ -1,10 +1,13 @@
+// Myenge ma Bonakristo — database schema.
+// Change it with `pnpm db:migrate` (creates a migration in prisma/migrations), never `db push`.
+
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -36,35 +39,100 @@ enum CollectionStatus {
   PENDING_REVIEW
 }
 
-model UserProfile {
-  id             String       @id @default(uuid())
-  supabaseUserId String       @unique
-  displayName    String
-  role           Role         @default(USER)
-  createdAt      DateTime     @default(now())
-  likes          Like[]
-  collections    Collection[]
-  annotations    Annotation[]
-  songNotes      SongNote[]
+// ─── Auth (Better Auth: user / session / account / verification) ────────────
+
+model User {
+  id            String       @id @default(uuid())
+  /// Better Auth "name" field, mapped in src/lib/auth.ts.
+  displayName   String
+  email         String       @unique
+  emailVerified Boolean      @default(false)
+  image         String?
+  role          Role         @default(USER)
+  banned        Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  likes         Like[]
+  collections   Collection[]
+  annotations   Annotation[]
+  songNotes     SongNote[]
+  setlists      Setlist[]
 }
 
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ─── Hymns ──────────────────────────────────────────────────────────────────
+
 model Song {
-  id             String         @id @default(uuid())
-  index          Int            @unique
-  title          String
-  status         SongStatus     @default(DRAFT)
-  originalSongId String?
-  originalSong   Song?          @relation("SongOriginal", fields: [originalSongId], references: [id])
-  rewrites       Song[]         @relation("SongOriginal")
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  versions       SongVersion[]
-  songAuthors    SongAuthor[]
-  songTags       SongTag[]
-  songLanguages  SongLanguage[]
-  notes          SongNote[]
-  likes          Like[]
+  id              String           @id @default(uuid())
+  /// Hymn number in Myenge ma Bonakristo.
+  index           Int              @unique
+  title           String
+  status          SongStatus       @default(DRAFT)
+  /// Page in the printed book, so readers can match it.
+  page            Int?
+  /// Melody / tune name (e.g. "Old Hundredth").
+  tune            String?
+  /// Normalised title + lyrics + references, for diacritic-insensitive search (see src/lib/duala.ts).
+  searchText      String           @default("")
+  originalSongId  String?
+  originalSong    Song?            @relation("SongOriginal", fields: [originalSongId], references: [id])
+  rewrites        Song[]           @relation("SongOriginal")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  versions        SongVersion[]
+  songAuthors     SongAuthor[]
+  songTags        SongTag[]
+  songLanguages   SongLanguage[]
+  notes           SongNote[]
+  likes           Like[]
   collectionSongs CollectionSong[]
+  references      SongReference[]
+  setlistItems    SetlistItem[]
 }
 
 model SongVersion {
@@ -72,6 +140,10 @@ model SongVersion {
   songId        String
   song          Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
   versionType   VersionType  @default(ORIGINAL)
+  /// Structured lyrics: { blocks: [{ kind: "stanza" | "refrain" | "text", number?, lines[] }], refrainAfterEachStanza }.
+  /// See src/lib/lyrics.ts. Source of truth when present.
+  content       Json?
+  /// Plain-text rendering of `content` (kept for search, annotations and older clients).
   lyrics        String
   versionNumber Int
   createdAt     DateTime     @default(now())
@@ -79,6 +151,33 @@ model SongVersion {
   annotations   Annotation[]
 
   @@unique([songId, versionNumber])
+}
+
+/// Another hymnal a hymn is cross-referenced to ("M.B.", "S. S. et S.", "Evang. S."...).
+model Hymnal {
+  id          String          @id @default(uuid())
+  /// Abbreviation as printed in the book, e.g. "S. S. et S.".
+  code        String          @unique
+  name        String
+  description String?
+  /// Other spellings found in the book ("SS&S", "S.S.S."), used when importing.
+  aliases     String[]        @default([])
+  sortOrder   Int             @default(0)
+  references  SongReference[]
+}
+
+model SongReference {
+  id           String @id @default(uuid())
+  songId       String
+  song         Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  hymnalId     String
+  hymnal       Hymnal @relation(fields: [hymnalId], references: [id], onDelete: Cascade)
+  /// Number in that hymnal; text because some are like "11a".
+  number       String
+  displayOrder Int    @default(0)
+
+  @@unique([songId, hymnalId, number])
+  @@index([hymnalId])
 }
 
 model Author {
@@ -91,9 +190,9 @@ model Author {
 model SongAuthor {
   songId       String
   authorId     String
-  displayOrder Int      @default(1)
-  song         Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
-  author       Author   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  displayOrder Int    @default(1)
+  song         Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  author       Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@id([songId, authorId])
 }
@@ -109,8 +208,8 @@ model Tag {
 model SongTag {
   songId String
   tagId  String
-  song   Song @relation(fields: [songId], references: [id], onDelete: Cascade)
-  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([songId, tagId])
 }
@@ -140,6 +239,8 @@ model Preview {
   uploadedAt      DateTime    @default(now())
 }
 
+// ─── People's lists ─────────────────────────────────────────────────────────
+
 model Collection {
   id              String           @id @default(uuid())
   name            Json
@@ -147,7 +248,7 @@ model Collection {
   isPublic        Boolean          @default(false)
   status          CollectionStatus @default(PRIVATE)
   userId          String
-  user            UserProfile      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime         @default(now())
   collectionSongs CollectionSong[]
 }
@@ -162,6 +263,42 @@ model CollectionSong {
   @@id([collectionId, songId])
 }
 
+/// A service programme ("Programme du culte"), shareable by link / QR code.
+model Setlist {
+  id        String        @id @default(uuid())
+  /// Short public code used in the share link (/p/<code>).
+  code      String        @unique
+  title     String
+  date      DateTime?
+  notes     String?
+  /// Anyone with the link can open it when true.
+  shared    Boolean       @default(true)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  items     SetlistItem[]
+
+  @@index([userId])
+}
+
+model SetlistItem {
+  id        String  @id @default(uuid())
+  setlistId String
+  setlist   Setlist @relation(fields: [setlistId], references: [id], onDelete: Cascade)
+  position  Int
+  /// Moment of the service ("Entrée", "Offrande"...).
+  label     String?
+  /// Empty for a non-hymn moment (reading, prayer).
+  songId    String?
+  song      Song?   @relation(fields: [songId], references: [id], onDelete: SetNull)
+  /// Stanza numbers to sing; empty = all.
+  stanzas   Int[]   @default([])
+  note      String?
+
+  @@index([setlistId])
+}
+
 model Annotation {
   id            String      @id @default(uuid())
   songVersionId String
@@ -170,27 +307,27 @@ model Annotation {
   lineText      String
   note          String
   createdById   String
-  createdBy     UserProfile @relation(fields: [createdById], references: [id])
+  createdBy     User        @relation(fields: [createdById], references: [id])
   createdAt     DateTime    @default(now())
 }
 
 model SongNote {
-  id          String      @id @default(uuid())
+  id          String   @id @default(uuid())
   songId      String
-  song        Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
+  song        Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
   content     String
   createdById String
-  createdBy   UserProfile @relation(fields: [createdById], references: [id])
-  createdAt   DateTime    @default(now())
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
 }
 
 model Like {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   songId    String
-  user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
-  song      Song        @relation(fields: [songId], references: [id], onDelete: Cascade)
-  createdAt DateTime    @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   @@unique([userId, songId])
 }

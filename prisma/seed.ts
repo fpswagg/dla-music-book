@@ -1,6 +1,105 @@
-import { PrismaClient } from "@prisma/client";
+/**
+ * Development seed: languages, tags, hymnals, authors and sample hymns.
+ * Idempotent (upserts). Run with `pnpm db:seed`. Never needed in production.
+ */
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { parseLyrics, plainLyrics, serializeLyrics, type LyricsContent } from "../src/lib/lyrics";
+import { buildSearchText } from "../src/lib/duala";
+import { parseReferences } from "../src/lib/references";
 
-const prisma = new PrismaClient();
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
+
+const HYMNALS = [
+  { code: "M.B.", name: "Myenge ma Bonakristo (édition précédente)", aliases: ["M. B.", "MB"], sortOrder: 1 },
+  { code: "S. S. et S.", name: "Sacred Songs and Solos (Ira D. Sankey)", aliases: ["S.S. et S.", "S. S. & S.", "SS&S", "S.S.S."], sortOrder: 2 },
+  { code: "Evang. S.", name: "Evangeliums-Sänger", aliases: ["Evang.S.", "Ev. S."], sortOrder: 3 },
+  { code: "W.", name: "Württembergisches Choralbuch", aliases: ["W"], sortOrder: 4 },
+];
+
+/** Hymns 5–7 transcribed from a scan of the book (ref/mmb-page-structure.jpg) — to be proofread. */
+const BOOK_SAMPLES: Array<{ index: number; page: number; refs: string; text: string }> = [
+  {
+    index: 5,
+    page: 10,
+    refs: "M.B.8. - Evang. S. 189",
+    text: `1. Edube na Loba!
+Mo̱ń na wase, kasa!
+Sesa Sango!
+Namse̱ Musungedi
+ńa ndolo na ndedi,
+nu Mun'a mudongi:
+Yesu Sango.
+
+2. Dinge̱le̱ bejedi,
+basangi ba lati
+sesa Sango.
+Bińo̱ basungabe̱,
+bińo̱ bapo̱so̱be̱,
+abwe̱le̱ pandise̱
+Yesu Sango.
+
+3. Bińo̱ be̱se̱, lata
+o kolise̱ Loba,
+sesa Sango.
+Sombise̱ na lo̱ngo̱,
+lo to̱ise̱ omo̱ńmo̱ń
+sesa na mudi mo̱
+Yesu Sango.`,
+  },
+  {
+    index: 6,
+    page: 10,
+    refs: "M. B. 11. - S. S. et S. 621",
+    text: `1. Loba le bwam! mo̱ń na wase,
+minja, midongo na mindi,
+madoi ma be̱se̱ ma kwale
+na: "Me̱se̱ Loba a weki."
+
+2. Bińo̱ lo̱ngo̱ la mo̱ń pe̱ ya!
+Na madoi ma myenge sesa!
+Mwemba mo̱ na ngo̱ na mbua.
+te̱, lo̱ngo̱ na sesa Loba!
+
+3. Na sengi ngo̱ na bemune̱.
+misima ma kwań na myo̱pi
+ba kwalisan mo̱ na nune̱:
+Loba nde e Muwekedi.
+
+4. Bola so̱ mo̱ musesako,
+nu boli mpo̱m mao ma muna
+ka jabea la babobe;
+sesa pe̱ mo̱ nu sungi wa.`,
+  },
+  {
+    index: 7,
+    page: 10,
+    refs: "M. B. 13. - S. S. et S. 62",
+    text: `1. Sesa Sango na doi lasu,
+na mulema di sese mo̱:
+bebolo bao be mabele̱
+o sesa mo̱ na muńenge̱.
+
+2. A weki ngengeti ńa mo̱ń
+a langi na muso̱ngi mao
+ka njib'a munja mundene̱,
+e jangwa buka dimene̱.
+
+3. Mo̱nd'a longi Yerusale̱m,
+mo̱ nd'a ko̱te̱le̱ matumba:
+a bo̱bise̱ midi myambi,
+a bo̱lise baboedi.
+
+4. Loba lasu e bondene̱
+nde nded'ao pe̱ e tingame̱;
+a namse̱ bapī na babwam,
+a sib'se̱ babobe 'wase.`,
+  },
+];
+
+const json = (c: LyricsContent) => c as unknown as object;
 
 async function main() {
   const duala = await prisma.language.upsert({
@@ -19,199 +118,114 @@ async function main() {
     create: { code: "en", name: { fr: "Anglais", en: "English", duala: "Anglis" } },
   });
 
-  const tags = await Promise.all([
-    prisma.tag.upsert({ where: { key: "spiritual" }, update: {}, create: { key: "spiritual", name: { fr: "Spirituel", en: "Spiritual", duala: "Mudi" }, category: "MOOD" } }),
-    prisma.tag.upsert({ where: { key: "praise" }, update: {}, create: { key: "praise", name: { fr: "Louange", en: "Praise", duala: "Tombédi" }, category: "THEME" } }),
-    prisma.tag.upsert({ where: { key: "worship" }, update: {}, create: { key: "worship", name: { fr: "Adoration", en: "Worship", duala: "Nyamsi" }, category: "THEME" } }),
-    prisma.tag.upsert({ where: { key: "storytelling" }, update: {}, create: { key: "storytelling", name: { fr: "Récit", en: "Storytelling", duala: "Musango" }, category: "STYLE" } }),
-    prisma.tag.upsert({ where: { key: "joyful" }, update: {}, create: { key: "joyful", name: { fr: "Joyeux", en: "Joyful", duala: "Bisima" }, category: "MOOD" } }),
-    prisma.tag.upsert({ where: { key: "solemn" }, update: {}, create: { key: "solemn", name: { fr: "Solennel", en: "Solemn", duala: "Nkémé" }, category: "MOOD" } }),
-    prisma.tag.upsert({ where: { key: "traditional" }, update: {}, create: { key: "traditional", name: { fr: "Traditionnel", en: "Traditional", duala: "Mbassa" }, category: "ERA" } }),
-    prisma.tag.upsert({ where: { key: "love" }, update: {}, create: { key: "love", name: { fr: "Amour", en: "Love", duala: "Ndolo" }, category: "MOOD" } }),
-  ]);
+  const tagSeeds = [
+    { key: "spiritual", name: { fr: "Spirituel", en: "Spiritual", duala: "Mudi" }, category: "MOOD" },
+    { key: "praise", name: { fr: "Louange", en: "Praise", duala: "Tombédi" }, category: "THEME" },
+    { key: "worship", name: { fr: "Adoration", en: "Worship", duala: "Nyamsi" }, category: "THEME" },
+    { key: "storytelling", name: { fr: "Récit", en: "Storytelling", duala: "Musango" }, category: "STYLE" },
+    { key: "joyful", name: { fr: "Joyeux", en: "Joyful", duala: "Bisima" }, category: "MOOD" },
+    { key: "solemn", name: { fr: "Solennel", en: "Solemn", duala: "Nkémé" }, category: "MOOD" },
+    { key: "traditional", name: { fr: "Traditionnel", en: "Traditional", duala: "Mbassa" }, category: "ERA" },
+    { key: "love", name: { fr: "Amour", en: "Love", duala: "Ndolo" }, category: "MOOD" },
+  ] as const;
+  const tags = await Promise.all(
+    tagSeeds.map((t) => prisma.tag.upsert({ where: { key: t.key }, update: {}, create: { ...t, name: { ...t.name } } })),
+  );
 
-  const authors = await Promise.all([
-    prisma.author.upsert({ where: { id: "a1000000-0000-0000-0000-000000000001" }, update: {}, create: { id: "a1000000-0000-0000-0000-000000000001", name: "Pasteur Ndedi Eyango", bio: "Compositeur de cantiques traditionnels douala" } }),
-    prisma.author.upsert({ where: { id: "a1000000-0000-0000-0000-000000000002" }, update: {}, create: { id: "a1000000-0000-0000-0000-000000000002", name: "Mama Ngando", bio: "Chantre de l'église de Bonabéri" } }),
-    prisma.author.upsert({ where: { id: "a1000000-0000-0000-0000-000000000003" }, update: {}, create: { id: "a1000000-0000-0000-0000-000000000003", name: "Ebenezer Moulongo" } }),
-    prisma.author.upsert({ where: { id: "a1000000-0000-0000-0000-000000000004" }, update: {}, create: { id: "a1000000-0000-0000-0000-000000000004", name: "Chorale de Douala" } }),
-  ]);
+  const hymnals = await Promise.all(
+    HYMNALS.map((h) => prisma.hymnal.upsert({ where: { code: h.code }, update: { aliases: h.aliases }, create: h })),
+  );
 
-  const admin = await prisma.userProfile.upsert({
-    where: { supabaseUserId: "admin-seed-001" },
+  const authors = await Promise.all(
+    [
+      { id: "a1000000-0000-0000-0000-000000000001", name: "Pasteur Ndedi Eyango", bio: "Compositeur de cantiques traditionnels douala" },
+      { id: "a1000000-0000-0000-0000-000000000002", name: "Mama Ngando", bio: "Chantre de l'église de Bonabéri" },
+      { id: "a1000000-0000-0000-0000-000000000003", name: "Ebenezer Moulongo", bio: null },
+      { id: "a1000000-0000-0000-0000-000000000004", name: "Chorale de Douala", bio: null },
+    ].map((a) => prisma.author.upsert({ where: { id: a.id }, update: {}, create: a })),
+  );
+
+  // Owner of seeded notes/annotations. Cannot sign in (no password, .invalid address).
+  const admin = await prisma.user.upsert({
+    where: { email: "seed-admin@users.invalid" },
     update: {},
-    create: { supabaseUserId: "admin-seed-001", displayName: "Admin", role: "ADMIN" },
+    create: { email: "seed-admin@users.invalid", displayName: "Admin", role: "ADMIN" },
   });
 
-  await prisma.userProfile.upsert({
-    where: { supabaseUserId: "user-seed-001" },
-    update: {},
-    create: { supabaseUserId: "user-seed-001", displayName: "Marie Ekambi", role: "USER" },
-  });
-  await prisma.userProfile.upsert({
-    where: { supabaseUserId: "user-seed-002" },
-    update: {},
-    create: { supabaseUserId: "user-seed-002", displayName: "Jean Priso", role: "USER" },
-  });
+  type SongSeed = { index: number; title?: string; status: "FINISHED" | "DRAFT"; text: string; page?: number; refs?: string; author?: number; tags?: number[]; french?: boolean };
 
-  type SongSeed = {
-    index: number;
-    title: string;
-    status: "FINISHED" | "DRAFT";
-    lyrics: string;
-    authorIndex: number;
-    tagIndices: number[];
-    /** When true, primary language row is French (otherwise Duala) */
-    useFrench?: boolean;
-  };
-
-  const curatedSongs: SongSeed[] = [
-    { index: 1, title: "Nya Loba", status: "FINISHED", lyrics: "Nya Loba, Nya Loba\nO mudi na bwam\nO mudi na bwam, Nya Loba\nNa sango na wé\n\nO ma pula mba na nyo\nO ma téyédi mba bunya\nNya Loba, Nya Loba\nNa tombédi wé", authorIndex: 0, tagIndices: [0, 1] },
-    { index: 2, title: "Yesu Kristu", status: "FINISHED", lyrics: "Yesu Kristu, Mwané ma Loba\nO bé na bwam bwa bésé\nO pula mba na nyo\nNa tombédi wé na lèm la mba\n\nO bé Nanga na mba\nO bé Loba na mba\nYesu Kristu, a bwam bwa mba", authorIndex: 1, tagIndices: [0, 2] },
-    { index: 3, title: "Hosana", status: "FINISHED", lyrics: "Hosana, Hosana\nNa kombo na Mulédi\nHosana na bulu ba kwédi\nHosana, Hosana\n\nA bé na nkémé\nA bé na ngéa\nMulédi ma bésé\nHosana, Hosana", authorIndex: 2, tagIndices: [1, 4] },
-    { index: 4, title: "Loba a Bwam", status: "FINISHED", lyrics: "Loba a bwam, Loba a bwam\nNa tèmèdi na miso ma wé\nLoba a bwam, a bwam bwa bésé\nNa nyo na é, na bunya na é\n\nO mulema mwa mba mu tomba\nNa sé ma Loba a bwam\nNa lèm la bwam la wé", authorIndex: 0, tagIndices: [0, 6] },
-    { index: 5, title: "Sango na Bwam", status: "FINISHED", lyrics: "Sango na bwam, sango na bwam\nNa sango na Yesu Kristu\nA bé na bwam bwa bésé\nA bé na bwam bwa bésé\n\nBana ba musango\nBana ba ndémbédi\nMiyéngédi ma Loba\nSango na bwam", authorIndex: 3, tagIndices: [1, 3, 6] },
-    { index: 6, title: "Na Tombédi Wé", status: "DRAFT", lyrics: "Na tombédi wé, Nya Loba\nNa tombédi wé na lèm la mba\nNa tombédi wé\n\nO ma tèmbédi mba bunya\nO ma téyédi mba", authorIndex: 1, tagIndices: [0, 5] },
-    { index: 7, title: "Bwam bwa Loba", status: "FINISHED", lyrics: "Bwam bwa Loba bu na mba\nBu na mba na bunya bwésé\nBwam bwa Loba\nBu na wé, bu na mba\n\nNa miso ma Loba\nNa lèm la Loba\nBwam bwa Loba bu na mba", authorIndex: 2, tagIndices: [2, 4, 6] },
-    { index: 8, title: "Prière du Soir", status: "FINISHED", lyrics: "Dans le calme du soir\nJe viens vers toi, Seigneur\nMon coeur cherche ta paix\nTa lumière dans la nuit\n\nGuide mes pas demain\nProtège ceux que j'aime\nDans le calme du soir\nJe te confie ma vie", authorIndex: 3, tagIndices: [0, 5], useFrench: true },
-    { index: 9, title: "Ndolo na Loba", status: "DRAFT", lyrics: "Ndolo na Loba\nNa mba a bé ndolo\nNdolo na Loba na bésé\n\nWé o si pula mba\nWé o si téyédi mba", authorIndex: 0, tagIndices: [7, 0] },
-    { index: 10, title: "Alléluia Douala", status: "FINISHED", lyrics: "Alléluia, Alléluia\nNa kombo na Loba\nAlléluia, Alléluia\nNa kombo na Yesu\n\nBésé ba tomba\nBésé ba sanga\nAlléluia na bulu ba kwédi\nAlléluia, Alléluia", authorIndex: 1, tagIndices: [1, 4, 6] },
+  const songs: SongSeed[] = [
+    ...BOOK_SAMPLES.map((s) => ({ index: s.index, status: "FINISHED" as const, text: s.text, page: s.page, refs: s.refs, tags: [1, 6] })),
+    { index: 1, title: "Nya Loba", status: "FINISHED", author: 0, tags: [0, 1], text: "1. Nya Loba, Nya Loba\nO mudi na bwam\nO mudi na bwam, Nya Loba\nNa sango na wé\n\nR. Na tombédi wé,\nNa tombédi wé!\n\n2. O ma pula mba na nyo\nO ma téyédi mba bunya\nNya Loba, Nya Loba\nNa tombédi wé" },
+    { index: 2, title: "Yesu Kristu", status: "FINISHED", author: 1, tags: [0, 2], text: "Yesu Kristu, Mwané ma Loba\nO bé na bwam bwa bésé\nO pula mba na nyo\nNa tombédi wé na lèm la mba\n\nO bé Nanga na mba\nO bé Loba na mba\nYesu Kristu, a bwam bwa mba" },
+    { index: 3, title: "Hosana", status: "FINISHED", author: 2, tags: [1, 4], text: "1. Hosana, Hosana\nNa kombo na Mulédi\nHosana na bulu ba kwédi\nHosana, Hosana\n\n2. A bé na nkémé\nA bé na ngéa\nMulédi ma bésé\nHosana, Hosana" },
+    { index: 8, title: "Prière du Soir", status: "FINISHED", author: 3, tags: [0, 5], french: true, text: "1. Dans le calme du soir\nJe viens vers toi, Seigneur\nMon cœur cherche ta paix\nTa lumière dans la nuit\n\n2. Guide mes pas demain\nProtège ceux que j'aime\nDans le calme du soir\nJe te confie ma vie" },
+    { index: 9, title: "Ndolo na Loba", status: "DRAFT", author: 0, tags: [7, 0], text: "Ndolo na Loba\nNa mba a bé ndolo\nNdolo na Loba na bésé" },
   ];
 
-  /** Synthetic bulk hymns (indices 11–120) for search, pagination, and performance testing */
-  const bulkTitles = [
-    "Élévation", "Confiance", "Paix du matin", "Route du ciel", "Eau vive", "Lumière nouvelle", "Cœur reconnaissant",
-    "Montagne sainte", "Rivière de grâce", "Porte étroite", "Berger fidèle", "Agneau vainqueur", "Colombe de paix",
-    "Étoile du matin", "Rocher éternel", "Refuge sûr", "Fontaine jaillissante", "Vigne fertile", "Moisson joyeuse",
-    "Moisson d’automne", "Printemps de foi", "Hiver de prière", "Été de louange", "Cloche du soir", "Cloche du matin",
-    "Chœur des anges", "Voix du désert", "Chemin de Damas", "Galilée", "Bethléem", "Nazareth", "Jérusalem nouvelle",
-    "Sion", "Oliviers", "Figuier", "Blé du champ", "Pain de vie", "Vin nouveau", "Coupe bénie", "Alliance",
-    "Arc-en-ciel", "Arche stable", "Barque en tempête", "Calme après l’orage", "Aube grise", "Crépuscule doré",
-    "Midi fervent", "Minuit sacré", "Veillée", "Veille de Noël", "Épiphanie", "Carême", "Pâques joyeuses",
-    "Ascension", "Pentecôte", "Trinité", "Saint-Esprit descends", "Consolation", "Exhortation", "Intercession",
-    "Supplication", "Action de grâce", "Gloria", "Kyrie", "Sanctus", "Agnus Dei", "Doxologie", "Amen final",
-    "Ronde des enfants", "Chant des jeunes", "Chant des anciens", "Chant familial", "Chant missionnaire",
-    "Chant d’envoi", "Chant d’entrée", "Offertoire simple", "Communion fraternelle", "Bénédiction pastorale",
-    "Bénédiction nuptiale", "Funérailles — espérance", "Funérailles — paix", "Mariage — alliance", "Baptême — eau",
-    "Confirmation — feu", "Ordination — appel", "Veillée de prière", "Réveil", "Réconciliation", "Pardon",
-    "Miséricorde", "Justice et grâce", "Vérité", "Voie étroite", "Porte ouverte", "Maison du Père", "Table préparée",
-    "Invité aux noces", "Robe blanche", "Couronne promise", "Palme de victoire", "Couronne d’épines", "Croix levée",
-    "Tombeau vide", "Résurrection", "Vie éternelle", "Héritage", "Terre promise", "Cité céleste", "Nouvelle Jérusalem",
-    "Rivière de vie", "Arbre de vie", "Lumière sans fin", "Fin des temps — gloire",
-  ];
+  for (const s of songs) {
+    const content = parseLyrics(s.text);
+    const lyrics = serializeLyrics(content);
+    const refs = s.refs ? parseReferences(s.refs, hymnals) : [];
+    const title = s.title ?? (content.blocks[0]?.lines[0] ?? `${s.index}`).replace(/[,;:!.\s]+$/, "");
+    const searchText = buildSearchText([title, plainLyrics(content), ...refs.map((r) => `${r.code} ${r.number}`)]);
 
-  const extraSongs: SongSeed[] = [];
-  for (let index = 11; index <= 120; index++) {
-    const titleBase = bulkTitles[(index - 11) % bulkTitles.length];
-    const title = `${titleBase} (${index})`;
-    const status: "FINISHED" | "DRAFT" = index % 25 === 0 ? "DRAFT" : "FINISHED";
-    const authorIndex = (index - 1) % 4;
-    const a = index % 8;
-    const b = (index + 3) % 8;
-    const tagIndices = a === b ? [a, (a + 1) % 8] : [a, b];
-    const useFrench = index % 15 === 8;
-    const lyrics = `${title}\n\nStrophe 1 — cantique numéro ${index}\nNous élevons notre voix vers le ciel\nEnsemble, frères et sœurs dans la foi\n\nRefrain:\nLouange au Seigneur, force de nos cœurs\nCantique ${index}, résonne au matin\n\nStrophe 2 — marche avec nous\nSur les chemins de Douala et d’ailleurs\nQue ce chant porte paix et vérité\n\nAmen — fin du cantique ${index}.`;
-    extraSongs.push({
-      index,
-      title,
-      status,
-      lyrics,
-      authorIndex,
-      tagIndices,
-      useFrench,
+    const existing = await prisma.song.findUnique({ where: { index: s.index } });
+    if (existing) continue; // never overwrite data in an existing database
+
+    const song = await prisma.song.create({
+      data: {
+        index: s.index,
+        title,
+        status: s.status,
+        page: s.page ?? null,
+        searchText,
+        versions: { create: { versionNumber: 1, versionType: "ORIGINAL", lyrics, content: json(content) } },
+        songLanguages: { create: { languageId: s.french ? french.id : duala.id } },
+        ...(s.author !== undefined && { songAuthors: { create: { authorId: authors[s.author].id, displayOrder: 1 } } }),
+        ...(s.tags && { songTags: { create: s.tags.map((i) => ({ tagId: tags[i].id })) } }),
+      },
     });
-  }
-
-  const songsData: SongSeed[] = [...curatedSongs, ...extraSongs];
-
-  for (const data of songsData) {
-    const song = await prisma.song.upsert({
-      where: { index: data.index },
-      update: {},
-      create: { index: data.index, title: data.title, status: data.status },
-    });
-
-    await prisma.songVersion.upsert({
-      where: { songId_versionNumber: { songId: song.id, versionNumber: 1 } },
-      update: {},
-      create: { songId: song.id, versionType: "ORIGINAL", lyrics: data.lyrics, versionNumber: 1 },
-    });
-
-    await prisma.songAuthor.upsert({
-      where: { songId_authorId: { songId: song.id, authorId: authors[data.authorIndex].id } },
-      update: {},
-      create: { songId: song.id, authorId: authors[data.authorIndex].id, displayOrder: 1 },
-    });
-
-    for (const tagIndex of data.tagIndices) {
-      await prisma.songTag.upsert({
-        where: { songId_tagId: { songId: song.id, tagId: tags[tagIndex].id } },
-        update: {},
-        create: { songId: song.id, tagId: tags[tagIndex].id },
-      });
+    for (const [i, r] of refs.entries()) {
+      if (r.hymnalId) await prisma.songReference.create({ data: { songId: song.id, hymnalId: r.hymnalId, number: r.number, displayOrder: i } });
     }
-
-    const langId = data.useFrench ? french.id : duala.id;
-    await prisma.songLanguage.upsert({
-      where: { songId_languageId: { songId: song.id, languageId: langId } },
-      update: {},
-      create: { songId: song.id, languageId: langId },
-    });
   }
 
   const song1 = await prisma.song.findUnique({ where: { index: 1 }, include: { versions: true } });
-  if (song1 && song1.versions[0]) {
-    await prisma.annotation.upsert({
-      where: { id: "ann00000-0000-0000-0000-000000000001" },
-      update: {},
-      create: {
-        id: "ann00000-0000-0000-0000-000000000001",
+  if (song1?.versions[0] && !(await prisma.annotation.count({ where: { songVersionId: song1.versions[0].id } }))) {
+    await prisma.annotation.create({
+      data: {
         songVersionId: song1.versions[0].id,
         lineNumber: 1,
         lineText: "Nya Loba, Nya Loba",
-        note: "\"Nya Loba\" signifie \"Dieu\" en langue Duala. Cette ouverture est une invocation directe.",
+        note: "« Nya Loba » : invocation directe de Dieu en duala.",
         createdById: admin.id,
       },
     });
   }
 
-  const song3 = await prisma.song.findUnique({ where: { index: 3 } });
-  if (song3) {
-    await prisma.songNote.upsert({
-      where: { id: "note0000-0000-0000-0000-000000000001" },
-      update: {},
-      create: {
-        id: "note0000-0000-0000-0000-000000000001",
-        songId: song3.id,
-        content: "Ce cantique est souvent chanté lors des entrées triomphales à l'église, inspiré par les Psaumes.",
-        createdById: admin.id,
-      },
-    });
-  }
-
-  // Collection
-  const colSongs = await prisma.song.findMany({ where: { index: { in: [1, 2, 3, 5, 10] } } });
+  const colSongs = await prisma.song.findMany({ where: { index: { in: [1, 2, 3, 5, 6, 7] } } });
   const col = await prisma.collection.upsert({
     where: { id: "c1000000-0000-0000-0000-000000000001" },
     update: {},
     create: {
       id: "c1000000-0000-0000-0000-000000000001",
-      name: { fr: "Cantiques du Dimanche", en: "Sunday Hymns", duala: "Bejango ba Sonde" },
-      description: { fr: "Les cantiques les plus chantés lors des cultes dominicaux", en: "The most sung hymns during Sunday worship", duala: "Bejango ba bato ba jangi na sonde" },
+      name: { fr: "Cantiques du Dimanche", en: "Sunday Hymns", duala: "Myenge ma Sonde" },
+      description: { fr: "Les cantiques les plus chantés lors des cultes dominicaux", en: "The most sung hymns during Sunday worship" },
       isPublic: true,
       status: "PUBLIC",
       userId: admin.id,
     },
   });
-  for (let i = 0; i < colSongs.length; i++) {
+  for (const [i, s] of colSongs.entries()) {
     await prisma.collectionSong.upsert({
-      where: { collectionId_songId: { collectionId: col.id, songId: colSongs[i].id } },
+      where: { collectionId_songId: { collectionId: col.id, songId: s.id } },
       update: {},
-      create: { collectionId: col.id, songId: colSongs[i].id, displayOrder: i },
+      create: { collectionId: col.id, songId: s.id, displayOrder: i },
     });
   }
 
-  console.log(`Seed completed successfully: ${songsData.length} songs (indices 1–${songsData[songsData.length - 1]?.index ?? 0}).`);
+  console.log(`Seed done: ${songs.length} sample hymns, ${hymnals.length} hymnals.`);
 }
 
 main()
@@ -219,6 +233,4 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Olive & Ink — see docs/STYLE.md. Components only use these tokens. */
 :root {
   --color-parchment:    #f5f0e8;
   --color-linen:        #ede8dc;
@@ -13,9 +14,12 @@
   --color-green-muted:  #4a6340;
   --color-text-muted:   #7a6a50;
   --color-text-body:    #3d4f3a;
+  --color-danger:       #a3402a;
+  --color-danger-light: #f7e1da;
 
-  --font-display: 'Georgia', 'Times New Roman', serif;
-  --font-ui:      system-ui, sans-serif;
+  /* Gentium Book Plus (SIL) covers Duala: e̱ o̱ ɛ ɔ ŋ ń ḿ. Loaded in layout.tsx. */
+  --font-display: var(--font-gentium), 'Georgia', 'Times New Roman', serif;
+  --font-ui:      system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   --radius-sm:   6px;
   --radius-md:   10px;
@@ -24,7 +28,36 @@
 
   --border-default: 0.5px solid var(--color-stone);
   --border-active:  2px solid var(--color-forest);
+
+  /* Reading settings (html[data-text]) */
+  --lyrics-size: 18px;
+  --lyrics-leading: 1.65;
+
+  color-scheme: light;
 }
+
+/* "Ink": the same notebook at night. */
+html[data-theme="dark"] {
+  --color-parchment:    #141b14;
+  --color-linen:        #1a241a;
+  --color-sand:         #233023;
+  --color-stone:        #4b5a45;
+  --color-forest:       #9cc98a;
+  --color-deep:         #ece6d6;
+  --color-amber:        #e3b450;
+  --color-amber-light:  #33290f;
+  --color-green-light:  #26391f;
+  --color-green-muted:  #a8b89a;
+  --color-text-muted:   #a59a82;
+  --color-text-body:    #d6d0bf;
+  --color-danger:       #e48a72;
+  --color-danger-light: #3a1d16;
+  color-scheme: dark;
+}
+
+html[data-text="sm"] { --lyrics-size: 16px; }
+html[data-text="lg"] { --lyrics-size: 21px; }
+html[data-text="xl"] { --lyrics-size: 25px; --lyrics-leading: 1.55; }
 
 @theme inline {
   --color-parchment: var(--color-parchment);
@@ -39,6 +72,8 @@
   --color-green-muted: var(--color-green-muted);
   --color-text-muted: var(--color-text-muted);
   --color-text-body: var(--color-text-body);
+  --color-danger: var(--color-danger);
+  --color-danger-light: var(--color-danger-light);
 
   --font-display: var(--font-display);
   --font-ui: var(--font-ui);
@@ -53,6 +88,12 @@ body {
   background: var(--color-parchment);
   color: var(--color-text-body);
   font-family: var(--font-ui);
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-forest);
+  outline-offset: 2px;
 }
 
 @keyframes pulse-subtle {
@@ -71,7 +112,87 @@ body {
   to { max-height: 200px; opacity: 1; }
 }
 
+/* ─── Hymn page (book layout) ─────────────────────────────────────────── */
+
+.hymn-number {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--color-deep);
+}
+
+.hymn-refs {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--color-green-muted);
+  letter-spacing: 0.01em;
+}
+
+.lyrics {
+  font-family: var(--font-display);
+  font-size: var(--lyrics-size);
+  line-height: var(--lyrics-leading);
+  color: var(--color-deep);
+}
+
+.lyrics-block { position: relative; break-inside: avoid; }
+
+/* Stanza number hangs in the margin, like the printed book. */
+.lyrics-stanza { padding-left: 2em; }
+.lyrics-stanza-number {
+  position: absolute;
+  left: 0;
+  width: 1.6em;
+  text-align: right;
+  color: var(--color-green-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lyrics-refrain { padding-left: 3.25em; }
+.lyrics-refrain-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+/* Reading setting: repeated refrains in full, or "Ba longo…" like the book. */
+html[data-refrain="short"] .refrain-repeat .refrain-full { display: none; }
+html:not([data-refrain="short"]) .refrain-repeat .refrain-short { display: none; }
+
+/* ─── Projection ─────────────────────────────────────────────────────── */
+
+.present {
+  background: #0f150f;
+  color: #f2ecdc;
+  font-family: var(--font-display);
+}
+.present-text {
+  font-size: clamp(28px, 5.2vw, 72px);
+  line-height: 1.35;
+}
+
+/* ─── Print: the original book layout ────────────────────────────────── */
+
 @media print {
+  html, html[data-theme="dark"] {
+    --color-parchment: #ffffff;
+    --color-linen: #ffffff;
+    --color-sand: #ffffff;
+    --color-stone: #999999;
+    --color-forest: #000000;
+    --color-deep: #000000;
+    --color-green-muted: #222222;
+    --color-text-muted: #444444;
+    --color-text-body: #000000;
+    --lyrics-size: 11.5pt;
+    --lyrics-leading: 1.35;
+    color-scheme: light;
+  }
+
   .no-print,
   header,
   footer,
@@ -79,17 +200,11 @@ body {
   aside,
   button,
   audio,
-  video,
-  .search-bar,
-  .filter-pill {
+  video {
     display: none !important;
   }
 
-  body {
-    background: white !important;
-    color: #1e3a1e !important;
-    font-size: 12pt;
-  }
+  body { background: white !important; }
 
   main {
     padding: 0 !important;
@@ -97,23 +212,23 @@ body {
     max-width: 100% !important;
   }
 
-  h1 {
-    font-size: 18pt !important;
-    margin-bottom: 8pt !important;
+  a { color: inherit !important; text-decoration: none !important; }
+
+  .print-columns {
+    column-count: 2;
+    column-gap: 1.2cm;
+    column-rule: 0.5pt solid #000;
   }
 
-  .song-lyrics-line {
-    font-family: 'Georgia', serif;
-    font-size: 12pt;
-    line-height: 1.6;
-  }
+  .print-hymn { break-inside: avoid-column; margin-bottom: 14pt; }
+  .print-hymn .hymn-number { font-size: 16pt; text-align: center; }
+  .print-hymn .hymn-refs { font-size: 10pt; text-align: center; color: #000; }
+  .lyrics-block { margin-bottom: 6pt !important; }
 
-  a {
-    color: #1e3a1e !important;
-    text-decoration: none !important;
-  }
+  @page { margin: 1.5cm 1.3cm; }
+}
 
-  @page {
-    margin: 1.5cm;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

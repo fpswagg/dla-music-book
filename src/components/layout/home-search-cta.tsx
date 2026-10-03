@@ -31,7 +31,7 @@ export function HomeSearchCta() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="flex-1 min-w-0 bg-transparent border-none outline-none text-[16px] md:text-[15px] text-[var(--color-deep)] font-[var(--font-ui)] placeholder:text-[var(--color-text-muted)]"
+          className="flex-1 min-w-0 bg-transparent border-none outline-none text-[16px] md:text-[15px] text-[var(--color-deep)] font-ui placeholder:text-[var(--color-text-muted)]"
           autoComplete="off"
           enterKeyHint="search"
           aria-label={t("searchPlaceholder")}
@@ -40,7 +40,7 @@ export function HomeSearchCta() {
       <button
         type="submit"
         aria-label={t("searchCta")}
-        className="shrink-0 inline-flex items-center justify-center gap-2 border-none cursor-pointer bg-[var(--color-forest)] text-[var(--color-parchment)] transition-colors hover:bg-[var(--color-deep)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-forest)] text-[13px] font-[var(--font-ui)]
+        className="shrink-0 inline-flex items-center justify-center gap-2 border-none cursor-pointer bg-[var(--color-forest)] text-[var(--color-parchment)] transition-colors hover:bg-[var(--color-deep)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-forest)] text-[13px] font-ui
           min-w-[3.25rem] px-1 max-md:rounded-none max-md:rounded-r-[var(--radius-md)]
           md:min-h-[44px] md:w-full md:rounded-[var(--radius-md)] md:px-5 md:py-2.5
           lg:min-h-0 lg:w-auto lg:px-5 lg:py-2.5"

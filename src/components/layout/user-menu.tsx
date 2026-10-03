@@ -3,11 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { User, LogOut, ChevronDown, LayoutDashboard, Shield } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard, Shield, ListMusic } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { isClientMockMode } from "@/lib/env.client";
-import { mockAuth } from "@/lib/mock/auth";
-import { createClient } from "@/lib/supabase/client";
+import { useAppConfig } from "@/components/providers/app-config";
 
 type UserMenuProps = {
   user: { displayName: string; role: string } | null;
@@ -18,6 +16,7 @@ type UserMenuProps = {
 export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
   const t = useTranslations("nav");
   const router = useRouter();
+  const config = useAppConfig();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -34,12 +33,11 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
 
   const handleSignOut = async () => {
     setOpen(false);
-    if (isClientMockMode()) {
-      await mockAuth.signOut();
-    } else {
-      const supabase = createClient();
-      await supabase?.auth.signOut();
+    if (config.auth) {
+      const { authClient } = await import("@/lib/auth-client");
+      await authClient.signOut();
     }
+    router.push("/");
     router.refresh();
   };
 
@@ -49,13 +47,13 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
       : user?.displayName;
 
   const linkClass =
-    "flex items-center gap-2 px-3 py-2.5 text-[13px] text-[var(--color-text-body)] font-[var(--font-ui)] no-underline rounded-[var(--radius-sm)] hover:bg-[var(--color-sand)] w-full text-left";
+    "flex items-center gap-2 px-3 py-2.5 text-[13px] text-[var(--color-text-body)] font-ui no-underline rounded-[var(--radius-sm)] hover:bg-[var(--color-sand)] w-full text-left";
 
   if (!user) {
     return (
       <Link
         href="/auth/login"
-        className="flex items-center gap-1.5 text-[13px] text-[var(--color-forest)] font-[var(--font-ui)] no-underline"
+        className="flex items-center gap-1.5 min-h-[40px] px-3 text-[13px] text-[var(--color-forest)] font-ui no-underline"
       >
         <User size={16} />
         <span>{t("signIn")}</span>
@@ -66,12 +64,16 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
   if (variant === "mobile") {
     return (
       <div className="flex flex-col gap-1 w-full pt-1 border-t-[0.5px] border-t-[var(--color-stone)]">
-        <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0 px-3 pt-2">
+        <p className="text-[11px] text-[var(--color-text-muted)] font-ui m-0 px-3 pt-2">
           {user.displayName}
         </p>
         <Link href="/dashboard" className={linkClass}>
           <LayoutDashboard size={16} className="shrink-0 text-[var(--color-forest)]" />
           <span className="text-[var(--color-forest)]">{t("mySpace")}</span>
+        </Link>
+        <Link href="/dashboard/programmes" className={linkClass}>
+          <ListMusic size={16} className="shrink-0" />
+          {t("programmes")}
         </Link>
         {user.role === "ADMIN" && (
           <Link href="/admin" className={linkClass}>
@@ -95,7 +97,7 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
     <div ref={wrapRef} className="relative flex items-center gap-1.5">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 max-w-[160px] sm:max-w-[200px] px-3 py-1.5 rounded-[var(--radius-pill)] bg-[var(--color-forest)] text-[var(--color-parchment)] text-[13px] font-[var(--font-ui)] no-underline hover:bg-[var(--color-deep)] transition-colors truncate"
+        className="inline-flex items-center gap-1.5 max-w-[160px] sm:max-w-[200px] px-3 py-1.5 rounded-[var(--radius-pill)] bg-[var(--color-forest)] text-[var(--color-parchment)] text-[13px] font-ui no-underline hover:bg-[var(--color-deep)] transition-colors truncate"
         title={user.displayName}
       >
         <LayoutDashboard size={15} className="shrink-0" />
@@ -119,17 +121,26 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
           <Link
             href="/dashboard"
             role="menuitem"
-            className="flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-body)] font-[var(--font-ui)] no-underline hover:bg-[var(--color-sand)]"
+            className="flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-body)] font-ui no-underline hover:bg-[var(--color-sand)]"
             onClick={() => setOpen(false)}
           >
             <LayoutDashboard size={14} />
             {t("dashboard")}
           </Link>
+          <Link
+            href="/dashboard/programmes"
+            role="menuitem"
+            className="flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-body)] font-ui no-underline hover:bg-[var(--color-sand)]"
+            onClick={() => setOpen(false)}
+          >
+            <ListMusic size={14} />
+            {t("programmes")}
+          </Link>
           {user.role === "ADMIN" && (
             <Link
               href="/admin"
               role="menuitem"
-              className="flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-body)] font-[var(--font-ui)] no-underline hover:bg-[var(--color-sand)]"
+              className="flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-body)] font-ui no-underline hover:bg-[var(--color-sand)]"
               onClick={() => setOpen(false)}
             >
               <Shield size={14} />
@@ -140,7 +151,7 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
             type="button"
             role="menuitem"
             onClick={handleSignOut}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)] bg-transparent border-none cursor-pointer hover:bg-[var(--color-sand)]"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-[13px] text-[var(--color-text-muted)] font-ui bg-transparent border-none cursor-pointer hover:bg-[var(--color-sand)]"
           >
             <LogOut size={14} />
             {t("signOut")}

@@ -1,70 +1,51 @@
-import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import "server-only";
+import { cache } from "react";
+import { headers } from "next/headers";
+import { getAuth } from "@/lib/auth";
+import { isMockMode } from "@/lib/config";
 import { getMockCurrentUser } from "@/lib/mock/provider";
 
 export type AppUser = {
   id: string;
-  supabaseUserId: string;
   displayName: string;
   role: "USER" | "ADMIN";
   email?: string;
+  emailVerified?: boolean;
+  image?: string | null;
 };
 
-export async function getCurrentUser(): Promise<AppUser | null> {
+/** Signed-in user for this request (deduplicated per request), or null. */
+export const getCurrentUser = cache(async (): Promise<AppUser | null> => {
   if (isMockMode()) {
     const mock = getMockCurrentUser();
-    return {
-      id: mock.id,
-      supabaseUserId: mock.supabaseUserId,
-      displayName: mock.displayName,
-      role: mock.role as "USER" | "ADMIN",
-    };
+    return { id: mock.id, displayName: mock.displayName, role: mock.role as AppUser["role"] };
   }
 
-  const supabase = await createClient();
-  if (!supabase) return null;
+  const auth = getAuth();
+  if (!auth) return null;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  const session = await auth.api.getSession({ headers: await headers() }).catch(() => null);
+  if (!session || session.user.banned) return null;
 
-  if (!prisma) return null;
-
-  let profile = await prisma.userProfile.findUnique({
-    where: { supabaseUserId: user.id },
-  });
-
-  if (!profile) {
-    profile = await prisma.userProfile.create({
-      data: {
-        supabaseUserId: user.id,
-        displayName: user.user_metadata?.display_name || user.email?.split("@")[0] || "User",
-        role: "USER",
-      },
-    });
-  }
-
+  const u = session.user;
   return {
-    id: profile.id,
-    supabaseUserId: profile.supabaseUserId,
-    displayName: profile.displayName,
-    role: profile.role,
-    email: user.email ?? undefined,
+    id: u.id,
+    displayName: u.name,
+    role: u.role === "ADMIN" ? "ADMIN" : "USER",
+    email: u.email,
+    emailVerified: u.emailVerified,
+    image: u.image ?? null,
   };
-}
+});
 
 export async function requireAuth(): Promise<AppUser> {
   const user = await getCurrentUser();
-  if (!user) {
-    throw new Error("UNAUTHORIZED");
-  }
+  if (!user) throw new Error("UNAUTHORIZED");
   return user;
 }
 
 export async function requireAdmin(): Promise<AppUser> {
   const user = await requireAuth();
-  if (user.role !== "ADMIN") {
-    throw new Error("FORBIDDEN");
-  }
+  if (user.role !== "ADMIN") throw new Error("FORBIDDEN");
   return user;
 }

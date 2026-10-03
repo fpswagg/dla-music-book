@@ -1,5 +1,6 @@
 "use client";
 
+import { setLocaleCookie } from "@/lib/locale-cookie";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
@@ -22,7 +23,7 @@ export function LanguagePicker() {
   const router = useRouter();
 
   const selectLocale = (locale: Locale) => {
-    document.cookie = `locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    setLocaleCookie(locale);
     router.refresh();
   };
 
@@ -36,7 +37,7 @@ export function LanguagePicker() {
             type="button"
             title={titles[locale]}
             onClick={() => selectLocale(locale)}
-            className={`min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-4 sm:px-3 py-2.5 sm:py-1.5 rounded-[var(--radius-pill)] text-[12px] font-medium font-[var(--font-ui)] transition-colors bg-transparent border-none cursor-pointer inline-flex items-center justify-center ${
+            className={`min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-4 sm:px-3 py-2.5 sm:py-1.5 rounded-[var(--radius-pill)] text-[12px] font-medium font-ui transition-colors bg-transparent border-none cursor-pointer inline-flex items-center justify-center ${
               currentLocale === locale
                 ? "bg-[var(--color-green-light)] text-[var(--color-forest)] ring-1 ring-[var(--color-forest)]"
                 : "text-[var(--color-text-muted)] hover:text-[var(--color-deep)] hover:bg-[var(--color-sand)]"

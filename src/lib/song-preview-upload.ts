@@ -1,5 +1,3 @@
-import { isClientMockMode } from "@/lib/env.client";
-
 /**
  * Uploads an audio file to SA Storage (through the admin API route) and returns the public URL.
  * Duration is estimated from the file in the browser before upload.
@@ -23,10 +21,6 @@ export async function uploadSongPreviewFile(
     );
     audio.addEventListener("error", () => finish(0), { once: true });
   });
-
-  if (isClientMockMode()) {
-    return { publicUrl: `https://example.com/mock-audio/${encodeURIComponent(file.name)}`, durationSeconds };
-  }
 
   const form = new FormData();
   form.append("file", file);

@@ -168,7 +168,7 @@ export function DashboardCollections({
         <button
           type="button"
           onClick={() => setShowCreate((s) => !s)}
-          className="text-[13px] font-[var(--font-ui)] text-[var(--color-forest)] bg-transparent border-none cursor-pointer underline-offset-2 hover:underline p-0"
+          className="text-[13px] font-ui text-[var(--color-forest)] bg-transparent border-none cursor-pointer underline-offset-2 hover:underline p-0"
         >
           {showCreate ? t("hideCreateSection") : t("showCreateSection")}
         </button>
@@ -179,7 +179,7 @@ export function DashboardCollections({
         onSubmit={handleCreate}
         className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] p-4 mb-6"
       >
-        <h3 className="text-[14px] text-[var(--color-deep)] font-[var(--font-display)] mb-3 m-0">
+        <h3 className="text-[14px] text-[var(--color-deep)] font-display mb-3 m-0">
           {t("newCollection")}
         </h3>
         <TranslatedTextField
@@ -195,7 +195,7 @@ export function DashboardCollections({
           editingHint={(loc) => tf("editingLanguage", { language: langFull[loc] })}
           className="mb-1"
         />
-        <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0 mb-3">
+        <p className="text-[11px] text-[var(--color-text-muted)] font-ui m-0 mb-3">
           {tf("frenchRequiredNote")}
         </p>
         <Button type="submit" disabled={creating}>
@@ -214,17 +214,17 @@ export function DashboardCollections({
           >
             <div className="flex items-start justify-between gap-2 mb-2">
               <div>
-                <h4 className="text-[16px] text-[var(--color-deep)] font-[var(--font-display)] m-0">
+                <h4 className="text-[16px] text-[var(--color-deep)] font-display m-0">
                   {getTranslatedName(col.name, locale)}
                 </h4>
                 {col.description && (
-                  <p className="text-[12px] text-[var(--color-green-muted)] font-[var(--font-ui)] m-0 mt-1">
+                  <p className="text-[12px] text-[var(--color-green-muted)] font-ui m-0 mt-1">
                     {getTranslatedName(col.description, locale)}
                   </p>
                 )}
-                <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0 mt-1 flex flex-wrap items-center gap-2">
+                <p className="text-[11px] text-[var(--color-text-muted)] font-ui m-0 mt-1 flex flex-wrap items-center gap-2">
                   <span
-                    className={`inline-flex px-2 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium font-[var(--font-ui)] ${statusBadgeClass(col.status)}`}
+                    className={`inline-flex px-2 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium font-ui ${statusBadgeClass(col.status)}`}
                   >
                     {statusBadgeLabel(col.status)}
                   </span>
@@ -247,9 +247,9 @@ export function DashboardCollections({
               {col.songs.map((s) => (
                 <li
                   key={s.id}
-                  className="flex items-center justify-between text-[13px] font-[var(--font-ui)] text-[var(--color-text-body)]"
+                  className="flex items-center justify-between text-[13px] font-ui text-[var(--color-text-body)]"
                 >
-                  <Link href={`/songs/${s.id}`} className="no-underline hover:underline text-[var(--color-forest)]">
+                  <Link href={`/songs/${s.index}`} className="no-underline hover:underline text-[var(--color-forest)]">
                     {String(s.index).padStart(2, "0")} · {s.title}
                   </Link>
                   <button
@@ -281,7 +281,7 @@ export function DashboardCollections({
                     onChange={(e) => setSearchQ(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), runSearch())}
                     placeholder={t("searchSongsToAdd")}
-                    className="flex-1 bg-[var(--color-linen)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-[var(--font-ui)]"
+                    className="flex-1 bg-[var(--color-linen)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-ui"
                   />
                   <Button type="button" variant="secondary" size="sm" onClick={runSearch} disabled={searching}>
                     {searching ? <Spinner /> : <Search size={14} />}
@@ -334,7 +334,7 @@ export function DashboardCollections({
                   setSearchHits([]);
                 }}
                 disabled={colBusy === col.id}
-                className="text-[12px] text-[var(--color-forest)] font-[var(--font-ui)] bg-transparent border-none cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                className="text-[12px] text-[var(--color-forest)] font-ui bg-transparent border-none cursor-pointer flex items-center gap-1 disabled:opacity-50"
               >
                 {colBusy === col.id ? <Spinner className="mr-1" /> : <Plus size={14} />}{" "}
                 {t("addSongs")}

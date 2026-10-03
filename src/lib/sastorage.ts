@@ -18,6 +18,7 @@ export type StoredFile = {
 const baseUrl = () => (process.env.SASTORAGE_URL ?? "").replace(/\/$/, "");
 const token = () => process.env.SASTORAGE_TOKEN ?? "";
 
+/** Same as isStorageConfigured() in src/lib/config.ts. */
 export function hasSaStorage(): boolean {
   return !!baseUrl() && !!token();
 }

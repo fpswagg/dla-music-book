@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getSiteUrl } from "@/lib/env";
-import { isMockMode } from "@/lib/env";
+import { getSiteUrl, isMockMode } from "@/lib/config";
+
+// Built per request so `next build` never needs the database.
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { getMockCollections, getMockSongs } from "@/lib/mock/provider";
 
@@ -12,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/songs`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/collections`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/hymnals`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/auth/login`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
     { url: `${base}/auth/register`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
@@ -22,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (isMockMode()) {
     for (const s of getMockSongs({ status: "FINISHED" })) {
       songEntries.push({
-        url: `${base}/songs/${s.id}`,
+        url: `${base}/songs/${s.index}`,
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.7,
@@ -40,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [songs, cols] = await Promise.all([
       prisma.song.findMany({
         where: { status: "FINISHED" },
-        select: { id: true, updatedAt: true },
+        select: { index: true, updatedAt: true },
       }),
       prisma.collection.findMany({
         where: { status: "PUBLIC" },
@@ -49,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
     for (const s of songs) {
       songEntries.push({
-        url: `${base}/songs/${s.id}`,
+        url: `${base}/songs/${s.index}`,
         lastModified: s.updatedAt,
         changeFrequency: "monthly",
         priority: 0.7,

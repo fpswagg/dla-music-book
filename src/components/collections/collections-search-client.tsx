@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useSyncedState } from "@/hooks/use-synced-state";
+import { useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -10,12 +11,8 @@ import { Button } from "@/components/ui/button";
 export function CollectionsSearchClient({ initialQ }: { initialQ: string }) {
   const t = useTranslations("collections");
   const router = useRouter();
-  const [draft, setDraft] = useState(initialQ);
+  const [draft, setDraft] = useSyncedState(initialQ);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    setDraft(initialQ);
-  }, [initialQ]);
 
   const submit = useCallback(
     (q: string) => {

@@ -1,14 +1,15 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useTransition } from "react";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 const inputCls =
-  "w-full sm:max-w-xs bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-[var(--font-ui)] text-[var(--color-text-body)] focus:border-[var(--color-forest)] focus:outline-none";
+  "w-full sm:max-w-xs bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-ui text-[var(--color-text-body)] focus:border-[var(--color-forest)] focus:outline-none";
 const selectCls =
-  "bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-2 py-2 text-[12px] font-[var(--font-ui)] text-[var(--color-text-body)] focus:border-[var(--color-forest)] focus:outline-none min-w-[8rem]";
+  "bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-2 py-2 text-[12px] font-ui text-[var(--color-text-body)] focus:border-[var(--color-forest)] focus:outline-none min-w-[8rem]";
 
 function useAdminQueryPush(basePath: string) {
   const router = useRouter();
@@ -37,10 +38,8 @@ export function AdminSongsListToolbar() {
   const tc = useTranslations("common");
   const { pushParams, sp } = useAdminQueryPush("/admin/songs");
   const qVal = sp.get("q") ?? "";
-  const [localQ, setLocalQ] = useState(qVal);
+  const [localQ, setLocalQ] = useSyncedState(qVal);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => setLocalQ(qVal), [qVal]);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -89,14 +88,12 @@ export function AdminSongsListToolbar() {
 
 export function AdminTagsListToolbar() {
   const t = useTranslations("admin");
-  const tc = useTranslations("tagCategory");
+  const tcat = useTranslations("tagCategory");
   const tco = useTranslations("common");
   const { pushParams, sp } = useAdminQueryPush("/admin/tags");
   const qVal = sp.get("q") ?? "";
-  const [localQ, setLocalQ] = useState(qVal);
+  const [localQ, setLocalQ] = useSyncedState(qVal);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => setLocalQ(qVal), [qVal]);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -136,10 +133,10 @@ export function AdminTagsListToolbar() {
         aria-label={t("filterCategory")}
       >
         <option value="">{t("allStatuses")}</option>
-        <option value="MOOD">{tc("MOOD")}</option>
-        <option value="THEME">{tc("THEME")}</option>
-        <option value="STYLE">{tc("STYLE")}</option>
-        <option value="ERA">{tc("ERA")}</option>
+        <option value="MOOD">{tcat("MOOD")}</option>
+        <option value="THEME">{tcat("THEME")}</option>
+        <option value="STYLE">{tcat("STYLE")}</option>
+        <option value="ERA">{tcat("ERA")}</option>
       </select>
     </div>
   );
@@ -150,10 +147,8 @@ export function AdminCollectionsListToolbar() {
   const tc = useTranslations("common");
   const { pushParams, sp } = useAdminQueryPush("/admin/collections");
   const qVal = sp.get("q") ?? "";
-  const [localQ, setLocalQ] = useState(qVal);
+  const [localQ, setLocalQ] = useSyncedState(qVal);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => setLocalQ(qVal), [qVal]);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -206,10 +201,8 @@ export function AdminAuthorsListToolbar() {
   const tc = useTranslations("common");
   const { pushParams, sp } = useAdminQueryPush("/admin/authors");
   const qVal = sp.get("q") ?? "";
-  const [localQ, setLocalQ] = useState(qVal);
+  const [localQ, setLocalQ] = useSyncedState(qVal);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => setLocalQ(qVal), [qVal]);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -242,10 +235,8 @@ export function AdminUsersListToolbar() {
   const tc = useTranslations("common");
   const { pushParams, sp } = useAdminQueryPush("/admin/users");
   const qVal = sp.get("q") ?? "";
-  const [localQ, setLocalQ] = useState(qVal);
+  const [localQ, setLocalQ] = useSyncedState(qVal);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => setLocalQ(qVal), [qVal]);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();

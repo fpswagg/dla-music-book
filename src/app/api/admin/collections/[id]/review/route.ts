@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 
 export async function POST(
   request: NextRequest,

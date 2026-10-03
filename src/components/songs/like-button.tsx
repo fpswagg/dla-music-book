@@ -41,7 +41,7 @@ export function LikeButton({
             stroke={liked ? "var(--color-amber)" : "currentColor"}
           />
           {count > 0 && (
-            <span className="text-[11px] font-[var(--font-ui)]">{count}</span>
+            <span className="text-[11px] font-ui">{count}</span>
           )}
         </>
       )}

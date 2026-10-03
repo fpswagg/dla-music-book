@@ -1,4 +1,5 @@
 import mockData from "./data.json";
+import { normalizeForSearch, searchTokens } from "../duala";
 
 export type MockSong = (typeof mockData.songs)[number];
 export type MockAuthor = (typeof mockData.authors)[number];
@@ -49,14 +50,15 @@ export function getMockSongs(filters?: {
   }
 
   if (filters?.q) {
-    const query = filters.q.toLowerCase();
-    songs = songs.filter(
-      (s) =>
-        s.title.toLowerCase().includes(query) ||
-        s.index.toString() === query ||
-        s.authors.some((a) => a.name.toLowerCase().includes(query)) ||
-        s.versions.some((v) => v.lyrics.toLowerCase().includes(query))
-    );
+    const q = filters.q.trim();
+    const tokens = searchTokens(q);
+    songs = songs.filter((s) => {
+      if (s.index.toString() === q) return true;
+      const hay = normalizeForSearch(
+        [s.title, ...s.authors.map((a) => a.name), ...s.versions.map((v) => v.lyrics)].join(" "),
+      );
+      return tokens.length > 0 && tokens.every((t) => hay.includes(t));
+    });
   }
 
   return songs;

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Heart, ListMusic } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import {
@@ -40,16 +40,27 @@ export default async function DashboardPage() {
     <div>
       <BackLink href="/" label={t("backToHome")} />
 
-      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6 text-balance">
+      <h1 className="text-[24px] sm:text-[28px] text-[var(--color-deep)] font-display mb-6 text-balance">
         {t("title")}
       </h1>
+
+      <Link
+        href="/dashboard/programmes"
+        className="flex items-center gap-3 mb-10 p-4 bg-linen rounded-[var(--radius-lg)] border-[0.5px] border-stone no-underline hover:border-forest"
+      >
+        <ListMusic size={20} className="text-forest shrink-0" />
+        <span>
+          <span className="block font-display text-[17px] text-deep">{t("programmes")}</span>
+          <span className="block text-[13px] text-text-muted">{t("programmesText")}</span>
+        </span>
+      </Link>
 
       <div className="mb-10">
         <div className="flex items-center justify-between mb-3">
           <SectionLabel>{t("myCollections")}</SectionLabel>
         </div>
         {collectionsWithSongs.length === 0 && (
-          <p className="text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)] mb-4 m-0">
+          <p className="text-[13px] text-[var(--color-text-muted)] font-ui mb-4 m-0">
             {t("noCollections")}
           </p>
         )}
@@ -61,15 +72,15 @@ export default async function DashboardPage() {
         {likedSongs.length === 0 ? (
           <div className="bg-[var(--color-linen)] rounded-[var(--radius-md)] p-8 text-center">
             <Heart size={24} className="mx-auto mb-2 text-[var(--color-text-muted)]" />
-            <p className="text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0">
+            <p className="text-[13px] text-[var(--color-text-muted)] font-ui m-0">
               {t("noLikes")}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {likedSongs.map((song) => (
-              <Link key={song.id} href={`/songs/${song.id}`} className="no-underline">
-                <SongCard
+              <SongCard
+                  key={song.id}
                   songId={song.id}
                   index={song.index}
                   title={song.title}
@@ -81,7 +92,6 @@ export default async function DashboardPage() {
                   likeCount={song._count?.likes ?? 0}
                   isLiked
                 />
-              </Link>
             ))}
           </div>
         )}

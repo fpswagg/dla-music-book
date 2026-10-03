@@ -13,11 +13,11 @@ export function StatCard({ value, label, icon }: StatCardProps) {
         {icon && (
           <span className="text-[var(--color-green-muted)]">{icon}</span>
         )}
-        <span className="text-[26px] leading-none text-[var(--color-deep)] font-[var(--font-display)]">
+        <span className="text-[26px] leading-none text-[var(--color-deep)] font-display">
           {value}
         </span>
       </div>
-      <div className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)]">
+      <div className="text-[11px] text-[var(--color-text-muted)] font-ui">
         {label}
       </div>
     </div>

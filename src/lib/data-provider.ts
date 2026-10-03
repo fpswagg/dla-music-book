@@ -1,7 +1,10 @@
-import type { Author, Prisma } from "@prisma/client";
-import { CollectionStatus, SongStatus } from "@prisma/client";
-import { isMockMode } from "./env";
+import "server-only";
+import type { Author, Prisma } from "@/generated/prisma/client";
+import { CollectionStatus, SongStatus } from "@/generated/prisma/client";
+import { isMockMode } from "./config";
 import { prisma } from "./prisma";
+import { searchTokens } from "./duala";
+import { firstLine, getLyricsContent, type LyricsContent } from "./lyrics";
 import {
   getMockSongs,
   getMockSongById,
@@ -17,32 +20,85 @@ import {
   type MockSong,
 } from "./mock/provider";
 
+type I18nName = string | Record<string, string>;
+
+export type SongReferenceView = { hymnalId: string; code: string; name: string; number: string };
+
+export type SongVersionView = {
+  id: string;
+  versionType: string;
+  versionNumber: number;
+  lyrics: string;
+  content: LyricsContent;
+  annotations: Array<{ id: string; lineNumber: number; lineText: string; note: string }>;
+  previews: Array<{ id: string; fileUrl: string; durationSeconds: number }>;
+};
+
 export type SongWithRelations = {
   id: string;
   index: number;
   title: string;
   status: string;
+  page: number | null;
+  tune: string | null;
   createdAt: string;
   updatedAt: string;
   authors: Array<{ id: string; name: string; displayOrder: number }>;
-  tags: Array<{ id: string; key?: string; name: string | Record<string, string>; category?: string }>;
-  languages: Array<{ id: string; code: string; name: string | Record<string, string> }>;
-  versions: Array<{
-    id: string;
-    versionType: string;
-    versionNumber: number;
-    lyrics: string;
-    annotations: Array<{
-      id: string;
-      lineNumber: number;
-      lineText: string;
-      note: string;
-    }>;
-    previews: Array<{ id: string; fileUrl: string; durationSeconds: number }>;
-  }>;
+  tags: Array<{ id: string; key?: string; name: I18nName; category?: string }>;
+  languages: Array<{ id: string; code: string; name: I18nName }>;
+  references: SongReferenceView[];
+  versions: SongVersionView[];
   notes: Array<{ id: string; content: string }>;
   _count?: { likes: number };
 };
+
+/** Lightweight row for lists, the number pad and offline use. */
+export type SongSummary = { id: string; index: number; title: string; firstLine: string; page: number | null };
+
+const songInclude = {
+  songAuthors: { include: { author: true }, orderBy: { displayOrder: "asc" } },
+  songTags: { include: { tag: true } },
+  songLanguages: { include: { language: true } },
+  references: { include: { hymnal: true }, orderBy: { displayOrder: "asc" } },
+  versions: { include: { annotations: true, previews: true }, orderBy: { versionNumber: "desc" } },
+  notes: { orderBy: { createdAt: "desc" } },
+  _count: { select: { likes: true } },
+} satisfies Prisma.SongInclude;
+
+type SongRow = Prisma.SongGetPayload<{ include: typeof songInclude }>;
+
+function mapSong(s: SongRow): SongWithRelations {
+  return {
+    id: s.id,
+    index: s.index,
+    title: s.title,
+    status: s.status,
+    page: s.page,
+    tune: s.tune,
+    createdAt: s.createdAt.toISOString(),
+    updatedAt: s.updatedAt.toISOString(),
+    authors: s.songAuthors.map((sa) => ({ id: sa.author.id, name: sa.author.name, displayOrder: sa.displayOrder })),
+    tags: s.songTags.map((st) => ({
+      id: st.tag.id,
+      key: st.tag.key,
+      name: st.tag.name as I18nName,
+      category: st.tag.category,
+    })),
+    languages: s.songLanguages.map((sl) => ({ id: sl.language.id, code: sl.language.code, name: sl.language.name as I18nName })),
+    references: s.references.map((r) => ({ hymnalId: r.hymnalId, code: r.hymnal.code, name: r.hymnal.name, number: r.number })),
+    versions: s.versions.map((v) => ({
+      id: v.id,
+      versionType: v.versionType,
+      versionNumber: v.versionNumber,
+      lyrics: v.lyrics,
+      content: getLyricsContent(v),
+      annotations: v.annotations.map((a) => ({ id: a.id, lineNumber: a.lineNumber, lineText: a.lineText, note: a.note })),
+      previews: v.previews.map((p) => ({ id: p.id, fileUrl: p.fileUrl, durationSeconds: p.durationSeconds })),
+    })),
+    notes: s.notes.map((n) => ({ id: n.id, content: n.content })),
+    _count: s._count,
+  };
+}
 
 function mockToSong(m: MockSong): SongWithRelations {
   return {
@@ -50,27 +106,40 @@ function mockToSong(m: MockSong): SongWithRelations {
     index: m.index,
     title: m.title,
     status: m.status,
+    page: null,
+    tune: null,
     createdAt: m.createdAt,
     updatedAt: m.updatedAt,
     authors: m.authors.map((a) => ({ id: a.id, name: a.name, displayOrder: a.displayOrder })),
     tags: m.tags.map((t) => ({ id: t.id, key: t.key, name: t.name, category: t.category })),
     languages: m.languages.map((l) => ({ id: l.id, code: l.code, name: l.name })),
+    references: [],
     versions: m.versions.map((v) => ({
       id: v.id,
       versionType: v.versionType,
       versionNumber: v.versionNumber,
       lyrics: v.lyrics,
-      annotations: v.annotations.map((a) => ({
-        id: a.id,
-        lineNumber: a.lineNumber,
-        lineText: a.lineText,
-        note: a.note,
-      })),
+      content: getLyricsContent({ lyrics: v.lyrics }),
+      annotations: v.annotations.map((a) => ({ id: a.id, lineNumber: a.lineNumber, lineText: a.lineText, note: a.note })),
       previews: [],
     })),
     notes: m.notes.map((n) => ({ id: n.id, content: n.content })),
     _count: { likes: 0 },
   };
+}
+
+/** Diacritic-insensitive search: every word must appear (title, lyrics, references, authors). */
+function songSearchWhere(q: string): Prisma.SongWhereInput {
+  const tokens = searchTokens(q);
+  const or: Prisma.SongWhereInput[] = [
+    { title: { contains: q, mode: "insensitive" } },
+    { versions: { some: { lyrics: { contains: q, mode: "insensitive" } } } },
+    { songAuthors: { some: { author: { name: { contains: q, mode: "insensitive" } } } } },
+  ];
+  if (tokens.length) or.unshift({ AND: tokens.map((t) => ({ searchText: { contains: t } })) });
+  const n = Number(q.trim().replace(/^(?:n[°o]|#)\s*/i, ""));
+  if (Number.isInteger(n) && n > 0) or.unshift({ index: n });
+  return { OR: or };
 }
 
 export async function getSongs(filters?: {
@@ -80,120 +149,37 @@ export async function getSongs(filters?: {
   mood?: string;
   tag?: string;
   author?: string;
+  hymnal?: string;
   page?: number;
   limit?: number;
 }): Promise<{ songs: SongWithRelations[]; total: number }> {
-  if (isMockMode()) {
-    const all = getMockSongs({
-      ...filters,
-      tag: filters?.tag ?? filters?.mood,
-    });
-    const page = filters?.page ?? 1;
-    const limit = filters?.limit ?? 20;
-    const start = (page - 1) * limit;
-    return {
-      songs: all.slice(start, start + limit).map(mockToSong),
-      total: all.length,
-    };
-  }
-
-  if (!prisma) return { songs: [], total: 0 };
-
-  const where: Prisma.SongWhereInput = {};
-  if (filters?.status) where.status = filters.status as SongStatus;
-  if (filters?.language) {
-    where.songLanguages = { some: { language: { code: filters.language } } };
-  }
-  const tagKey = filters?.tag ?? filters?.mood;
-  if (tagKey) {
-    where.songTags = { some: { tag: { key: tagKey } } };
-  }
-  if (filters?.author) {
-    where.songAuthors = { some: { author: { name: { contains: filters.author, mode: "insensitive" } } } };
-  }
-  if (filters?.q) {
-    const q = filters.q;
-    const or: Prisma.SongWhereInput[] = [
-      { title: { contains: q, mode: "insensitive" } },
-      { songAuthors: { some: { author: { name: { contains: q, mode: "insensitive" } } } } },
-      { versions: { some: { lyrics: { contains: q, mode: "insensitive" } } } },
-    ];
-    if (!isNaN(Number(q))) {
-      or.push({ index: Number(q) });
-    }
-    where.OR = or;
-  }
-
   const page = filters?.page ?? 1;
   const limit = filters?.limit ?? 20;
 
+  if (isMockMode()) {
+    const all = getMockSongs({ ...filters, tag: filters?.tag ?? filters?.mood });
+    const start = (page - 1) * limit;
+    return { songs: all.slice(start, start + limit).map(mockToSong), total: all.length };
+  }
+  if (!prisma) return { songs: [], total: 0 };
+
+  const and: Prisma.SongWhereInput[] = [];
+  if (filters?.status) and.push({ status: filters.status as SongStatus });
+  if (filters?.language) and.push({ songLanguages: { some: { language: { code: filters.language } } } });
+  const tagKey = filters?.tag ?? filters?.mood;
+  if (tagKey) and.push({ songTags: { some: { tag: { key: tagKey } } } });
+  if (filters?.author) {
+    and.push({ songAuthors: { some: { author: { name: { contains: filters.author, mode: "insensitive" } } } } });
+  }
+  if (filters?.hymnal) and.push({ references: { some: { hymnal: { code: filters.hymnal } } } });
+  if (filters?.q?.trim()) and.push(songSearchWhere(filters.q.trim()));
+  const where: Prisma.SongWhereInput = and.length ? { AND: and } : {};
+
   const [songs, total] = await Promise.all([
-    prisma.song.findMany({
-      where,
-      include: {
-        songAuthors: { include: { author: true }, orderBy: { displayOrder: "asc" } },
-        songTags: { include: { tag: true } },
-        songLanguages: { include: { language: true } },
-        versions: {
-          include: { annotations: true, previews: true },
-          orderBy: { versionNumber: "desc" },
-        },
-        notes: { orderBy: { createdAt: "desc" } },
-        _count: { select: { likes: true } },
-      },
-      orderBy: { index: "asc" },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
+    prisma.song.findMany({ where, include: songInclude, orderBy: { index: "asc" }, skip: (page - 1) * limit, take: limit }),
     prisma.song.count({ where }),
   ]);
-
-  return {
-    songs: songs.map((s) => ({
-      id: s.id,
-      index: s.index,
-      title: s.title,
-      status: s.status,
-      createdAt: s.createdAt.toISOString(),
-      updatedAt: s.updatedAt.toISOString(),
-      authors: s.songAuthors.map((sa) => ({
-        id: sa.author.id,
-        name: sa.author.name,
-        displayOrder: sa.displayOrder,
-      })),
-      tags: s.songTags.map((st) => ({
-        id: st.tag.id,
-        key: st.tag.key,
-        name: st.tag.name as string | Record<string, string>,
-        category: st.tag.category,
-      })),
-      languages: s.songLanguages.map((sl) => ({
-        id: sl.language.id,
-        code: sl.language.code,
-        name: sl.language.name as string | Record<string, string>,
-      })),
-      versions: s.versions.map((v) => ({
-        id: v.id,
-        versionType: v.versionType,
-        versionNumber: v.versionNumber,
-        lyrics: v.lyrics,
-        annotations: v.annotations.map((a) => ({
-          id: a.id,
-          lineNumber: a.lineNumber,
-          lineText: a.lineText,
-          note: a.note,
-        })),
-        previews: v.previews?.map((p) => ({
-          id: p.id,
-          fileUrl: p.fileUrl,
-          durationSeconds: p.durationSeconds,
-        })) ?? [],
-      })),
-      notes: s.notes.map((n) => ({ id: n.id, content: n.content })),
-      _count: s._count,
-    })),
-    total,
-  };
+  return { songs: songs.map(mapSong), total };
 }
 
 export async function getSongById(id: string): Promise<SongWithRelations | null> {
@@ -201,69 +187,103 @@ export async function getSongById(id: string): Promise<SongWithRelations | null>
     const m = getMockSongById(id);
     return m ? mockToSong(m) : null;
   }
-
   if (!prisma) return null;
+  const song = await prisma.song.findUnique({ where: { id }, include: songInclude });
+  return song ? mapSong(song) : null;
+}
 
-  const song = await prisma.song.findUnique({
-    where: { id },
-    include: {
-      songAuthors: { include: { author: true }, orderBy: { displayOrder: "asc" } },
-      songTags: { include: { tag: true } },
-      songLanguages: { include: { language: true } },
-      versions: {
-        include: { annotations: true, previews: true },
-        orderBy: { versionNumber: "desc" },
-      },
-      notes: { orderBy: { createdAt: "desc" } },
-      _count: { select: { likes: true } },
+export async function getSongByIndex(index: number): Promise<SongWithRelations | null> {
+  if (!Number.isInteger(index) || index < 1) return null;
+  if (isMockMode()) {
+    const m = getMockSongs().find((s) => s.index === index);
+    return m ? mockToSong(m) : null;
+  }
+  if (!prisma) return null;
+  const song = await prisma.song.findUnique({ where: { index }, include: songInclude });
+  return song ? mapSong(song) : null;
+}
+
+/** "/songs/42" (hymn number) or "/songs/<uuid>" (older links). */
+export async function getSongByParam(param: string): Promise<SongWithRelations | null> {
+  return /^\d{1,5}$/.test(param) ? getSongByIndex(Number(param)) : getSongById(param);
+}
+
+/** Previous / next published hymn, for page turning. */
+export async function getAdjacentSongs(index: number): Promise<{ prev: number | null; next: number | null }> {
+  if (isMockMode()) {
+    const nums = getMockSongs({ status: "FINISHED" }).map((s) => s.index).sort((a, b) => a - b);
+    return { prev: [...nums].reverse().find((n) => n < index) ?? null, next: nums.find((n) => n > index) ?? null };
+  }
+  if (!prisma) return { prev: null, next: null };
+  const [prev, next] = await Promise.all([
+    prisma.song.findFirst({ where: { status: "FINISHED", index: { lt: index } }, orderBy: { index: "desc" }, select: { index: true } }),
+    prisma.song.findFirst({ where: { status: "FINISHED", index: { gt: index } }, orderBy: { index: "asc" }, select: { index: true } }),
+  ]);
+  return { prev: prev?.index ?? null, next: next?.index ?? null };
+}
+
+/** Every published hymn, light: for the number pad, sitemap and printing ranges. */
+export async function getSongSummaries(): Promise<SongSummary[]> {
+  if (isMockMode()) {
+    return getMockSongs({ status: "FINISHED" }).map((m) => {
+      const c = getLyricsContent({ lyrics: m.versions[0]?.lyrics ?? "" });
+      return { id: m.id, index: m.index, title: m.title, firstLine: firstLine(c), page: null };
+    });
+  }
+  if (!prisma) return [];
+  const rows = await prisma.song.findMany({
+    where: { status: "FINISHED" },
+    orderBy: { index: "asc" },
+    select: {
+      id: true,
+      index: true,
+      title: true,
+      page: true,
+      versions: { orderBy: { versionNumber: "desc" }, take: 1, select: { content: true, lyrics: true } },
     },
   });
+  return rows.map((r) => ({
+    id: r.id,
+    index: r.index,
+    title: r.title,
+    page: r.page,
+    firstLine: r.versions[0] ? firstLine(getLyricsContent(r.versions[0])) : "",
+  }));
+}
 
-  if (!song) return null;
+/** Published hymns with lyrics, for offline reading and printing. */
+export async function getPublishedSongs(range?: { from?: number; to?: number }): Promise<SongWithRelations[]> {
+  if (isMockMode()) {
+    return getMockSongs({ status: "FINISHED" })
+      .filter((m) => (range?.from ? m.index >= range.from : true) && (range?.to ? m.index <= range.to : true))
+      .map(mockToSong);
+  }
+  if (!prisma) return [];
+  const rows = await prisma.song.findMany({
+    where: { status: "FINISHED", index: { gte: range?.from, lte: range?.to } },
+    include: songInclude,
+    orderBy: { index: "asc" },
+  });
+  return rows.map(mapSong);
+}
 
-  return {
-    id: song.id,
-    index: song.index,
-    title: song.title,
-    status: song.status,
-    createdAt: song.createdAt.toISOString(),
-    updatedAt: song.updatedAt.toISOString(),
-    authors: song.songAuthors.map((sa) => ({
-      id: sa.author.id,
-      name: sa.author.name,
-      displayOrder: sa.displayOrder,
-    })),
-    tags: song.songTags.map((st) => ({
-      id: st.tag.id,
-      key: st.tag.key,
-      name: st.tag.name as string | Record<string, string>,
-      category: st.tag.category,
-    })),
-    languages: song.songLanguages.map((sl) => ({
-      id: sl.language.id,
-      code: sl.language.code,
-      name: sl.language.name as string | Record<string, string>,
-    })),
-    versions: song.versions.map((v) => ({
-      id: v.id,
-      versionType: v.versionType,
-      versionNumber: v.versionNumber,
-      lyrics: v.lyrics,
-      annotations: v.annotations.map((a) => ({
-        id: a.id,
-        lineNumber: a.lineNumber,
-        lineText: a.lineText,
-        note: a.note,
-      })),
-      previews: v.previews.map((p) => ({
-        id: p.id,
-        fileUrl: p.fileUrl,
-        durationSeconds: p.durationSeconds,
-      })),
-    })),
-    notes: song.notes.map((n) => ({ id: n.id, content: n.content })),
-    _count: song._count,
-  };
+export type HymnalView = { id: string; code: string; name: string; description: string | null; aliases: string[]; sortOrder: number; songCount: number };
+
+export async function getHymnals(): Promise<HymnalView[]> {
+  if (isMockMode() || !prisma) return [];
+  const rows = await prisma.hymnal.findMany({
+    orderBy: [{ sortOrder: "asc" }, { code: "asc" }],
+    include: { _count: { select: { references: true } } },
+  });
+  return rows.map((h) => ({
+    id: h.id,
+    code: h.code,
+    name: h.name,
+    description: h.description,
+    aliases: h.aliases,
+    sortOrder: h.sortOrder,
+    songCount: h._count.references,
+  }));
 }
 
 export async function getAuthors() {
@@ -523,76 +543,14 @@ export async function getUserLikedSongIds(
 }
 
 export async function getUserLikedSongs(userId: string): Promise<SongWithRelations[]> {
-  if (isMockMode()) {
-    return getMockUserLikedSongs(userId).map(mockToSong);
-  }
+  if (isMockMode()) return getMockUserLikedSongs(userId).map(mockToSong);
   if (!prisma) return [];
   const likes = await prisma.like.findMany({
-    where: { userId },
+    where: { userId, song: { status: "FINISHED" } },
     orderBy: { createdAt: "desc" },
-    select: { songId: true },
+    include: { song: { include: songInclude } },
   });
-  const songIds = likes.map((l) => l.songId);
-  if (songIds.length === 0) return [];
-  const songs = await prisma.song.findMany({
-    where: { id: { in: songIds }, status: "FINISHED" },
-    include: {
-      songAuthors: { include: { author: true }, orderBy: { displayOrder: "asc" } },
-      songTags: { include: { tag: true } },
-      songLanguages: { include: { language: true } },
-      versions: {
-        include: { annotations: true, previews: true },
-        orderBy: { versionNumber: "desc" },
-      },
-      notes: { orderBy: { createdAt: "desc" } },
-      _count: { select: { likes: true } },
-    },
-  });
-  const order = new Map(songIds.map((id, i) => [id, i]));
-  songs.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
-  return songs.map((s) => ({
-    id: s.id,
-    index: s.index,
-    title: s.title,
-    status: s.status,
-    createdAt: s.createdAt.toISOString(),
-    updatedAt: s.updatedAt.toISOString(),
-    authors: s.songAuthors.map((sa) => ({
-      id: sa.author.id,
-      name: sa.author.name,
-      displayOrder: sa.displayOrder,
-    })),
-    tags: s.songTags.map((st) => ({
-      id: st.tag.id,
-      key: st.tag.key,
-      name: st.tag.name as string | Record<string, string>,
-      category: st.tag.category,
-    })),
-    languages: s.songLanguages.map((sl) => ({
-      id: sl.language.id,
-      code: sl.language.code,
-      name: sl.language.name as string | Record<string, string>,
-    })),
-    versions: s.versions.map((v) => ({
-      id: v.id,
-      versionType: v.versionType,
-      versionNumber: v.versionNumber,
-      lyrics: v.lyrics,
-      annotations: v.annotations.map((a) => ({
-        id: a.id,
-        lineNumber: a.lineNumber,
-        lineText: a.lineText,
-        note: a.note,
-      })),
-      previews: v.previews.map((p) => ({
-        id: p.id,
-        fileUrl: p.fileUrl,
-        durationSeconds: p.durationSeconds,
-      })),
-    })),
-    notes: s.notes.map((n) => ({ id: n.id, content: n.content })),
-    _count: s._count,
-  }));
+  return likes.map((l) => mapSong(l.song));
 }
 
 export async function getCollectionSongSummaries(
@@ -757,7 +715,7 @@ export async function getStats() {
     prisma.song.count(),
     prisma.song.count({ where: { status: "FINISHED" } }),
     prisma.song.count({ where: { status: "DRAFT" } }),
-    prisma.userProfile.count(),
+    prisma.user.count(),
     prisma.collection.count({ where: { status: "PUBLIC" } }),
   ]);
 

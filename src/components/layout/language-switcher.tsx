@@ -1,5 +1,6 @@
 "use client";
 
+import { setLocaleCookie } from "@/lib/locale-cookie";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
@@ -27,14 +28,14 @@ export function LanguageSwitcher({ compact = false }: LanguageSwitcherProps) {
   const router = useRouter();
 
   const switchLocale = (locale: Locale) => {
-    document.cookie = `locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    setLocaleCookie(locale);
     router.refresh();
   };
 
   const show = compact ? shortLabels : labels;
   const btnClass = compact
-    ? "px-2 py-0.5 rounded-[var(--radius-pill)] text-[11px] font-[var(--font-ui)] transition-colors bg-transparent border-none cursor-pointer"
-    : "px-3 py-1 rounded-[var(--radius-pill)] text-[12px] font-medium font-[var(--font-ui)] transition-colors bg-transparent border-none cursor-pointer";
+    ? "px-2 py-0.5 rounded-[var(--radius-pill)] text-[11px] font-ui transition-colors bg-transparent border-none cursor-pointer"
+    : "px-3 py-1 rounded-[var(--radius-pill)] text-[12px] font-medium font-ui transition-colors bg-transparent border-none cursor-pointer";
 
   return (
     <div className={`flex items-center ${compact ? "gap-1" : "gap-1.5"}`}>

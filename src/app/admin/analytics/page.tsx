@@ -14,7 +14,7 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <div>
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">{t("title")}</h1>
+      <h1 className="text-[28px] text-[var(--color-deep)] font-display mb-6">{t("title")}</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <StatCard value={stats.totalViews} label={t("totalPageViews")} />
@@ -33,12 +33,12 @@ export default async function AdminAnalyticsPage() {
                 const height = (d.views / max) * 100;
                 return (
                   <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-[var(--color-text-muted)] font-[var(--font-ui)]">{d.views}</span>
+                    <span className="text-[10px] text-[var(--color-text-muted)] font-ui">{d.views}</span>
                     <div
                       className="w-full bg-[var(--color-forest)] rounded-t-[3px] transition-all"
                       style={{ height: `${height}%`, minHeight: "2px" }}
                     />
-                    <span className="text-[9px] text-[var(--color-text-muted)] font-[var(--font-ui)]">
+                    <span className="text-[9px] text-[var(--color-text-muted)] font-ui">
                       {d.date.slice(5)}
                     </span>
                   </div>
@@ -53,9 +53,9 @@ export default async function AdminAnalyticsPage() {
           <div className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] overflow-hidden">
             {topSongs.map((song, i) => (
               <div key={song.songId} className="flex items-center px-4 py-2.5 border-b-[0.5px] border-b-[var(--color-stone)] last:border-b-0">
-                <span className="text-[12px] text-[var(--color-stone)] font-[var(--font-ui)] w-6">{i + 1}.</span>
-                <span className="text-[13px] text-[var(--color-deep)] font-[var(--font-ui)] flex-1">{song.songTitle}</span>
-                <span className="text-[12px] text-[var(--color-text-muted)] font-[var(--font-ui)]">{t("views", { count: song.views })}</span>
+                <span className="text-[12px] text-[var(--color-stone)] font-ui w-6">{i + 1}.</span>
+                <span className="text-[13px] text-[var(--color-deep)] font-ui flex-1">{song.songTitle}</span>
+                <span className="text-[12px] text-[var(--color-text-muted)] font-ui">{t("views", { count: song.views })}</span>
               </div>
             ))}
           </div>
@@ -66,9 +66,9 @@ export default async function AdminAnalyticsPage() {
       <div className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] overflow-hidden max-w-lg">
         {topSearches.map((s, i) => (
           <div key={s.query} className="flex items-center px-4 py-2.5 border-b-[0.5px] border-b-[var(--color-stone)] last:border-b-0">
-            <span className="text-[12px] text-[var(--color-stone)] font-[var(--font-ui)] w-6">{i + 1}.</span>
-            <span className="text-[13px] text-[var(--color-deep)] font-[var(--font-ui)] flex-1">&ldquo;{s.query}&rdquo;</span>
-            <span className="text-[12px] text-[var(--color-text-muted)] font-[var(--font-ui)]">{s.count}x</span>
+            <span className="text-[12px] text-[var(--color-stone)] font-ui w-6">{i + 1}.</span>
+            <span className="text-[13px] text-[var(--color-deep)] font-ui flex-1">&ldquo;{s.query}&rdquo;</span>
+            <span className="text-[12px] text-[var(--color-text-muted)] font-ui">{s.count}x</span>
           </div>
         ))}
       </div>

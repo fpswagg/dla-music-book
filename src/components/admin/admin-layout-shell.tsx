@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -13,10 +13,12 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations("admin");
   const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-
-  useEffect(() => {
+  const [navPath, setNavPath] = useState(pathname);
+  if (navPath !== pathname) {
+    // Close the drawer after navigating.
+    setNavPath(pathname);
     setMobileNavOpen(false);
-  }, [pathname]);
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -50,7 +52,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
         <div className="hidden md:flex items-center justify-between gap-4 px-6 py-3 border-b-[0.5px] border-b-[var(--color-stone)] bg-[var(--color-linen)] no-print shrink-0">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[13px] text-[var(--color-forest)] font-[var(--font-ui)] no-underline hover:underline"
+            className="inline-flex items-center gap-2 text-[13px] text-[var(--color-forest)] font-ui no-underline hover:underline"
           >
             <ArrowLeft size={16} aria-hidden />
             {t("backToSite")}

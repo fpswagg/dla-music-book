@@ -1,6 +1,6 @@
 import { getAdminCollectionsList } from "@/lib/data-provider";
 import { AdminCollections } from "@/components/admin/admin-collections";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 import { prisma } from "@/lib/prisma";
 import { getMockUsers } from "@/lib/mock/provider";
 import { Pagination } from "@/components/ui/pagination";
@@ -26,7 +26,7 @@ export default async function AdminCollectionsPage(props: {
   if (isMockMode()) {
     users = getMockUsers().map((u) => ({ id: u.id, displayName: u.displayName }));
   } else if (prisma) {
-    users = await prisma.userProfile.findMany({
+    users = await prisma.user.findMany({
       select: { id: true, displayName: true },
       orderBy: { displayName: "asc" },
     });

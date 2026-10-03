@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth-helpers";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 import { AdminLayoutShell } from "@/components/admin/admin-layout-shell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

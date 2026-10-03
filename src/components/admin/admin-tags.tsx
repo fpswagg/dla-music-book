@@ -127,17 +127,17 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
   }
 
   const inputCls =
-    "bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-[var(--font-ui)] text-[var(--color-text-body)] focus:border-[var(--color-forest)] focus:outline-none";
+    "bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-ui text-[var(--color-text-body)] focus:border-[var(--color-forest)] focus:outline-none";
   const btnPrimary =
-    "bg-[var(--color-forest)] text-[var(--color-parchment)] rounded-[var(--radius-md)] px-3 py-1.5 text-[12px] font-[var(--font-ui)] hover:bg-[var(--color-deep)] transition-colors cursor-pointer border-none";
+    "bg-[var(--color-forest)] text-[var(--color-parchment)] rounded-[var(--radius-md)] px-3 py-1.5 text-[12px] font-ui hover:bg-[var(--color-deep)] transition-colors cursor-pointer border-none";
   const btnDanger =
-    "bg-transparent border-[0.5px] border-[var(--color-amber)] text-[var(--color-amber)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-[var(--font-ui)] hover:bg-[var(--color-amber-light)] cursor-pointer";
+    "bg-transparent border-[0.5px] border-[var(--color-amber)] text-[var(--color-amber)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-ui hover:bg-[var(--color-amber-light)] cursor-pointer";
   const btnSecondary =
-    "bg-[var(--color-sand)] text-[var(--color-text-body)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-[var(--font-ui)] hover:bg-[var(--color-stone)] cursor-pointer border-none";
+    "bg-[var(--color-sand)] text-[var(--color-text-body)] rounded-[var(--radius-md)] px-2 py-1 text-[11px] font-ui hover:bg-[var(--color-stone)] cursor-pointer border-none";
 
   return (
     <div>
-      <h1 className="text-[28px] text-[var(--color-deep)] font-[var(--font-display)] mb-6">
+      <h1 className="text-[28px] text-[var(--color-deep)] font-display mb-6">
         {t("tags")}
       </h1>
 
@@ -147,7 +147,7 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
         <button
           type="button"
           onClick={() => setShowCreate((s) => !s)}
-          className="text-[13px] font-[var(--font-ui)] text-[var(--color-forest)] bg-transparent border-none cursor-pointer underline-offset-2 hover:underline p-0"
+          className="text-[13px] font-ui text-[var(--color-forest)] bg-transparent border-none cursor-pointer underline-offset-2 hover:underline p-0"
         >
           {showCreate ? t("hideCreateForm") : t("showCreateForm")}
         </button>
@@ -155,7 +155,7 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
 
       {showCreate && (
       <form onSubmit={handleCreate} className="bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] p-4 mb-8">
-        <h2 className="text-[14px] text-[var(--color-deep)] font-[var(--font-display)] mb-3">
+        <h2 className="text-[14px] text-[var(--color-deep)] font-display mb-3">
           {t("createTag")}
         </h2>
         <div className="flex flex-col gap-3 mb-3">
@@ -177,7 +177,7 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
             pickerLabel={tf("pickerLabel")}
             editingHint={(loc) => tf("editingLanguage", { language: langFull[loc] })}
           />
-          <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0 -mt-2 mb-1">
+          <p className="text-[11px] text-[var(--color-text-muted)] font-ui m-0 -mt-2 mb-1">
             {tf("frenchRequiredNote")}
           </p>
           <select
@@ -199,7 +199,7 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
       )}
 
       {Object.keys(grouped).length === 0 && (
-        <p className="text-[13px] text-[var(--color-text-muted)] font-[var(--font-ui)]">{t("noTags")}</p>
+        <p className="text-[13px] text-[var(--color-text-muted)] font-ui">{t("noTags")}</p>
       )}
 
       {CATEGORIES.map((category) => {
@@ -207,7 +207,7 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
         if (!categoryTags?.length) return null;
         return (
           <div key={category} className="mb-6">
-            <h3 className="text-[12px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-[var(--font-ui)] mb-2">
+            <h3 className="text-[12px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-ui mb-2">
               {tc(category)}
             </h3>
             <div className="flex flex-col gap-2">
@@ -262,7 +262,7 @@ export function AdminTags({ initialTags }: { initialTags: Tag[] }) {
                     key={tag.id}
                     className="flex items-center gap-3 bg-[var(--color-parchment)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3 py-2"
                   >
-                    <span className="text-[14px] text-[var(--color-text-body)] font-[var(--font-ui)] flex-1">
+                    <span className="text-[14px] text-[var(--color-text-body)] font-ui flex-1">
                       {getTranslatedName(tag.name, locale)}
                       {tag.key && (
                         <span className="text-[11px] text-[var(--color-text-muted)] ml-1">({tag.key})</span>

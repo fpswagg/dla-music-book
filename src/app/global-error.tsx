@@ -17,10 +17,10 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-parchment)] text-[var(--color-text-body)] font-[var(--font-ui)] p-6">
+      <body className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-parchment)] text-[var(--color-text-body)] font-ui p-6">
         <div className="max-w-md w-full bg-[var(--color-linen)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] p-8 text-center">
-          <h1 className="text-[20px] text-[var(--color-deep)] font-[var(--font-display)] mb-2">Something went wrong</h1>
-          <p className="text-[13px] text-[var(--color-green-muted)] font-[var(--font-ui)] mb-6">
+          <h1 className="text-[20px] text-[var(--color-deep)] font-display mb-2">Something went wrong</h1>
+          <p className="text-[13px] text-[var(--color-green-muted)] font-ui mb-6">
             Please try again or return to the home page.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">

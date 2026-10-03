@@ -50,7 +50,7 @@ export function AudioPlayer({ src, duration }: AudioPlayerProps) {
         />
       </div>
       {duration && (
-        <span className="text-[12px] text-[var(--color-text-muted)] font-[var(--font-ui)] shrink-0">
+        <span className="text-[12px] text-[var(--color-text-muted)] font-ui shrink-0">
           {duration}
         </span>
       )}

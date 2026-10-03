@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 import { addMockUserCollection } from "@/lib/mock/provider";
 import type { MockCollection } from "@/lib/mock/provider";
 import { randomUUID } from "crypto";

@@ -8,6 +8,8 @@ import {
   FolderOpen,
   BarChart3,
   Database,
+  BookMarked,
+  Upload,
 } from "lucide-react";
 
 export type AdminNavEntry = {
@@ -16,6 +18,8 @@ export type AdminNavEntry = {
   labelKey:
     | "overview"
     | "songs"
+    | "import"
+    | "hymnals"
     | "authors"
     | "tags"
     | "collections"
@@ -27,6 +31,8 @@ export type AdminNavEntry = {
 export const ADMIN_NAV: AdminNavEntry[] = [
   { href: "/admin", icon: LayoutDashboard, labelKey: "overview" },
   { href: "/admin/songs", icon: Music, labelKey: "songs" },
+  { href: "/admin/import", icon: Upload, labelKey: "import" },
+  { href: "/admin/hymnals", icon: BookMarked, labelKey: "hymnals" },
   { href: "/admin/authors", icon: Pen, labelKey: "authors" },
   { href: "/admin/tags", icon: Tag, labelKey: "tags" },
   { href: "/admin/collections", icon: FolderOpen, labelKey: "collections" },

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { isMockMode } from "@/lib/env";
+import { isMockMode } from "@/lib/config";
 import { downloadText, hasSaStorage, listFiles, uploadFile } from "@/lib/sastorage";
 
 /** Folder under the SA Storage token prefix. */
@@ -12,7 +12,8 @@ export async function createBackup(): Promise<{ filename: string; size: number }
   }
 
   const [songs, songVersions, authors, songAuthors, tags, songTags, languages, songLanguages,
-    collections, collectionSongs, annotations, songNotes, userProfiles, likes, previews] = await Promise.all([
+    hymnals, songReferences, collections, collectionSongs, setlists, setlistItems,
+    annotations, songNotes, users, likes, previews] = await Promise.all([
     prisma.song.findMany(),
     prisma.songVersion.findMany(),
     prisma.author.findMany(),
@@ -21,11 +22,18 @@ export async function createBackup(): Promise<{ filename: string; size: number }
     prisma.songTag.findMany(),
     prisma.language.findMany(),
     prisma.songLanguage.findMany(),
+    prisma.hymnal.findMany(),
+    prisma.songReference.findMany(),
     prisma.collection.findMany(),
     prisma.collectionSong.findMany(),
+    prisma.setlist.findMany(),
+    prisma.setlistItem.findMany(),
     prisma.annotation.findMany(),
     prisma.songNote.findMany(),
-    prisma.userProfile.findMany(),
+    // Profiles only: no password hashes, OAuth tokens or sessions in backup files.
+    prisma.user.findMany({
+      select: { id: true, displayName: true, email: true, emailVerified: true, role: true, banned: true, createdAt: true },
+    }),
     prisma.like.findMany(),
     prisma.preview.findMany(),
   ]);
@@ -33,21 +41,23 @@ export async function createBackup(): Promise<{ filename: string; size: number }
   const backup = {
     metadata: {
       createdAt: new Date().toISOString(),
-      version: "1.0",
+      version: "2.0",
       tables: {
         songs: songs.length,
         songVersions: songVersions.length,
         authors: authors.length,
         tags: tags.length,
         languages: languages.length,
+        hymnals: hymnals.length,
         collections: collections.length,
-        userProfiles: userProfiles.length,
+        setlists: setlists.length,
+        users: users.length,
       },
     },
     data: {
-      songs, songVersions, authors, songAuthors, tags, songTags,
-      languages, songLanguages, collections, collectionSongs,
-      annotations, songNotes, userProfiles, likes, previews,
+      songs, songVersions, authors, songAuthors, tags, songTags, languages, songLanguages,
+      hymnals, songReferences, collections, collectionSongs, setlists, setlistItems,
+      annotations, songNotes, users, likes, previews,
     },
   };
 

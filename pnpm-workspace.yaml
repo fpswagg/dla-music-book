@@ -1,0 +1,21 @@
+# Packages allowed to run install scripts.
+# pnpm 10 reads `onlyBuiltDependencies`; pnpm 11+ reads `allowBuilds`.
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@prisma/client"
+  - "@prisma/engines"
+  - "@swc/core"
+  - esbuild
+  - prisma
+  - sharp
+  - unrs-resolver
+
+allowBuilds:
+  "@parcel/watcher": true
+  "@prisma/client": true
+  "@prisma/engines": true
+  "@swc/core": true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true

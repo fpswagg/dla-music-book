@@ -51,12 +51,12 @@ export function TranslatedTextField({
     : placeholder;
 
   const inputCls =
-    "w-full bg-[var(--color-linen)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3.5 py-2.5 text-[13px] text-[var(--color-deep)] font-[var(--font-ui)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-forest)] focus:bg-[var(--color-parchment)]";
+    "w-full bg-[var(--color-linen)] border-[0.5px] border-[var(--color-stone)] rounded-[var(--radius-md)] px-3.5 py-2.5 text-[13px] text-[var(--color-deep)] font-ui outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-forest)] focus:bg-[var(--color-parchment)]";
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
       {label && (
-        <span className="text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-[var(--font-ui)]">
+        <span className="text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] font-ui">
           {label}
         </span>
       )}
@@ -72,7 +72,7 @@ export function TranslatedTextField({
             role="tab"
             aria-selected={active === loc}
             onClick={() => setActive(loc)}
-            className={`px-2.5 py-1 rounded-[var(--radius-sm)] text-[11px] font-medium font-[var(--font-ui)] border-none cursor-pointer transition-colors ${
+            className={`px-2.5 py-1 rounded-[var(--radius-sm)] text-[11px] font-medium font-ui border-none cursor-pointer transition-colors ${
               active === loc
                 ? "bg-[var(--color-forest)] text-[var(--color-parchment)]"
                 : "bg-transparent text-[var(--color-text-muted)] hover:text-[var(--color-deep)]"
@@ -82,7 +82,7 @@ export function TranslatedTextField({
           </button>
         ))}
       </div>
-      <p className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] m-0">
+      <p className="text-[11px] text-[var(--color-text-muted)] font-ui m-0">
         {editingHint(active)}
       </p>
       {multiline ? (
@@ -92,7 +92,7 @@ export function TranslatedTextField({
           onChange={(e) => setField(active, e.target.value)}
           rows={rows}
           placeholder={activePlaceholder}
-          className={`${inputCls} resize-y min-h-[60px] font-[var(--font-ui)]`}
+          className={`${inputCls} resize-y min-h-[60px] font-ui`}
         />
       ) : (
         <input

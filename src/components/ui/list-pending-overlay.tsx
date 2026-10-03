@@ -34,7 +34,7 @@ export function ListPendingOverlay({
           className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center bg-[var(--color-parchment)]/60 pt-6"
           aria-hidden
         >
-          <span className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border-[0.5px] border-[var(--color-stone)] bg-[var(--color-linen)] px-3 py-2 text-[13px] font-[var(--font-ui)] text-[var(--color-forest)]">
+          <span className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border-[0.5px] border-[var(--color-stone)] bg-[var(--color-linen)] px-3 py-2 text-[13px] font-ui text-[var(--color-forest)]">
             <Spinner />
             {label}
           </span>

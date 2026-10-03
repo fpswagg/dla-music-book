@@ -26,7 +26,7 @@ export function AdminHeader({ onOpenNav, navOpen }: AdminHeaderProps) {
       </button>
       <Link
         href="/"
-        className="text-[13px] text-[var(--color-forest)] font-[var(--font-ui)] no-underline hover:underline truncate max-w-[45%]"
+        className="text-[13px] text-[var(--color-forest)] font-ui no-underline hover:underline truncate max-w-[45%]"
       >
         {t("backToSite")}
       </Link>

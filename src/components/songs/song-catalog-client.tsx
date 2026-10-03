@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useCallback, useEffect, useTransition } from "react";
+import { useCallback, useTransition } from "react";
+import { useSyncedState } from "@/hooks/use-synced-state";
 import { useTranslations, useLocale } from "next-intl";
 import { SearchBar } from "@/components/ui/search-bar";
 import { FilterPill } from "@/components/ui/filter-pill";
@@ -13,27 +14,28 @@ interface Props {
   initialQuery: string;
   tags: Array<{ id: string; key?: string; name: string | Record<string, string>; category: string }>;
   languages: Array<{ id: string; code: string; name: string | Record<string, string> }>;
+  hymnals: Array<{ code: string; name: string }>;
   activeLang: string;
   activeTag: string;
+  activeHymnal: string;
 }
 
 export function SongCatalogClient({
   initialQuery,
   tags,
   languages,
+  hymnals,
   activeLang,
   activeTag,
+  activeHymnal,
 }: Props) {
   const t = useTranslations("songs");
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [draftQuery, setDraftQuery] = useState(initialQuery);
+  const [draftQuery, setDraftQuery] = useSyncedState(initialQuery);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    setDraftQuery(initialQuery);
-  }, [initialQuery]);
 
   const pushUrl = useCallback(
     (params: URLSearchParams) => {
@@ -87,6 +89,7 @@ export function SongCatalogClient({
               value={draftQuery}
               onChange={setDraftQuery}
               placeholder={t("searchPlaceholder")}
+              dualaKeys
             />
           </div>
           <Button
@@ -99,7 +102,7 @@ export function SongCatalogClient({
         </form>
         {activeTag && (
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider">
+            <span className="text-[11px] text-[var(--color-text-muted)] font-ui uppercase tracking-wider">
               {t("tagFilter")}
             </span>
             <FilterPill
@@ -115,7 +118,7 @@ export function SongCatalogClient({
             <button
               type="button"
               onClick={clearTagFilter}
-              className="text-[12px] text-[var(--color-forest)] font-[var(--font-ui)] bg-transparent border-none cursor-pointer underline"
+              className="text-[12px] text-[var(--color-forest)] font-ui bg-transparent border-none cursor-pointer underline"
             >
               {t("clearTag")}
             </button>
@@ -123,7 +126,7 @@ export function SongCatalogClient({
         )}
         <div className="flex flex-col gap-3">
           <div>
-            <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider mr-2">
+            <span className="text-[11px] text-[var(--color-text-muted)] font-ui uppercase tracking-wider mr-2">
               {t("language")}
             </span>
             <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
@@ -142,7 +145,7 @@ export function SongCatalogClient({
             </div>
           </div>
           <div>
-            <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider mr-2">
+            <span className="text-[11px] text-[var(--color-text-muted)] font-ui uppercase tracking-wider mr-2">
               {t("mood")}
             </span>
             <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
@@ -165,9 +168,28 @@ export function SongCatalogClient({
               </div>
             </div>
           </div>
+          {hymnals.length > 0 && (
+            <div>
+              <span className="text-[11px] text-[var(--color-text-muted)] font-ui uppercase tracking-wider mr-2">
+                {t("hymnalFilter")}
+              </span>
+              <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
+                <div className="flex flex-nowrap sm:flex-wrap gap-1.5 pb-0.5">
+                  {hymnals.map((h) => (
+                    <FilterPill
+                      key={h.code}
+                      label={h.code}
+                      active={activeHymnal === h.code}
+                      onClick={() => updateParams({ hymnal: activeHymnal === h.code ? undefined : h.code })}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           {otherTags.length > 0 && (
             <div>
-              <span className="text-[11px] text-[var(--color-text-muted)] font-[var(--font-ui)] uppercase tracking-wider mr-2">
+              <span className="text-[11px] text-[var(--color-text-muted)] font-ui uppercase tracking-wider mr-2">
                 {t("tagFilter")}
               </span>
               <div className="mt-1 max-sm:-mx-1 max-sm:px-1 max-sm:overflow-x-auto">
