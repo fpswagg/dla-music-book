@@ -132,7 +132,7 @@ export function Presenter({ slides, exitHref, title }: { slides: Slide[]; exitHr
         <a href={exitHref} className={btn} aria-label={t("exit")} onClick={(e) => { e.preventDefault(); router.push(exitHref); }}>
           <X size={20} />
         </a>
-        <span className="font-ui text-[13px] text-[#a8b89a] truncate">{title}</span>
+        <span className="font-display text-[15px] text-[#a8b89a] truncate">{title}</span>
         <button type="button" className={btn} onClick={toggleFull} aria-label={full ? t("exitFullscreen") : t("fullscreen")}>
           {full ? <Minimize size={18} /> : <Maximize size={18} />}
         </button>

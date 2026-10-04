@@ -1,3 +1,6 @@
+> **Historical (v1, 2025).** These planning documents describe the first version (Supabase auth, plain-text
+> lyrics). The current architecture is in `docs/CONTEXT.md`.
+
 # Agent Planning Documents
 
 These documents are created during planning and read before implementing each phase.

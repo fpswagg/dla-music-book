@@ -1,12 +1,13 @@
 # Olive & Ink — Design System
-> Songbook UI for a personal music library. Warm, handwritten, literary feel.
+> Songbook UI for the Duala hymnal. Warm, handwritten, literary feel — and readable from the back of a church.
 
 ---
 
 ## Core Philosophy
 
 - **Feels like a notebook**, not an app. Organic, personal, warm.
-- **Serif for expression, sans-serif for function.** Titles and lyrics use Georgia. UI text uses system sans-serif.
+- **Serif for expression, sans-serif for function.** Numbers, titles and lyrics use Gentium Book Plus (SIL, full Duala coverage: e̱ o̱ ɛ ɔ ŋ ń ḿ), falling back to Georgia. UI text uses the system sans-serif.
+- **The book is the reference.** Hymn number big and centred, cross-references under it, stanza numbers hanging in the margin, refrain indented.
 - **Dark green is the anchor.** It signals action, selection, and identity.
 - **Amber is the accent.** Used for mood, emotion, and annotations — never for UI actions.
 - **No harsh blacks.** Use `--color-deep` (`#1e3a1e`) for the darkest text.
@@ -49,8 +50,8 @@ Always use these names — never hardcode hex values directly in components.
   --color-text-muted:   #7a6a50;
   --color-text-body:    #3d4f3a;
 
-  --font-display: 'Georgia', 'Times New Roman', serif;
-  --font-ui:      system-ui, sans-serif;
+  --font-display: var(--font-gentium), 'Georgia', 'Times New Roman', serif;
+  --font-ui:      system-ui, -apple-system, 'Segoe UI', Roboto, var(--font-gentium), sans-serif;
 
   --radius-sm:   6px;
   --radius-md:   10px;
@@ -68,10 +69,10 @@ Always use these names — never hardcode hex values directly in components.
 
 | Role | Font | Size | Weight | Color |
 |---|---|---|---|---|
-| Display / Page title | Georgia serif | 28–32px | 400 | `--color-deep` |
-| Section heading | Georgia serif | 18–22px | 400 | `--color-deep` |
-| Song title (card) | Georgia serif | 16px | 400 | `--color-deep` |
-| Lyric line | Georgia serif | 15–18px | 400 | `--color-deep` |
+| Display / Page title | Gentium serif | 28–32px | 400 | `--color-deep` |
+| Section heading | Gentium serif | 18–22px | 400 | `--color-deep` |
+| Song title (card) | Gentium serif | 16px | 400 | `--color-deep` |
+| Lyric line | Gentium serif | 16–25px (reading setting) | 400 | `--color-deep` |
 | Body / Description | Sans-serif | 14px | 400 | `--color-text-body` |
 | Metadata / Subtitle | Sans-serif | 12px | 400 | `--color-green-muted` |
 | Label / Section tag | Sans-serif | 10–11px | 500 | `--color-text-muted` |
@@ -428,7 +429,7 @@ Used above every UI section as a small all-caps label.
 
 | Do | Don't |
 |---|---|
-| Use Georgia for all song titles and lyrics | Use Georgia for buttons or nav items |
+| Use the display serif for numbers, titles, lyrics and any Duala text | Use the display serif for buttons or nav items |
 | Use 0.5px borders everywhere | Use 1px or 2px borders (except active states) |
 | Use `--color-amber` only for mood/emotion | Use amber for primary actions or navigation |
 | Keep backgrounds flat (parchment, linen, sand) | Add gradients or shadows |
@@ -452,4 +453,28 @@ Used above every UI section as a small all-caps label.
 
 ---
 
-*Olive & Ink Design System — built for a personal Douala songbook.*
+
+---
+
+## Dark theme ("Ink")
+
+`html[data-theme="dark"]` swaps the same tokens for a night palette (parchment `#141b14`, deep `#ece6d6`,
+forest `#9cc98a`, amber `#e3b450`…). Components never test the theme: they only use tokens. The reader picks
+light / dark / auto in the reading settings; an inline script applies it before paint.
+
+Extra tokens: `--color-danger` / `--color-danger-light` (errors, destructive actions), `--lyrics-size` /
+`--lyrics-leading` (driven by `html[data-text="sm|md|lg|xl"]`).
+
+## Hymn layout classes (globals.css)
+
+`.hymn-number`, `.hymn-refs`, `.lyrics`, `.lyrics-stanza` (+ `.lyrics-stanza-number` hanging in the margin),
+`.lyrics-refrain` (+ `.lyrics-refrain-label`), `.refrain-repeat` with `.refrain-full` / `.refrain-short`
+(toggled by `html[data-refrain]`). Print: `.print-columns` (two columns with a rule, like the book),
+`.print-hymn`.
+
+## Projection
+
+`.present`: near-black `#0f150f` background, parchment text, `.present-text` sized with `clamp()` so a stanza fills
+a projector screen. The only place where hardcoded colours are allowed (it must look the same in both themes).
+
+*Olive & Ink Design System — built for Myenge ma Bonakristo.*

@@ -255,8 +255,8 @@
     }
   ],
   "users": [
-    { "id": "user-mock-admin", "displayName": "Admin", "role": "ADMIN", "supabaseUserId": "mock-admin" },
-    { "id": "user-mock-1", "displayName": "Marie Ekambi", "role": "USER", "supabaseUserId": "mock-user-1" },
-    { "id": "user-mock-2", "displayName": "Jean Priso", "role": "USER", "supabaseUserId": "mock-user-2" }
+    { "id": "user-mock-admin", "displayName": "Admin", "role": "ADMIN" },
+    { "id": "user-mock-1", "displayName": "Marie Ekambi", "role": "USER" },
+    { "id": "user-mock-2", "displayName": "Jean Priso", "role": "USER" }
   ]
 }

@@ -32,8 +32,10 @@ export type SetlistView = {
   items: SetlistItemView[];
 };
 
-// Demo mode keeps programmes in memory (lost on restart).
-const mockStore = new Map<string, SetlistView>();
+// Demo mode keeps programmes in memory (lost on restart). On globalThis because Next bundles
+// each route separately: a module-level Map would differ between the API and the pages.
+const globalForMock = globalThis as unknown as { mockSetlists?: Map<string, SetlistView> };
+const mockStore = (globalForMock.mockSetlists ??= new Map<string, SetlistView>());
 
 const ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
 export function newSetlistCode(): string {

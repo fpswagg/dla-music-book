@@ -15,8 +15,13 @@ import {
 import { buildAuthMail, localeFromRequest, sendMail } from "./mailer";
 import { prisma } from "./prisma";
 
-/** Lets the admin "reset link" action receive the URL instead of emailing it. */
-const resetCaptures = new Map<string, (url: string) => void>();
+/**
+ * Lets the admin "reset link" action receive the URL instead of emailing it.
+ * On globalThis like the auth instance: Next bundles routes separately, so a module-level
+ * Map would not be the one the shared auth instance sees.
+ */
+const globalForCaptures = globalThis as unknown as { resetCaptures?: Map<string, (url: string) => void> };
+const resetCaptures = (globalForCaptures.resetCaptures ??= new Map<string, (url: string) => void>());
 
 function trustedOrigins(): string[] {
   const out = new Set<string>([getSiteUrl()]);

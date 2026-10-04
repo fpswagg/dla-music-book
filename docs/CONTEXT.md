@@ -1,70 +1,74 @@
-# Myenge ma bonakristo — Project Context
+# Myenge ma Bonakristo — Project Context
 
 > Read this document + docs/STYLE.md before every implementation step.
 
 ## Overview
 
-- **Myenge ma bonakristo** (Douala: Christian hymn book) — a hymn book site for church and village use, accessible anywhere/anytime
-- Features: song catalog with lyrics, user auth, admin dashboard, collections, analytics, backups
-- Design system: "Olive & Ink" — warm, notebook-like, literary feel (see STYLE.md)
+- **Myenge ma Bonakristo** (Duala: "Christian songs") — the Duala hymnal of the churches of Douala, online.
+- The #1 use: someone in church says "cantique 245" → open it in two taps, read it, project it.
+- Design system: "Olive & Ink" — warm, notebook-like, literary (see STYLE.md), with an "Ink" dark theme.
 
-## Tech Stack
+## Tech stack
 
-- **Framework:** Next.js 15 (App Router) + TypeScript
-- **ORM:** Prisma (PostgreSQL via Supabase)
-- **Auth/Storage:** Supabase (Auth with email/phone/Google/Facebook/Instagram, Storage buckets)
-- **Styling:** Tailwind CSS + CSS custom properties from STYLE.md
-- **i18n:** next-intl (French, English, Duala placeholder)
-- **Validation:** Zod
-- **Icons:** Lucide React
-- **Forms:** React Hook Form
-- **Deployment:** Vercel
+- **Framework:** Next.js 16 (App Router, Turbopack, `src/proxy.ts` instead of middleware) + TypeScript 6
+- **Database:** PostgreSQL via Prisma 7 (`prisma-client` generator → `src/generated/prisma`, `@prisma/adapter-pg`,
+  `prisma.config.ts`). Schema changes go through migrations (`prisma/migrations`), never `db push`.
+- **Auth:** Better Auth on our own tables (User, Session, Account, Verification) — `src/lib/auth.ts`
+- **Email:** Resend (optional) — `src/lib/mailer.ts`
+- **Storage:** SA Storage (optional) for audio previews and backups — `src/lib/sastorage.ts`
+- **Validation:** zod 4 (`src/lib/validation.ts`)
+- **i18n:** next-intl (fr default, en, duala); locale in the `locale` cookie
+- **Styling:** Tailwind CSS 4 + CSS tokens from STYLE.md; font Gentium Book Plus (self-hosted, Duala coverage)
+- **Deployment:** Vercel (prod) — migrations are applied separately with `pnpm db:deploy`
+
+## Runtime configuration (src/lib/config.ts)
+
+One module answers "is X configured?": `isDatabaseConfigured()`, `isAuthConfigured()`, `isEmailConfigured()`,
+`isGoogleConfigured()`, `isStorageConfigured()`. Every feature must keep working when an optional one is
+missing (hide the button, fall back, explain to the admin). `getPublicConfig()` sends the flags (no secrets)
+to the browser through `AppConfigProvider`; `getIntegrationsStatus()` feeds the admin overview.
+
+App modes: **db** (DATABASE_URL set) or **mock** (demo on `src/lib/mock/data.json`, you are the demo admin).
+
+## The book (src/lib/lyrics.ts, duala.ts, references.ts, book-import.ts)
+
+- `Song.index` is the hymn number and the public address (`/songs/42`; old uuid links redirect).
+- `SongVersion.content` (JSON) holds structured lyrics: `blocks[]` of `stanza` (number), `refrain`, `text`, and
+  `refrainAfterEachStanza`. `SongVersion.lyrics` keeps the same text in the editing format
+  ("1. …", "R. …", blank lines) for search and older clients. `getLyricsContent()` reads either.
+- `displayBlocks()` expands the refrain after each stanza (marked `repeat`) and can limit to chosen stanzas.
+- `Song.searchText` = normalised title + lyrics + references + authors (`normalizeForSearch`: no diacritics,
+  e̱/ɛ→e, o̱/ɔ→o, ŋ/ń→n, no apostrophes). Keep it fresh with `refreshSearchText()` after every write.
+- `Hymnal` + `SongReference`: the "M. B. 11. – S. S. et S. 621" line under the number. Legend at `/hymnals`.
+- `Song.page` (printed book page), `Song.tune` (melody name).
 
 ## Conventions
 
-- All CSS colors via tokens (never hardcode hex) from STYLE.md
-- Georgia serif for song titles/lyrics, system sans-serif for UI text
-- Font-weight: only 400 or 500, never 600/700
-- Borders: 0.5px solid stone default, 2px solid forest for active only
-- No box-shadows, no gradients — flat backgrounds only
-- Spacing: xs=4px, sm=8px, md=12px, lg=16px, xl=24px, 2xl=32px
-- **Responsive:** mobile-first Tailwind breakpoints; primary controls aim for ~44px min touch height on small screens where practical; print-only chrome uses the `no-print` class with rules in `src/app/globals.css` (`@media print`).
-- File naming: kebab-case for files, PascalCase for components
-- API routes in src/app/api/
-- Components organized: ui/ (design system), songs/, admin/, layout/
-- Server components by default, "use client" only when needed
-- Environment modes: Full (Prisma+Supabase), DB-only (Prisma+mock auth), Mock (JSON data)
-- Two Supabase storage buckets: song-previews (public read, admin write), backups (admin-only)
+- All colours via tokens (never hardcode hex) from STYLE.md; Tailwind utilities `bg-parchment`, `text-deep`… exist.
+- `font-display` (Gentium) for hymn numbers, titles and lyrics — and any text that may contain Duala letters.
+  `font-ui` (system) for interface text.
+- Font-weight 400 or 500 only. Borders 0.5px stone; 2px forest for active only. No shadows, no gradients.
+- Mobile-first; ~44px touch targets for primary controls. Print chrome uses `no-print`.
+- Server components by default; `"use client"` only when needed. Server-only modules import `"server-only"`.
+- API routes in `src/app/api/`, validated with zod; admin routes call `requireAdmin()`.
+- Files kebab-case, components PascalCase. Components: `ui/`, `songs/`, `setlists/`, `present/`, `offline/`,
+  `admin/`, `auth/`, `layout/`, `providers/`.
+- Translation keys must exist in fr, en and duala: `node scripts/check-i18n.mjs`.
 
 ## Roles
 
-- **USER:** browse songs, like songs, create/manage private collections, request collection publication
-- **ADMIN:** all USER capabilities + manage songs/tags/authors/annotations/users/analytics/backups, approve collection publications
+- **USER:** read, like, collections (request publication), service programmes.
+- **ADMIN:** + hymns, import, sources, tags, authors, annotations, users (role, ban, reset link), analytics, backups.
+- Bootstrap: `ADMIN_EMAILS` promotes those addresses on sign-up / sign-in.
 
-## Key Data Models
+## Data model (prisma/schema.prisma)
 
-- **Song** (index, title, status, originalSongId)
-- **SongVersion** (lyrics, versionType, versionNumber)
-- **Author** (name, bio) — linked via SongAuthor with displayOrder
-- **Tag** (name, category: MOOD/THEME/STYLE/ERA)
-- **Language** (code: fr/en/duala)
-- **Collection** (name, isPublic, status: PRIVATE/PUBLIC/PENDING_REVIEW)
-- **Annotation** (lineNumber, lineText, note — on SongVersion)
-- **SongNote** (short notes on songs — what sparked it)
-- **Like** (user + song)
-- **Preview** (audio file reference on SongVersion)
-- **UserProfile** (extends Supabase Auth — displayName, role)
-- **AnalyticsEvent** (eventType, metadata JSON)
+User (+ Session, Account, Verification) · Song · SongVersion · Hymnal · SongReference · Author/SongAuthor ·
+Tag/SongTag · Language/SongLanguage · Preview · Collection/CollectionSong · Setlist/SetlistItem ·
+Annotation · SongNote · Like · AnalyticsEvent.
 
-## Languages
+## Offline (public/sw.js)
 
-- App UI: translatable in French, English, Duala (placeholder)
-- Song content: songs have their own language field (most default to Duala)
-- French, English, Duala are the possible song languages
-
-## Documentation Structure
-
-- `docs/STYLE.md` — design system (existing)
-- `docs/CONTEXT.md` — this file
-- `docs/agent/` — per-phase planning docs (read before implementing each phase)
-- `docs/INTEGRATION-*.md` — integration guides for developers
+Static assets cache-first; pages network-first (visited pages kept); `/api/offline/bundle` saved by the
+"save all hymns" button and read by `/offline`. Offline navigation to an unsaved hymn redirects to
+`/offline?n=<number>`. Bump `VERSION` in `sw.js` when its logic changes.

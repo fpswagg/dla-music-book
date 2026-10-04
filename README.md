@@ -1,83 +1,71 @@
-# Douala Hymn Book
+# Myenge ma Bonakristo
 
-A warm, notebook-styled hymn book web application for the Douala community. Browse, search, and share traditional hymns with a beautiful "Olive & Ink" design aesthetic.
+The Duala hymnal *Myenge ma Bonakristo* on the web: every hymn by its number, laid out like the
+printed book, usable during the service (projection, programmes) and in churches without network
+(offline PWA). Olive & Ink design.
 
 ## Features
 
-- Song catalog with lyrics, versions, annotations, and audio previews
-- Full-text + fuzzy lyric search (find songs by half-remembered lyrics)
-- User authentication (email, phone, Google, Facebook, Instagram)
-- Personal collections and song likes
-- Admin dashboard with song management, analytics, and backups
-- Multi-language UI (French, English, Duala)
-- Clean printable lyrics format
-- Easy link sharing with rich previews
+- **Go to hymn N** — number pad in the header, or just type digits anywhere. Hymns live at `/songs/<number>`.
+- **Book layout** — numbered stanzas, refrain written once then abbreviated ("Ba longo…"), cross-references
+  to other hymnals (M.B., S. S. et S., Evang. S.…) with a legend at `/hymnals`, book page, tune.
+- **Duala orthography** — Gentium Book Plus font (e̱ o̱ ɛ ɔ ŋ ń ḿ), accent-insensitive search, Duala character picker.
+- **Projection mode** — one stanza per screen, big type, arrow keys / clicker / swipe, keeps the screen awake.
+- **Service programmes** — order of service with chosen stanzas and moments; share by link or QR code, print, project.
+- **Offline** — installable PWA; "save all hymns" stores the whole book on the device (`/offline` reader).
+- **Reading settings** — text size, dark theme, full or abbreviated repeated refrains.
+- **Print** — one hymn or a range (`/print?from=1&to=40`) in the book's two-column layout.
+- Accounts (email + password, optional Google, optional email via Resend), likes, collections.
+- Admin: hymn editor with live preview, bulk import of digitised pages, sources, users, analytics, backups.
+- UI in French, English and Duala.
 
-## Tech Stack
+## Stack
 
-- Next.js 15 (App Router) + TypeScript
-- Prisma ORM + PostgreSQL (via Supabase)
-- Supabase Auth & Storage
-- Tailwind CSS + Olive & Ink design system
-- next-intl for internationalization
+Next.js 16 (App Router, Turbopack) · React 19 · TypeScript 6 · Prisma 7 (PostgreSQL, `@prisma/adapter-pg`) ·
+Better Auth · Resend · zod 4 · next-intl 4 · Tailwind CSS 4 · pnpm 10.
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- (Optional) Supabase project for auth/storage
-
-### Installation
+## Getting started
 
 ```bash
-git clone <repo-url>
-cd douala-music-book
-npm install
-cp .env.example .env
+pnpm install
+cp .env.example .env          # fill in what you have; everything is documented there
+pnpm db:deploy                # apply migrations (needs DATABASE_URL)
+pnpm db:seed                  # sample data (development only)
+pnpm dev
 ```
 
-### Environment Setup
+Without `DATABASE_URL` the app runs in **demo mode** on `src/lib/mock/data.json` (you are the demo admin).
 
-Copy `.env.example` to `.env` and fill in your values. The app runs in three modes:
+| Integration | Variables | When missing |
+|---|---|---|
+| Database | `DATABASE_URL` | demo mode |
+| Auth | `BETTER_AUTH_SECRET` (+ `BETTER_AUTH_URL`) | sign-in disabled in production |
+| Email | `RESEND_API_KEY`, `RESEND_FROM` | no verification / forgot password; admins hand out reset links |
+| Google | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | button hidden |
+| Storage | `SASTORAGE_URL`, `SASTORAGE_TOKEN` | no audio upload, no backups |
 
-- **Full mode**: All env vars set — Prisma + Supabase auth + storage
-- **DB-only mode**: DATABASE_URL set but no Supabase keys — database works, auth/storage mocked
-- **Mock mode**: No env vars — runs entirely on mock JSON data (great for development)
+Make yourself admin with `ADMIN_EMAILS=you@example.org` (applied when that address signs up or signs in).
 
-### Development
+## Scripts
 
-```bash
-npx prisma generate
-npx prisma db push
-npm run dev
-```
-
-### Database Seeding
-
-```bash
-npx prisma db seed
-```
-
-## Project Structure
-
-- `src/app/` — Next.js App Router pages and API routes
-- `src/components/` — React components (ui/, songs/, admin/, layout/)
-- `src/lib/` — Utilities (Prisma, Supabase, mock data, analytics, backup)
-- `src/i18n/` — Internationalization config and message files
-- `prisma/` — Database schema and seed data
-- `docs/` — Documentation (STYLE.md, CONTEXT.md, integration guides)
+| Command | |
+|---|---|
+| `pnpm dev` / `pnpm build` / `pnpm start` | Next.js |
+| `pnpm lint` / `pnpm typecheck` / `pnpm test` | ESLint, TypeScript, unit tests (lyrics, search, references, import) |
+| `pnpm db:migrate` | create a migration after editing `prisma/schema.prisma` (development) |
+| `pnpm db:deploy` | apply migrations (production, CI) |
+| `pnpm db:backfill [--apply]` | structured lyrics + search text for existing hymns |
+| `pnpm import:supabase [--apply] [--copy-previews]` | one-off copy of the old Supabase data |
+| `node scripts/check-i18n.mjs` | translation keys missing in a locale |
 
 ## Documentation
 
-- [Design System](docs/STYLE.md) — Olive & Ink color tokens, typography, components
-- [Project Context](docs/CONTEXT.md) — Architecture, conventions, data models
-- [Supabase Integration](docs/INTEGRATION-SUPABASE.md)
-- [Prisma Integration](docs/INTEGRATION-PRISMA.md)
-- [i18n Integration](docs/INTEGRATION-I18N.md)
-- [Duala Language Guide](docs/INTEGRATION-DUALA.md)
+- [docs/CONTEXT.md](docs/CONTEXT.md) — architecture, conventions, data model
+- [docs/STYLE.md](docs/STYLE.md) — Olive & Ink design system
+- [docs/INTEGRATION-AUTH.md](docs/INTEGRATION-AUTH.md) — auth, email, Google, cut-over from Supabase
+- [docs/INTEGRATION-PRISMA.md](docs/INTEGRATION-PRISMA.md) — database and migrations
+- [docs/INTEGRATION-I18N.md](docs/INTEGRATION-I18N.md), [docs/INTEGRATION-DUALA.md](docs/INTEGRATION-DUALA.md)
 
 ## License
 
-MIT
+MIT. Font: Gentium Book Plus, © SIL International, [SIL Open Font License](src/app/fonts/OFL.txt).

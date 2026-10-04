@@ -80,7 +80,7 @@
   },
   "songs": {
     "title": "Cantiques",
-    "searchPlaceholder": "Titre, paroles ou numéro… (e̱, ɔ, ŋ facultatifs)",
+    "searchPlaceholder": "Titre, paroles ou numéro… (accents facultatifs)",
     "noResults": "Aucun cantique trouvé.",
     "found": "{count} cantique(s) trouvé(s)",
     "language": "Langue",
@@ -623,5 +623,11 @@
     "save": "Enregistrer {count, plural, one {# cantique} other {# cantiques}}",
     "result": "{created} créés, {updated} mis à jour, {skipped} ignorés.",
     "seeSongs": "Voir les cantiques"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "Ce cantique ou cette page n'existe pas, ou n'est pas encore en ligne.",
+    "goto": "Aller à un numéro",
+    "browse": "Tous les cantiques"
   }
 }

@@ -32,7 +32,8 @@ export const isMockMode = () => getAppMode() === "mock";
 
 /** Canonical site origin for links, metadata, sitemap and emails (no trailing slash). */
 export function getSiteUrl(): string {
-  const explicit = process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL;
+  // BETTER_AUTH_URL first: read at runtime, while NEXT_PUBLIC_* may be frozen at build time.
+  const explicit = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL;
   if (explicit) return explicit.replace(/\/$/, "");
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL && process.env.VERCEL_ENV === "production") {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;

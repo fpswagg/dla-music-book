@@ -117,9 +117,10 @@ export function getMockUserLikedSongs(userId: string): MockSong[] {
     .filter((s): s is MockSong => !!s);
 }
 
-const extraMockCollections: Array<
-  MockCollection & { userId: string; songs: string[] }
-> = [];
+type ExtraCollection = MockCollection & { userId: string; songs: string[] };
+// On globalThis so every route bundle sees the same demo data.
+const globalForMock = globalThis as unknown as { extraMockCollections?: ExtraCollection[] };
+const extraMockCollections: ExtraCollection[] = (globalForMock.extraMockCollections ??= []);
 
 export function getMockUserCollections(userId: string): MockCollection[] {
   const extra = extraMockCollections.filter((c) => c.userId === userId);

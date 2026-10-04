@@ -80,7 +80,7 @@
   },
   "songs": {
     "title": "Hymns",
-    "searchPlaceholder": "Title, lyrics or number… (e̱, ɔ, ŋ optional)",
+    "searchPlaceholder": "Title, lyrics or number… (accents optional)",
     "noResults": "No hymns found matching your search.",
     "found": "{count} hymn(s) found",
     "language": "Language",
@@ -623,5 +623,11 @@
     "save": "Save {count, plural, one {# hymn} other {# hymns}}",
     "result": "{created} created, {updated} updated, {skipped} skipped.",
     "seeSongs": "See hymns"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "This hymn or page does not exist, or is not online yet.",
+    "goto": "Go to a number",
+    "browse": "All hymns"
   }
 }
