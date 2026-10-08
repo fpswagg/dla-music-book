@@ -12,7 +12,7 @@ printed book, usable during the service (projection, programmes) and in churches
 - **Duala orthography** — Gentium Book Plus font (e̱ o̱ ɛ ɔ ŋ ń ḿ), accent-insensitive search, Duala character picker.
 - **Projection mode** — one stanza per screen, big type, arrow keys / clicker / swipe, keeps the screen awake.
 - **Service programmes** — order of service with chosen stanzas and moments; share by link or QR code, print, project.
-- **Offline** — installable PWA; "save all hymns" stores the whole book on the device (`/offline` reader).
+- **Offline** — installable PWA; the whole book is cached in the background, no button needed (`/offline` reader).
 - **Reading settings** — text size, dark theme, full or abbreviated repeated refrains.
 - **Print** — one hymn or a range (`/print?from=1&to=40`) in the book's two-column layout.
 - Accounts (email + password, optional Google, optional email via Resend), likes, collections.

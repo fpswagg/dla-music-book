@@ -52,31 +52,14 @@
   "home": {
     "title": "Myenge ma bonakristo",
     "subtitle": "The hymns of Myenge ma Bonakristo, at hand in church, at home, and even without a network.",
-    "searchPlaceholder": "Search hymns by title, lyrics, or number...",
-    "featured": "Featured hymns",
+    "searchPlaceholder": "Title or lyrics…",
     "browseAll": "Browse all",
-    "totalHymns": "Total hymns",
-    "completed": "Completed",
-    "inProgress": "In progress",
-    "collections": "Collections",
-    "chooseLanguage": "Choose your language",
-    "languageDescription": "Browse hymns in your preferred language",
-    "searchCta": "Search hymns",
     "gotoLabel": "Go to hymn",
     "gotoCta": "Open",
-    "gotoTip": "Tip: type a number anywhere on the site to open that hymn.",
-    "keypad": "Number pad",
     "recent": "Recently opened",
-    "tileAll": "All hymns",
-    "tileAllText": "{count, plural, =0 {Browse and search} one {# hymn} other {# hymns}} — accent-insensitive search",
-    "tileProgrammes": "Service programmes",
-    "tileProgrammesText": "Plan the order of service, share it by link or QR code, project it.",
-    "tileCollections": "Collections",
-    "tileCollectionsText": "Selections shared by the community.",
-    "tileHymnals": "Sources & abbreviations",
-    "tileHymnalsText": "M.B., S. S. et S., Evang. S.: what the references mean.",
-    "tileOffline": "Offline",
-    "tileOfflineText": "Save the whole book on your phone for churches without network."
+    "tagline": "The hymn book, always at hand.",
+    "gotoPlaceholder": "Hymn number",
+    "gotoMissing": "This number is not online yet"
   },
   "songs": {
     "title": "Hymns",
@@ -441,8 +424,7 @@
     "shelved": "Shelved"
   },
   "mock": {
-    "banner": "Demo mode — no database connected, nothing is saved.",
-    "bannerNoAuth": "Sign-in disabled: the auth secret (BETTER_AUTH_SECRET) is not configured."
+    "banner": "Demo mode — no database connected, nothing is saved."
   },
   "goto": {
     "open": "Go to hymn no.…",
@@ -466,15 +448,8 @@
     "refrainShort": "Short (Ba longo…)"
   },
   "offline": {
-    "title": "Offline",
-    "save": "Save all hymns",
-    "update": "Update",
-    "saved": "{count} hymns saved ({date})",
-    "failed": "Failed: check your connection.",
-    "openReader": "Open offline reader",
     "readerTitle": "Offline reader",
-    "badge": "offline",
-    "empty": "No hymns saved on this device yet.",
+    "empty": "No network right now. The hymns will be here after your next connection.",
     "backOnline": "Back to the site",
     "allHymns": "All hymns",
     "notSaved": "Hymn {n} is not saved on this device.",

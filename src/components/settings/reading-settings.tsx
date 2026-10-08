@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Settings2 } from "lucide-react";
+import { Type } from "lucide-react";
 import { usePreferences, type Preferences } from "@/components/providers/preferences";
-import { OfflineToggle } from "@/components/offline/offline-toggle";
 
 function Segmented<K extends keyof Preferences>({
   name,
@@ -41,8 +40,8 @@ function Segmented<K extends keyof Preferences>({
   );
 }
 
-/** Font size, theme, refrain repeats, offline — the reader's knobs. */
-export function ReadingSettings() {
+/** Font size, theme, refrain repeats: the reader's knobs, next to the hymn. */
+export function ReadingSettings({ className = "" }: { className?: string }) {
   const t = useTranslations("settings");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -69,12 +68,12 @@ export function ReadingSettings() {
         aria-expanded={open}
         aria-label={t("title")}
         title={t("title")}
-        className="inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-pill)] border-[0.5px] border-stone bg-parchment text-deep cursor-pointer hover:bg-sand transition-colors"
+        className={className}
       >
-        <Settings2 size={17} aria-hidden />
+        <Type size={16} aria-hidden />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-[min(88vw,300px)] z-[70] bg-parchment border-[0.5px] border-stone rounded-[var(--radius-lg)] p-4 flex flex-col gap-4">
+        <div className="fixed inset-x-0 bottom-0 sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[300px] z-[70] bg-parchment border-[0.5px] border-stone rounded-t-[var(--radius-lg)] sm:rounded-[var(--radius-lg)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-4 text-left">
           <Segmented
             name="text"
             label={t("textSize")}
@@ -102,7 +101,6 @@ export function ReadingSettings() {
               { value: "short", label: t("refrainShort") },
             ]}
           />
-          <OfflineToggle />
         </div>
       )}
     </div>

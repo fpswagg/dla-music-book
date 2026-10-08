@@ -10,7 +10,7 @@ type Entry = { index: number; title: string; firstLine: string };
 let indexCache: Entry[] | null = null;
 const INDEX_KEY = "mmb:index";
 
-async function loadIndex(): Promise<Entry[]> {
+export async function loadIndex(): Promise<Entry[]> {
   if (indexCache) return indexCache;
   try {
     const res = await fetch("/api/songs/index");

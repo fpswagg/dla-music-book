@@ -69,6 +69,14 @@ Annotation · SongNote · Like · AnalyticsEvent.
 
 ## Offline (public/sw.js)
 
-Static assets cache-first; pages network-first (visited pages kept); `/api/offline/bundle` saved by the
-"save all hymns" button and read by `/offline`. Offline navigation to an unsaved hymn redirects to
-`/offline?n=<number>`. Bump `VERSION` in `sw.js` when its logic changes.
+No offline UI on purpose: it just works. Static assets cache-first; pages network-first (visited pages kept).
+`ServiceWorker` (components/offline) quietly saves `/api/offline/bundle` (every hymn) in the background, at most
+every 12 h; the worker caches the `/offline` reader with all its chunks at install and after each sync. Offline
+navigation to a hymn not visited redirects to `/offline?n=<number>`. Bump `VERSION` in `sw.js` when its logic changes.
+
+## Home and navigation
+
+Home = hymn number field (live first-line preview), search, recently opened, "Browse all". Everything else lives
+in the menu (programmes, collections, sources, language, account) or next to the hymn (present, reading settings
+"Aa", share, print, add to programme). Digits typed anywhere open the number pad. Edit links only for admins.
+The "sign-in not configured" notice stays on the sign-in page, not on public pages.

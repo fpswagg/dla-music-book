@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { BookOpen, ChevronLeft, ChevronRight, WifiOff } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { LyricsView } from "@/components/songs/lyrics-view";
 import { HymnHeader } from "@/components/songs/hymn-header";
 import { normalizeForSearch } from "@/lib/duala";
@@ -15,7 +15,6 @@ export function OfflineReader() {
   const [bundle, setBundle] = useState<OfflineBundle | null | undefined>(undefined);
   const [current, setCurrent] = useState<number | null>(null);
   const [q, setQ] = useState("");
-  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     const n = Number(new URLSearchParams(window.location.search).get("n"));
@@ -25,7 +24,8 @@ export function OfflineReader() {
       setBundle(null);
       return;
     }
-    void readOfflineBundle().then(setBundle);
+    // Nothing cached yet but the network is back: fetch it quietly instead of asking.
+    void readOfflineBundle().then((b) => (b ? setBundle(b) : saveOfflineBundle().then(setBundle, () => setBundle(null))));
   }, []);
 
   const songs = useMemo(() => bundle?.songs ?? [], [bundle]);
@@ -46,17 +46,6 @@ export function OfflineReader() {
     window.scrollTo(0, 0);
   };
 
-  const download = async () => {
-    setBusy(true);
-    try {
-      setBundle(await saveOfflineBundle());
-    } catch {
-      /* still offline */
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <div className="min-h-[100dvh] flex flex-col">
       <header className="sticky top-0 z-30 bg-linen border-b-[0.5px] border-b-stone pt-[env(safe-area-inset-top)]">
@@ -65,9 +54,6 @@ export function OfflineReader() {
             <BookOpen size={20} className="text-forest" />
             <span className="font-display text-[18px] text-deep">Myenge ma Bonakristo</span>
           </button>
-          <span className="inline-flex items-center gap-1 text-[11px] text-text-muted">
-            <WifiOff size={13} /> {t("badge")}
-          </span>
         </div>
       </header>
 
@@ -75,9 +61,6 @@ export function OfflineReader() {
         {bundle === undefined ? null : !bundle ? (
           <div className="text-center py-12">
             <p className="text-[15px] text-text-body mb-4">{t("empty")}</p>
-            <button type="button" onClick={download} disabled={busy} className="px-5 py-2.5 rounded-[var(--radius-md)] bg-forest text-parchment border-none cursor-pointer">
-              {t("save")}
-            </button>
             <p className="mt-6">
               <Link href="/" className="text-forest text-[13px]">{t("backOnline")}</Link>
             </p>

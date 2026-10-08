@@ -20,14 +20,14 @@ export type OfflineBundle = {
 
 export const offlineSupported = () => typeof window !== "undefined" && "caches" in window && "serviceWorker" in navigator;
 
-/** Downloads every published hymn and stores it in the Cache API. */
+/** Downloads every published hymn and stores it in the Cache API (done in the background by ServiceWorker). */
 export async function saveOfflineBundle(): Promise<OfflineBundle> {
   const res = await fetch(BUNDLE_URL, { cache: "no-store" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const cache = await caches.open(DATA_CACHE);
   await cache.put(BUNDLE_URL, res.clone());
-  // Make sure the offline reader page itself is cached too.
-  await fetch("/offline").catch(() => undefined);
+  // Ask the service worker to cache the reader page with its scripts (it may never have been opened).
+  navigator.serviceWorker.controller?.postMessage("refresh-offline");
   return (await res.json()) as OfflineBundle;
 }
 
@@ -36,9 +36,4 @@ export async function readOfflineBundle(): Promise<OfflineBundle | null> {
   const cache = await caches.open(DATA_CACHE);
   const hit = await cache.match(BUNDLE_URL);
   return hit ? ((await hit.json()) as OfflineBundle) : null;
-}
-
-export async function removeOfflineBundle(): Promise<void> {
-  const cache = await caches.open(DATA_CACHE);
-  await cache.delete(BUNDLE_URL);
 }

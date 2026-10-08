@@ -52,31 +52,14 @@
   "home": {
     "title": "Myenge ma bonakristo",
     "subtitle": "Bejango ba bonakristo, na mbwémba na njangi na tombédi na bato ba Douala",
-    "searchPlaceholder": "Yang bejango na tôn, na paroles, to na nimero…",
-    "featured": "Bejango ya solo",
+    "searchPlaceholder": "Titre ou paroles…",
     "browseAll": "Bola béése",
-    "totalHymns": "Béjango béése",
-    "completed": "E sala",
-    "inProgress": "Na sala",
-    "collections": "Bikotedi",
-    "chooseLanguage": "Bola ewala a wo",
-    "languageDescription": "Bola bejango na ewala a wo",
-    "searchCta": "Yang bejango",
     "gotoLabel": "Aller au cantique",
     "gotoCta": "Ouvrir",
-    "gotoTip": "Astuce : tapez un numéro n'importe où sur le site pour l'ouvrir.",
-    "keypad": "Pavé numérique",
     "recent": "Ouverts récemment",
-    "tileAll": "Tous les cantiques",
-    "tileAllText": "{count, plural, =0 {Parcourir et chercher} one {# cantique} other {# cantiques}} — recherche sans accents",
-    "tileProgrammes": "Programmes du culte",
-    "tileProgrammesText": "Préparez l'ordre du culte, partagez-le par lien ou QR code, projetez-le.",
-    "tileCollections": "Recueils",
-    "tileCollectionsText": "Sélections partagées par la communauté.",
-    "tileHymnals": "Sources et abréviations",
-    "tileHymnalsText": "M.B., S. S. et S., Evang. S. : ce que signifient les références.",
-    "tileOffline": "Hors ligne",
-    "tileOfflineText": "Enregistrez tout le livre sur votre téléphone pour l'église sans réseau."
+    "tagline": "Le livre de cantiques, toujours à portée de main.",
+    "gotoPlaceholder": "N° du cantique",
+    "gotoMissing": "Ce numéro n'est pas encore en ligne"
   },
   "songs": {
     "title": "Bejango",
@@ -441,8 +424,7 @@
     "shelved": "Shelved"
   },
   "mock": {
-    "banner": "Mode démo — aucune base de données connectée, rien n'est enregistré.",
-    "bannerNoAuth": "Connexion désactivée : le secret d'authentification (BETTER_AUTH_SECRET) n'est pas configuré."
+    "banner": "Mode démo — aucune base de données connectée, rien n'est enregistré."
   },
   "goto": {
     "open": "Aller au cantique n°…",
@@ -466,15 +448,8 @@
     "refrainShort": "Abrégé (Ba longo…)"
   },
   "offline": {
-    "title": "Hors ligne",
-    "save": "Enregistrer tous les cantiques",
-    "update": "Mettre à jour",
-    "saved": "{count} cantiques enregistrés ({date})",
-    "failed": "Échec : vérifiez la connexion.",
-    "openReader": "Ouvrir la lecture hors ligne",
     "readerTitle": "Lecture hors ligne",
-    "badge": "hors ligne",
-    "empty": "Aucun cantique enregistré sur cet appareil pour l'instant.",
+    "empty": "Pas de réseau pour l'instant. Les cantiques seront là dès la prochaine connexion.",
     "backOnline": "Retour au site",
     "allHymns": "Tous les cantiques",
     "notSaved": "Le cantique {n} n'est pas enregistré sur cet appareil.",

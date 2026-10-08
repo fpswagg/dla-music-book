@@ -5,7 +5,8 @@ import { MockBanner } from "@/components/ui/mock-banner";
 import { UserMenu } from "@/components/layout/user-menu";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { GoToHymn } from "@/components/songs/goto-hymn";
-import { ReadingSettings } from "@/components/settings/reading-settings";
+import { HideOnHome } from "@/components/layout/hide-on-home";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { getCurrentUser } from "@/lib/auth-helpers";
 
 const linkClass =
@@ -17,6 +18,7 @@ export async function Header() {
 
   const links = [
     { href: "/songs", label: t("songs") },
+    { href: "/dashboard/programmes", label: t("programmes") },
     { href: "/collections", label: t("collections") },
     { href: "/hymnals", label: t("hymnals") },
   ];
@@ -37,8 +39,9 @@ export async function Header() {
               </Link>
             ))}
           </nav>
-          <GoToHymn />
-          <ReadingSettings />
+          <HideOnHome>
+            <GoToHymn />
+          </HideOnHome>
           <div className="hidden md:flex items-center">
             <UserMenu user={userProp} variant="desktop" />
           </div>
@@ -49,6 +52,9 @@ export async function Header() {
               </Link>
             ))}
             <UserMenu user={userProp} variant="mobile" />
+            <div className="pt-3 mt-1 px-3 border-t-[0.5px] border-t-stone">
+              <LanguageSwitcher />
+            </div>
           </MobileNav>
         </div>
       </header>

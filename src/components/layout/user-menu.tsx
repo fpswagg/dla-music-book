@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { User, LogOut, ChevronDown, LayoutDashboard, Shield, ListMusic } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAppConfig } from "@/components/providers/app-config";
 
@@ -71,10 +71,6 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
           <LayoutDashboard size={16} className="shrink-0 text-[var(--color-forest)]" />
           <span className="text-[var(--color-forest)]">{t("mySpace")}</span>
         </Link>
-        <Link href="/dashboard/programmes" className={linkClass}>
-          <ListMusic size={16} className="shrink-0" />
-          {t("programmes")}
-        </Link>
         {user.role === "ADMIN" && (
           <Link href="/admin" className={linkClass}>
             <Shield size={16} className="shrink-0" />
@@ -126,15 +122,6 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
           >
             <LayoutDashboard size={14} />
             {t("dashboard")}
-          </Link>
-          <Link
-            href="/dashboard/programmes"
-            role="menuitem"
-            className="flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-body)] font-ui no-underline hover:bg-[var(--color-sand)]"
-            onClick={() => setOpen(false)}
-          >
-            <ListMusic size={14} />
-            {t("programmes")}
           </Link>
           {user.role === "ADMIN" && (
             <Link

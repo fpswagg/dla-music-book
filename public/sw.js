@@ -1,17 +1,40 @@
 /* Myenge ma Bonakristo — service worker (offline reading). Keep in sync with
    src/components/offline/offline-store.ts (DATA_CACHE, BUNDLE_URL). */
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC = `mmb-static-${VERSION}`;
 const PAGES = "mmb-pages";
 const DATA = "mmb-data";
 const MAX_PAGES = 400;
-const PRECACHE = ["/offline", "/manifest.webmanifest", "/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
+const PRECACHE = ["/manifest.webmanifest", "/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
 const PRIVATE = /^\/(admin|dashboard|auth|api)(\/|$)/;
+
+/**
+ * The offline reader must work even if it was never opened: cache its HTML and every script, style
+ * and font it references (Next lists them all in the page, including lazily loaded chunks).
+ */
+async function cacheOfflineReader() {
+  const cache = await caches.open(STATIC);
+  const res = await fetch("/offline", { cache: "no-store" });
+  if (!res.ok) return;
+  const html = await res.clone().text();
+  const assets = [...new Set(html.match(/\/_next\/static\/[^"'\s)\\]+/g) || [])];
+  await Promise.all(assets.map((u) => caches.match(u).then((hit) => hit || cache.add(u)).catch(() => undefined)));
+  await cache.put("/offline", res);
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(STATIC).then((c) => Promise.all(PRECACHE.map((u) => c.add(u).catch(() => undefined)))).then(() => self.skipWaiting()),
+    caches
+      .open(STATIC)
+      .then((c) => Promise.all(PRECACHE.map((u) => c.add(u).catch(() => undefined))))
+      .then(() => cacheOfflineReader().catch(() => undefined))
+      .then(() => self.skipWaiting()),
   );
+});
+
+// Sent by the page after its background sync, so the reader follows new deploys.
+self.addEventListener("message", (event) => {
+  if (event.data === "refresh-offline") event.waitUntil(cacheOfflineReader().catch(() => undefined));
 });
 
 self.addEventListener("activate", (event) => {

@@ -55,9 +55,11 @@ export function AddToProgramme({ songId, index }: { songId: string; index: numbe
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 min-h-[40px] px-3 rounded-[var(--radius-md)] text-[13px] text-text-body bg-transparent border-[0.5px] border-stone cursor-pointer hover:bg-sand"
+        aria-label={t("addTo")}
+        title={t("addTo")}
+        className="inline-flex items-center justify-center w-10 h-10 rounded-full text-green-muted bg-transparent border-none cursor-pointer hover:bg-sand hover:text-deep transition-colors"
       >
-        <ListPlus size={15} /> {t("addTo")}
+        <ListPlus size={17} />
       </button>
       {open && (
         <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[min(86vw,280px)] z-50 bg-parchment border-[0.5px] border-stone rounded-[var(--radius-lg)] p-2 text-left">

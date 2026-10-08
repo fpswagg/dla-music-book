@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, MonitorPlay, Printer, Share2 } from "lucide-
 import { Toast } from "@/components/ui/toast";
 import { trackSongView } from "@/lib/analytics/tracker";
 import { AddToProgramme } from "@/components/setlists/add-to-programme";
+import { ReadingSettings } from "@/components/settings/reading-settings";
 
 const RECENT_KEY = "mmb:recent";
 
@@ -32,6 +33,9 @@ export function readRecentHymns(): Array<{ index: number; title: string }> {
 
 const btn =
   "inline-flex items-center gap-1.5 min-h-[40px] px-3 rounded-[var(--radius-md)] text-[13px] font-ui text-text-body bg-transparent border-[0.5px] border-stone cursor-pointer hover:bg-sand transition-colors no-underline";
+/** Quiet round icon button: the secondary actions stay out of the way of the lyrics. */
+const icon =
+  "inline-flex items-center justify-center w-10 h-10 rounded-full text-green-muted bg-transparent border-none cursor-pointer hover:bg-sand hover:text-deep transition-colors";
 
 export function HymnActions({
   songId,
@@ -73,15 +77,16 @@ export function HymnActions({
   };
 
   return (
-    <div className="no-print flex flex-wrap items-center justify-center gap-2">
-      <Link href={`/songs/${index}/present`} className={`${btn} bg-forest text-parchment border-forest hover:bg-deep`}>
+    <div className="no-print flex flex-wrap items-center justify-center gap-1">
+      <Link href={`/songs/${index}/present`} className={`${btn} mr-1`}>
         <MonitorPlay size={15} /> {t("present")}
       </Link>
-      <button type="button" className={btn} onClick={share}>
-        <Share2 size={15} /> {t("share")}
+      <ReadingSettings className={icon} />
+      <button type="button" className={icon} onClick={share} aria-label={t("share")} title={t("share")}>
+        <Share2 size={17} />
       </button>
-      <button type="button" className={btn} onClick={() => window.print()}>
-        <Printer size={15} /> {t("print")}
+      <button type="button" className={icon} onClick={() => window.print()} aria-label={t("print")} title={t("print")}>
+        <Printer size={17} />
       </button>
       {signedIn && <AddToProgramme songId={songId} index={index} />}
       {children}
