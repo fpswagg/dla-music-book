@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import { isEmailConfigured, isMockMode } from "@/lib/config";
-import { createPasswordResetLink, getAuth } from "@/lib/auth";
+import { createToken, siteLink } from "@/lib/auth-tokens";
+import { buildAuthMail, localeFromRequest, sendMail } from "@/lib/mailer";
 import { getSiteUrl } from "@/lib/config";
 
 /**
@@ -30,15 +31,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (mode === "email") {
     if (!isEmailConfigured()) return NextResponse.json({ error: "EMAIL_NOT_CONFIGURED" }, { status: 503 });
-    const auth = getAuth();
-    if (!auth) return NextResponse.json({ error: "AUTH_NOT_CONFIGURED" }, { status: 503 });
-    await auth.api.requestPasswordReset({
-      body: { email: user.email, redirectTo: `${getSiteUrl()}/auth/reset-password` },
-    });
+    const token = await createToken("reset", user.email, 3600);
+    await sendMail(buildAuthMail("reset", localeFromRequest(request), user.email, siteLink("/auth/reset-password", { token })));
     return NextResponse.json({ ok: true, sent: true });
   }
 
-  const link = await createPasswordResetLink(user);
-  if (!link) return NextResponse.json({ error: "RESET_FAILED" }, { status: 500 });
-  return NextResponse.json({ ok: true, link });
+  const token = await createToken("reset", user.email, 3600);
+  return NextResponse.json({ ok: true, link: siteLink("/auth/reset-password", { token }) });
 }

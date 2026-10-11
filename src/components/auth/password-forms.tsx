@@ -31,8 +31,11 @@ export function ForgotPasswordForm() {
             e.preventDefault();
             setLoading(true);
             try {
-              const { authClient } = await import("@/lib/auth-client");
-              await authClient.requestPasswordReset({ email, redirectTo: `${window.location.origin}/auth/reset-password` });
+              await fetch("/api/account/forgot", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ email }),
+              });
               setSent(true); // Same answer whether the account exists or not.
             } finally {
               setLoading(false);
@@ -79,9 +82,12 @@ export function ResetPasswordForm() {
             setLoading(true);
             setError("");
             try {
-              const { authClient } = await import("@/lib/auth-client");
-              const { error: err } = await authClient.resetPassword({ newPassword: password, token });
-              if (err) setError(t("errorTokenInvalid"));
+              const res = await fetch("/api/account/reset", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ token, password }),
+              });
+              if (!res.ok) setError(t("errorTokenInvalid"));
               else router.push("/auth/login?reset=1");
             } finally {
               setLoading(false);

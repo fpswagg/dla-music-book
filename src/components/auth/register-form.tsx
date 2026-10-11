@@ -38,19 +38,24 @@ export function RegisterForm() {
     setLoading(true);
     setError("");
     try {
-      const { authClient } = await import("@/lib/auth-client");
-      const { error: err } = await authClient.signUp.email({
-        name: name.trim(),
-        email,
-        password,
-        callbackURL: `/auth/login?verified=1&redirect=${encodeURIComponent(redirect)}`,
+      const res = await fetch("/api/account/register", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), email, password }),
       });
-      if (err) {
-        setError(errorMessage(err));
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(errorMessage({ code: data.error, status: res.status }));
         return;
       }
       if (config.email) {
         setCheckInbox(true);
+        return;
+      }
+      const { signIn } = await import("next-auth/react");
+      const login = await signIn("credentials", { email, password, redirect: false });
+      if (login?.error) {
+        setError(errorMessage({ code: login.code ?? login.error }));
         return;
       }
       router.push(redirect);

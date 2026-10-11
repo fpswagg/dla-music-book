@@ -1,6 +1,6 @@
 # Auth, email and Google
 
-Sign-in uses [Better Auth](https://better-auth.com) with our own tables (`User`, `Session`, `Account`,
+Sign-in uses [Auth.js (NextAuth v5)](https://authjs.dev) with our own tables (`User`, `Session`, `Account`,
 `Verification`). Config: `src/lib/auth.ts`; browser client: `src/lib/auth-client.ts`; route: `/api/auth/*`.
 Better Auth's `name` field is mapped to `User.displayName`; `role` (USER/ADMIN) and `banned` are extra fields.
 
@@ -8,7 +8,7 @@ Better Auth's `name` field is mapped to `User.displayName`; `role` (USER/ADMIN) 
 
 | Set | Behaviour |
 |---|---|
-| `DATABASE_URL` + `BETTER_AUTH_SECRET` | email + password accounts. Production refuses to start auth without the secret. |
+| `DATABASE_URL` + `AUTH_SECRET` | email + password accounts. Production refuses to start auth without the secret. |
 | + `RESEND_API_KEY`, `RESEND_FROM` | sign-up sends a verification email and sign-in requires a verified address; "forgot password" and "email me a sign-in link" appear. |
 | no Resend | no verification required, no "forgot password". Admins create a one-hour reset link in `/admin/users` and pass it on. In development the email text (with links) is printed to the server console. |
 | + `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | "Continue with Google". A Google account with the same verified email is linked to the existing user. |
@@ -46,5 +46,5 @@ new database:
    Ids are kept. Users are created from their Supabase email (no password): they sign in with "forgot
    password", a magic link, Google, or a reset link from an admin. `--copy-previews` re-uploads audio files from
    Supabase Storage to SA Storage (needs `SASTORAGE_*`).
-4. Point Vercel's `DATABASE_URL` to the new database, set `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `ADMIN_EMAILS`
+4. Point Vercel's `DATABASE_URL` to the new database, set `AUTH_SECRET`, `BETTER_AUTH_URL`, `ADMIN_EMAILS`
    (and Resend / Google when available), remove the `NEXT_PUBLIC_SUPABASE_*` / `SUPABASE_*` variables, deploy.

@@ -34,8 +34,8 @@ export function UserMenu({ user, variant = "desktop" }: UserMenuProps) {
   const handleSignOut = async () => {
     setOpen(false);
     if (config.auth) {
-      const { authClient } = await import("@/lib/auth-client");
-      await authClient.signOut();
+      const { signOut } = await import("next-auth/react");
+      await signOut({ redirect: false });
     }
     router.push("/");
     router.refresh();

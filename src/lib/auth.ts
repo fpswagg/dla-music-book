@@ -1,163 +1,135 @@
 import "server-only";
-import { betterAuth } from "better-auth";
-import { APIError } from "better-auth/api";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
-import { magicLink } from "better-auth/plugins";
-import type { PrismaClient } from "@/generated/prisma/client";
-import {
-  getAdminEmails,
-  getSiteUrl,
-  isAuthConfigured,
-  isEmailConfigured,
-  isGoogleConfigured,
-} from "./config";
-import { buildAuthMail, localeFromRequest, sendMail } from "./mailer";
+import NextAuth, { CredentialsSignin } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import { getAdminEmails, isAuthConfigured, isEmailConfigured, isGoogleConfigured } from "./config";
+import { consumeToken, createToken, siteLink } from "./auth-tokens";
+import { buildAuthMail, sendMail, type MailLocale } from "./mailer";
+import { verifyPassword } from "./passwords";
 import { prisma } from "./prisma";
 
-/**
- * Lets the admin "reset link" action receive the URL instead of emailing it.
- * On globalThis like the auth instance: Next bundles routes separately, so a module-level
- * Map would not be the one the shared auth instance sees.
- */
-const globalForCaptures = globalThis as unknown as { resetCaptures?: Map<string, (url: string) => void> };
-const resetCaptures = (globalForCaptures.resetCaptures ??= new Map<string, (url: string) => void>());
-
-function trustedOrigins(): string[] {
-  const out = new Set<string>([getSiteUrl()]);
-  if (process.env.VERCEL_URL) out.add(`https://${process.env.VERCEL_URL}`);
-  if (process.env.VERCEL_BRANCH_URL) out.add(`https://${process.env.VERCEL_BRANCH_URL}`);
-  if (process.env.NODE_ENV !== "production") out.add("http://localhost:3000");
-  return [...out];
+class NotVerified extends CredentialsSignin {
+  code = "EMAIL_NOT_VERIFIED";
+}
+class Banned extends CredentialsSignin {
+  code = "ACCOUNT_BANNED";
 }
 
-function createAuth(db: PrismaClient) {
-  const emailOn = isEmailConfigured();
-  const adminEmails = getAdminEmails();
+const isAdminEmail = (email: string) => getAdminEmails().includes(email.toLowerCase());
 
-  return betterAuth({
-    appName: "Myenge ma Bonakristo",
-    baseURL: getSiteUrl(),
-    secret: process.env.BETTER_AUTH_SECRET,
-    trustedOrigins: trustedOrigins(),
-    database: prismaAdapter(db, { provider: "postgresql" }),
-    telemetry: { enabled: false },
-    advanced: { database: { generateId: () => crypto.randomUUID() } },
-    user: {
-      fields: { name: "displayName" },
-      additionalFields: {
-        role: { type: "string", defaultValue: "USER", input: false },
-        banned: { type: "boolean", defaultValue: false, input: false },
-      },
-    },
-    emailAndPassword: {
-      enabled: true,
-      minPasswordLength: 8,
-      // Without an email provider nobody could ever verify, so verification is only required with Resend.
-      requireEmailVerification: emailOn,
-      revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async ({ user, url }, request) => {
-        const capture = resetCaptures.get(user.id);
-        if (capture) return capture(url);
-        await sendMail(buildAuthMail("reset", localeFromRequest(request), user.email, url));
-      },
-    },
-    emailVerification: emailOn
-      ? {
-          sendOnSignUp: true,
-          sendOnSignIn: true,
-          autoSignInAfterVerification: true,
-          sendVerificationEmail: async ({ user, url }, request) => {
-            await sendMail(buildAuthMail("verify", localeFromRequest(request), user.email, url));
-          },
-        }
-      : undefined,
-    socialProviders: isGoogleConfigured()
-      ? {
-          google: {
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            prompt: "select_account",
-          },
-        }
-      : {},
-    account: { accountLinking: { enabled: true, trustedProviders: ["google"] } },
-    databaseHooks: {
-      user: {
-        create: {
-          before: async (user) => {
-            const email = user.email.toLowerCase();
-            return {
-              data: {
-                ...user,
-                email,
-                name: user.name?.trim() || email.split("@")[0],
-                role: adminEmails.includes(email) ? "ADMIN" : "USER",
-              },
-            };
-          },
-        },
-      },
-      session: {
-        create: {
-          before: async (session) => {
-            const user = await db.user.findUnique({
-              where: { id: session.userId },
-              select: { banned: true, role: true, email: true },
-            });
-            if (user?.banned) throw new APIError("FORBIDDEN", { message: "ACCOUNT_BANNED" });
-            if (user && user.role !== "ADMIN" && adminEmails.includes(user.email.toLowerCase())) {
-              await db.user.update({ where: { id: session.userId }, data: { role: "ADMIN" } });
-            }
-            return { data: session };
-          },
-        },
-      },
-    },
-    plugins: [
-      ...(emailOn
-        ? [
-            magicLink({
-              expiresIn: 15 * 60,
-              sendMagicLink: async ({ email, url }, ctx) => {
-                await sendMail(buildAuthMail("magic", localeFromRequest(ctx?.request), email, url));
-              },
-            }),
-          ]
-        : []),
-      nextCookies(),
-    ],
-  });
+/** Sends (or re-sends) the email verification link. */
+export async function sendVerificationMail(email: string, locale: MailLocale = "fr") {
+  const token = await createToken("verify", email, 24 * 3600);
+  await sendMail(buildAuthMail("verify", locale, email, siteLink("/api/account/verify", { token })));
 }
 
-export type Auth = ReturnType<typeof createAuth>;
-
-const globalForAuth = globalThis as unknown as { auth?: Auth };
-
-/** The Better Auth instance, or null when sign-in is not configured (demo mode, or no secret in production). */
-export function getAuth(): Auth | null {
-  if (!prisma || !isAuthConfigured()) return null;
-  globalForAuth.auth ??= createAuth(prisma);
-  return globalForAuth.auth;
-}
-
-/**
- * Creates a password-reset link for a user without emailing it (admin action when email
- * is not configured, or to hand the link over directly). Returns null if it failed.
- */
-export async function createPasswordResetLink(user: { id: string; email: string }): Promise<string | null> {
-  const auth = getAuth();
-  if (!auth) return null;
-  let link: string | null = null;
-  resetCaptures.set(user.id, (url) => {
-    link = url;
-  });
-  try {
-    await auth.api.requestPasswordReset({
-      body: { email: user.email, redirectTo: `${getSiteUrl()}/auth/reset-password` },
-    });
-  } finally {
-    resetCaptures.delete(user.id);
+/** Promotes bootstrap admin emails; returns the fresh user row. */
+async function loadUser(where: { id: string } | { email: string }) {
+  if (!prisma) return null;
+  const user = await prisma.user.findUnique({ where });
+  if (user && user.role !== "ADMIN" && isAdminEmail(user.email)) {
+    return prisma.user.update({ where: { id: user.id }, data: { role: "ADMIN" } });
   }
-  return link;
+  return user;
 }
+
+const toAuthUser = (u: { id: string; email: string; displayName: string; image: string | null }) => ({
+  id: u.id,
+  email: u.email,
+  name: u.displayName,
+  image: u.image,
+});
+
+export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
+  secret: process.env.AUTH_SECRET || process.env.BETTER_AUTH_SECRET,
+  trustHost: true,
+  session: { strategy: "jwt", maxAge: 30 * 24 * 3600 },
+  pages: { signIn: "/auth/login", error: "/auth/login" },
+  providers: [
+    ...(isGoogleConfigured()
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            authorization: { params: { prompt: "select_account" } },
+          }),
+        ]
+      : []),
+    Credentials({
+      id: "credentials",
+      credentials: { email: {}, password: {} },
+      async authorize(raw) {
+        if (!prisma || !isAuthConfigured()) return null;
+        const email = String(raw?.email ?? "").trim().toLowerCase();
+        const password = String(raw?.password ?? "");
+        if (!email || !password) return null;
+        const user = await loadUser({ email });
+        const account = user
+          ? await prisma.account.findFirst({ where: { userId: user.id, providerId: "credential" } })
+          : null;
+        if (!user || !verifyPassword(password, account?.password)) return null;
+        if (user.banned) throw new Banned();
+        if (isEmailConfigured() && !user.emailVerified) {
+          await sendVerificationMail(user.email).catch(() => {});
+          throw new NotVerified();
+        }
+        return toAuthUser(user);
+      },
+    }),
+    // Passwordless sign-in: the emailed link carries a one-time token (see /api/account/magic).
+    Credentials({
+      id: "magic",
+      credentials: { token: {} },
+      async authorize(raw) {
+        if (!prisma) return null;
+        const email = await consumeToken("magic", String(raw?.token ?? ""));
+        if (!email) return null;
+        let user = await loadUser({ email });
+        if (!user) {
+          user = await prisma.user.create({
+            data: { email, displayName: email.split("@")[0], emailVerified: true, role: isAdminEmail(email) ? "ADMIN" : "USER" },
+          });
+        } else if (!user.emailVerified) {
+          user = await prisma.user.update({ where: { id: user.id }, data: { emailVerified: true } });
+        }
+        if (user.banned) throw new Banned();
+        return toAuthUser(user);
+      },
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider !== "google") return true;
+      if (!prisma || !profile?.email || profile.email_verified === false) return false;
+      const email = profile.email.toLowerCase();
+      let dbUser = await loadUser({ email });
+      if (dbUser?.banned) return "/auth/login?error=ACCOUNT_BANNED";
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            email,
+            displayName: profile.name?.trim() || email.split("@")[0],
+            image: typeof profile.picture === "string" ? profile.picture : null,
+            emailVerified: true,
+            role: isAdminEmail(email) ? "ADMIN" : "USER",
+          },
+        });
+      } else if (!dbUser.emailVerified) {
+        await prisma.user.update({ where: { id: dbUser.id }, data: { emailVerified: true } });
+      }
+      const accountId = account.providerAccountId;
+      const existing = await prisma.account.findFirst({ where: { userId: dbUser.id, providerId: "google", accountId } });
+      if (!existing) await prisma.account.create({ data: { userId: dbUser.id, providerId: "google", accountId } });
+      user.id = dbUser.id;
+      return true;
+    },
+    async jwt({ token, user }) {
+      if (user?.id) token.sub = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.sub) (session.user as { id?: string }).id = token.sub;
+      return session;
+    },
+  },
+}));

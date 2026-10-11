@@ -5,7 +5,7 @@ import "server-only";
  * the app must work (degraded) when any of them is missing. Documented in .env.example.
  *
  *   Database  DATABASE_URL                                    → otherwise demo ("mock") mode on JSON data
- *   Auth      BETTER_AUTH_SECRET (+ database)                 → required for sign-in in production
+ *   Auth      AUTH_SECRET (or BETTER_AUTH_SECRET) (+ database)                 → required for sign-in in production
  *   Google    GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET         → "Continue with Google" button
  *   Email     RESEND_API_KEY + RESEND_FROM                    → verification, reset and magic-link emails
  *   Storage   SASTORAGE_URL + SASTORAGE_TOKEN                 → audio previews and backups
@@ -16,7 +16,7 @@ export type AppMode = "db" | "mock";
 const has = (...names: string[]) => names.every((n) => !!process.env[n]?.trim());
 
 export const isDatabaseConfigured = () => has("DATABASE_URL");
-export const isAuthSecretConfigured = () => has("BETTER_AUTH_SECRET");
+export const isAuthSecretConfigured = () => (has("AUTH_SECRET") || has("BETTER_AUTH_SECRET"));
 /** Sign-in needs the database; in production it also needs a real secret. */
 export const isAuthConfigured = () =>
   isDatabaseConfigured() && (isAuthSecretConfigured() || process.env.NODE_ENV !== "production");
@@ -80,7 +80,7 @@ export type IntegrationStatus = {
 export function getIntegrationsStatus(): IntegrationStatus[] {
   return [
     { key: "database", ok: isDatabaseConfigured(), required: true, env: ["DATABASE_URL"] },
-    { key: "auth", ok: isAuthSecretConfigured(), required: true, env: ["BETTER_AUTH_SECRET"] },
+    { key: "auth", ok: isAuthSecretConfigured(), required: true, env: ["AUTH_SECRET"] },
     { key: "email", ok: isEmailConfigured(), required: false, env: ["RESEND_API_KEY", "RESEND_FROM"] },
     { key: "google", ok: isGoogleConfigured(), required: false, env: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"] },
     { key: "storage", ok: isStorageConfigured(), required: false, env: ["SASTORAGE_URL", "SASTORAGE_TOKEN"] },

@@ -39,7 +39,7 @@ Without `DATABASE_URL` the app runs in **demo mode** on `src/lib/mock/data.json`
 | Integration | Variables | When missing |
 |---|---|---|
 | Database | `DATABASE_URL` | demo mode |
-| Auth | `BETTER_AUTH_SECRET` (+ `BETTER_AUTH_URL`) | sign-in disabled in production |
+| Auth | `AUTH_SECRET` (+ `BETTER_AUTH_URL`) | sign-in disabled in production |
 | Email | `RESEND_API_KEY`, `RESEND_FROM` | no verification / forgot password; admins hand out reset links |
 | Google | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | button hidden |
 | Storage | `SASTORAGE_URL`, `SASTORAGE_TOKEN` | no audio upload, no backups |

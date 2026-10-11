@@ -16,12 +16,12 @@ export function useAuthErrorMessage() {
   const t = useTranslations("auth");
   return (error: ErrorLike) => {
     const code = `${error?.code ?? ""} ${error?.message ?? ""}`;
-    if (code.includes("EMAIL_NOT_VERIFIED") || code.toLowerCase().includes("email not verified")) return t("errorNotVerified");
+    if (code.includes("EMAIL_NOT_VERIFIED")) return t("errorNotVerified");
     if (code.includes("ACCOUNT_BANNED")) return t("errorBanned");
-    if (code.includes("INVALID_EMAIL_OR_PASSWORD") || code.includes("INVALID_PASSWORD")) return t("errorInvalid");
     if (code.includes("USER_ALREADY_EXISTS")) return t("errorExists");
     if (code.includes("PASSWORD_TOO_SHORT")) return t("errorPasswordShort");
     if (error?.status === 429) return t("errorRateLimit");
+    if (code.includes("credentials") || code.includes("CredentialsSignin")) return t("errorInvalid");
     return t("errorGeneric");
   };
 }
@@ -38,8 +38,8 @@ export function GoogleButton({ redirect }: { redirect: string }) {
       onClick={async () => {
         setBusy(true);
         try {
-          const { authClient } = await import("@/lib/auth-client");
-          await authClient.signIn.social({ provider: "google", callbackURL: redirect, errorCallbackURL: "/auth/login?error=oauth" });
+          const { signIn } = await import("next-auth/react");
+          await signIn("google", { redirectTo: redirect });
         } finally {
           setBusy(false);
         }
@@ -102,16 +102,20 @@ export function LoginForm() {
     setLoading(true);
     setError("");
     try {
-      const { authClient } = await import("@/lib/auth-client");
       if (mode === "link") {
-        const { error: err } = await authClient.signIn.magicLink({ email, callbackURL: redirect });
-        if (err) setError(errorMessage(err));
+        const res = await fetch("/api/account/magic", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email, redirect }),
+        });
+        if (!res.ok) setError(errorMessage({ status: res.status }));
         else setLinkSent(true);
         return;
       }
-      const { error: err } = await authClient.signIn.email({ email, password, callbackURL: redirect });
-      if (err) {
-        setError(errorMessage(err));
+      const { signIn } = await import("next-auth/react");
+      const res = await signIn("credentials", { email, password, redirect: false });
+      if (!res || res.error || !res.ok) {
+        setError(errorMessage({ code: res?.code ?? res?.error ?? "" }));
         return;
       }
       router.push(redirect);
@@ -124,7 +128,8 @@ export function LoginForm() {
   };
 
   const hasError = !!params.get("error");
-  const notice = params.get("verified") ? t("noticeVerified") : params.get("reset") ? t("noticeReset") : hasError ? t("errorGeneric") : null;
+  const urlError = params.get("error") ? errorMessage({ code: params.get("error") ?? "" }) : null;
+  const notice = params.get("verified") ? t("noticeVerified") : params.get("reset") ? t("noticeReset") : urlError;
 
   return (
     <div>
