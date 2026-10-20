@@ -108,7 +108,8 @@
       "DEMO": "démo",
       "REWRITE": "réécriture"
     },
-    "score": "Partition"
+    "score": "Partition",
+    "recordings": "Enregistrements"
   },
   "collections": {
     "backToCollections": "Retour aux collections",
@@ -373,7 +374,8 @@
       "USER": "Utilisateur",
       "CONTRIBUTOR": "Contributeur",
       "ADMIN": "Admin"
-    }
+    },
+    "recordings": "Enregistrements"
   },
   "pagination": {
     "prev": "Précédent",
@@ -748,12 +750,107 @@
     "ownMelody": "Mélodie propre (« Eigene Melodie »).",
     "noTuneField": "Aucune mélodie indiquée.",
     "linkTo": "Lier à « {name} »",
-    "allTunes": "Toutes les mélodies"
+    "allTunes": "Toutes les mélodies",
+    "scoresQueue": "Partitions à vérifier"
   },
   "contribute": {
     "title": "Contribuer",
-    "intro": "Envoyez des partitions (fichiers numériques). Chaque envoi reste en brouillon jusqu’à sa validation par un admin.",
+    "intro": "Envoyez des partitions (fichiers numériques) et des enregistrements de cantiques. Chaque envoi reste en brouillon jusqu’à sa validation par un admin.",
     "send": "Envoyer une partition",
-    "mine": "Mes envois"
+    "mine": "Mes envois",
+    "sendRecording": "Envoyer un enregistrement",
+    "myRecordings": "Mes enregistrements"
+  },
+  "recordings": {
+    "adminTitle": "Enregistrements",
+    "adminIntro": "Enregistrements de cantiques envoyés par les chorales. Le serveur les analyse (transcription, cantique reconnu, minutage karaoké, brouillon de mélodie) ; un admin vérifie avant publication.",
+    "upload": "Envoyer un enregistrement",
+    "all": "Enregistrements à vérifier",
+    "none": "Aucun enregistrement pour le moment.",
+    "untitled": "Sans titre",
+    "recording": "Enregistrement",
+    "file": "Fichier audio",
+    "formats": "MP3, M4A, WAV, OGG, FLAC ou vidéo (le son est extrait), 150 Mo max.",
+    "hymnNumber": "N° du cantique",
+    "hymnNumberHint": "facultatif, sinon reconnu automatiquement",
+    "title": "Titre",
+    "titleHint": "ex. Culte de Pâques 2026",
+    "performer": "Interprète",
+    "performerHint": "ex. Chorale de Bonaku",
+    "send": "Envoyer",
+    "sending": "Envoi… {pct} %",
+    "sent": "Reçu ! L’analyse tourne sur le serveur, puis un admin vérifie.",
+    "tooBig": "Fichier trop gros (150 Mo max).",
+    "badFormat": "Ce n’est pas un fichier audio.",
+    "unknownHymn": "Ce numéro de cantique n’existe pas.",
+    "storageDown": "Stockage indisponible, réessayez plus tard.",
+    "uploadFailed": "L’envoi a échoué. Vérifiez la connexion et réessayez.",
+    "aiLabel": "Généré par IA",
+    "hymnUnknown": "Cantique non identifié",
+    "choose": "Choisir un enregistrement",
+    "draftVisible": "brouillon, visible par vous seulement",
+    "noTiming": "Les paroles ne sont pas encore synchronisées avec cet enregistrement.",
+    "analysis": {
+      "PENDING": "Analyse en attente",
+      "RUNNING": "Analyse en cours…",
+      "DONE": "Analyse terminée",
+      "FAILED": "Échec de l’analyse"
+    },
+    "saved": "Enregistré",
+    "queued": "Nouvelle analyse en file d’attente",
+    "reanalyze": "Relancer l’analyse",
+    "tap": "Taper",
+    "noAudioYet": "Le fichier audio est encore en préparation.",
+    "details": "Infos",
+    "setHymn": "Associer",
+    "matches": "Cantiques reconnus",
+    "noMatches": "Aucune correspondance (pas de transcription).",
+    "notes": "Notes internes",
+    "timing": "Minutage karaoké",
+    "timingHelp": "Lancez la lecture et tapez (bouton « Taper » ou barre d’espace) au début de chaque ligne. Vous pouvez aussi corriger un temps (m:ss.s) ou reprendre depuis une ligne avec le viseur.",
+    "alignmentSource": {
+      "auto": "minutage automatique",
+      "manual": "minutage manuel"
+    },
+    "startOf": "Début de la ligne {n}",
+    "playFrom": "Écouter depuis cette ligne",
+    "tapFromHere": "Reprendre le tapage ici",
+    "saveTiming": "Enregistrer le minutage",
+    "clearTiming": "Tout effacer",
+    "pickHymnFirst": "Associez d’abord le cantique.",
+    "transcription": "Transcription",
+    "rawTranscript": "Transcription brute",
+    "correctedTranscript": "Transcription corrigée",
+    "correctionHelp": "Corrigée par l’IA quand elle est disponible, puis par vous. Chaque correction validée sert d’exemple pour les suivantes.",
+    "validateCorrection": "Valider la correction",
+    "noTranscript": "Pas de transcription (service non configuré ou analyse pas encore faite).",
+    "melody": "Mélodie (brouillon)",
+    "downloadMidi": "Télécharger le MIDI",
+    "melodyToScore": "Créer un brouillon de partition",
+    "scoreDraftCreated": "Brouillon de partition créé, conversion en cours.",
+    "needsTune": "Le cantique doit d’abord être lié à une mélodie.",
+    "noMelody": "Pas encore de mélodie extraite.",
+    "analysisReport": "Rapport d’analyse",
+    "steps": {
+      "audio": "Audio",
+      "transcription": "Transcription",
+      "match": "Reconnaissance",
+      "correction": "Correction",
+      "alignment": "Minutage",
+      "melody": "Mélodie"
+    },
+    "errors": {
+      "NOT_READY": "Il faut un fichier audio et un cantique associé avant de publier.",
+      "NO_MELODY": "Pas de mélodie extraite.",
+      "NO_TUNE": "Le cantique n’est lié à aucune mélodie.",
+      "UNKNOWN_SONG": "Ce numéro de cantique n’existe pas.",
+      "FAILED": "L’action a échoué."
+    },
+    "glossary": "Glossaire duala",
+    "glossaryHelp": "Mots que la transcription doit connaître (noms propres, mots rares, orthographe). Ils sont donnés à la transcription et à la correction.",
+    "glossaryEmpty": "Glossaire vide.",
+    "term": "Mot",
+    "termNote": "Note (facultatif)",
+    "allList": "Tous les enregistrements"
   }
 }

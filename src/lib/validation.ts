@@ -132,3 +132,39 @@ export const tuneProposalInput = z.object({
   songIds: z.array(z.string()).min(1).max(50),
   existingTuneId: z.string().optional(),
 });
+
+export const recordingStart = z.object({
+  fileName: z.string().trim().min(1).max(200),
+  size: z.number().int().positive(),
+  contentType: z.string().max(100).optional(),
+  songId: z.string().max(60).nullish(),
+  songIndex: z.number().int().positive().nullish(),
+  title: z.string().trim().max(200).optional(),
+  performer: z.string().trim().max(200).optional(),
+});
+
+export const recordingComplete = z.object({ chunks: z.number().int().positive() });
+
+const alignedLine = z.object({
+  line: z.number().int().min(0).max(2000),
+  text: z.string().max(500),
+  startMs: z.number().int().min(0),
+  endMs: z.number().int().min(0),
+});
+
+export const recordingAdmin = z.object({
+  action: z.enum(["edit", "publish", "reject", "unpublish", "reanalyze", "melodyToScore"]),
+  note: z.string().trim().max(1000).optional(),
+  songId: z.string().max(60).nullish(),
+  songIndex: z.number().int().positive().nullish(),
+  title: z.string().trim().max(200).nullish(),
+  performer: z.string().trim().max(200).nullish(),
+  notes: z.string().trim().max(5000).nullish(),
+  correctedText: z.string().max(20000).nullish(),
+  alignment: z.array(alignedLine).max(2000).optional(),
+});
+
+export const glossaryInput = z.object({
+  term: z.string().trim().min(1).max(120),
+  note: z.string().trim().max(300).nullish(),
+});

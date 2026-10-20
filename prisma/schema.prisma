@@ -78,26 +78,28 @@ enum CollectionStatus {
 // ─── Auth (Better Auth: user / session / account / verification) ────────────
 
 model User {
-  id            String       @id @default(uuid())
+  id               String       @id @default(uuid())
   /// Better Auth "name" field, mapped in src/lib/auth.ts.
-  displayName   String
-  email         String       @unique
-  emailVerified Boolean      @default(false)
-  image         String?
-  role          Role         @default(USER)
-  banned        Boolean      @default(false)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  likes         Like[]
-  collections   Collection[]
-  annotations   Annotation[]
-  songNotes     SongNote[]
-  setlists      Setlist[]
-  tunes         Tune[]       @relation("TuneCreatedBy")
-  scoreFiles    ScoreFile[]  @relation("ScoreCreatedBy")
-  scoreReviews  ScoreFile[]  @relation("ScoreReviewedBy")
+  displayName      String
+  email            String       @unique
+  emailVerified    Boolean      @default(false)
+  image            String?
+  role             Role         @default(USER)
+  banned           Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  likes            Like[]
+  collections      Collection[]
+  annotations      Annotation[]
+  songNotes        SongNote[]
+  setlists         Setlist[]
+  tunes            Tune[]       @relation("TuneCreatedBy")
+  scoreFiles       ScoreFile[]  @relation("ScoreCreatedBy")
+  scoreReviews     ScoreFile[]  @relation("ScoreReviewedBy")
+  recordings       Recording[]  @relation("RecordingCreatedBy")
+  recordingReviews Recording[]  @relation("RecordingReviewedBy")
 }
 
 model Session {
@@ -159,6 +161,7 @@ model Song {
   /// The melody this hymn is sung to (scores live on the Tune).
   tuneId          String?
   tuneRef         Tune?            @relation(fields: [tuneId], references: [id], onDelete: SetNull)
+  recordings      Recording[]
   /// Normalised title + lyrics + references, for diacritic-insensitive search (see src/lib/duala.ts).
   searchText      String           @default("")
   originalSongId  String?
@@ -391,62 +394,62 @@ model AnalyticsEvent {
 
 /// A melody, shared by every hymn sung to it.
 model Tune {
-  id          String       @id @default(uuid())
-  name        String
+  id            String      @id @default(uuid())
+  name          String
   /// Key as written, e.g. "G", "Eb", "D minor".
-  key         String?
+  key           String?
   /// Time signature, e.g. "4/4", "3/4".
   timeSignature String?
   /// Poetic metre, e.g. "8.7.8.7" or "L.M.".
-  metre       String?
-  composer    String?
+  metre         String?
+  composer      String?
   /// Where the score comes from (URL or book reference).
-  source      String?
+  source        String?
   /// Licence of the score, e.g. "Domaine public", "CC BY-SA 4.0".
-  license     String?
-  notes       String?
-  createdById String?
-  createdBy   User?        @relation("TuneCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  songs       Song[]
-  scores      ScoreFile[]
+  license       String?
+  notes         String?
+  createdById   String?
+  createdBy     User?       @relation("TuneCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  songs         Song[]
+  scores        ScoreFile[]
 
   @@index([name])
 }
 
 /// One score of a tune (SATB, melody only...). The rendered file is MusicXML, ABC or MEI.
 model ScoreFile {
-  id               String           @id @default(uuid())
-  tuneId           String
-  tune             Tune             @relation(fields: [tuneId], references: [id], onDelete: Cascade)
-  label            String
-  kind             ScoreKind        @default(SATB)
+  id              String           @id @default(uuid())
+  tuneId          String
+  tune            Tune             @relation(fields: [tuneId], references: [id], onDelete: Cascade)
+  label           String
+  kind            ScoreKind        @default(SATB)
   /// Format of the rendered file (null while a conversion is pending).
-  format           ScoreFormat?
+  format          ScoreFormat?
   /// SA Storage full key / public URL of the file the player renders.
-  fileKey          String?
-  fileUrl          String?
+  fileKey         String?
+  fileUrl         String?
   /// The file as uploaded (.mscz, .mid, .mxl...), kept for later conversions.
-  originalKey      String?
-  originalUrl      String?
-  originalName     String?
-  originalFormat   String?
-  conversion       ConversionStatus @default(READY)
-  conversionError  String?
-  status           ReviewStatus     @default(DRAFT)
+  originalKey     String?
+  originalUrl     String?
+  originalName    String?
+  originalFormat  String?
+  conversion      ConversionStatus @default(READY)
+  conversionError String?
+  status          ReviewStatus     @default(DRAFT)
   /// Shown first on the hymn page.
-  isDefault        Boolean          @default(false)
-  source           String?
-  license          String?
-  createdById      String?
-  createdBy        User?            @relation("ScoreCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  reviewedById     String?
-  reviewedBy       User?            @relation("ScoreReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
-  reviewNote       String?
-  reviewedAt       DateTime?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  isDefault       Boolean          @default(false)
+  source          String?
+  license         String?
+  createdById     String?
+  createdBy       User?            @relation("ScoreCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  reviewedById    String?
+  reviewedBy      User?            @relation("ScoreReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewNote      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@index([tuneId])
   @@index([status])
@@ -469,4 +472,89 @@ model Job {
 
   @@index([status, runAfter])
   @@index([type])
+}
+
+// ── Recordings (phase 2: audio import, transcription, karaoke alignment) ───────
+
+enum RecordingSource {
+  UPLOAD
+  AI
+}
+
+enum AnalysisStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+}
+
+/// An audio recording of a hymn (choir, soloist…) or, later, a generated rendition.
+model Recording {
+  id              String                @id @default(uuid())
+  songId          String?
+  song            Song?                 @relation(fields: [songId], references: [id], onDelete: SetNull)
+  title           String?
+  performer       String?
+  /// Original upload: chunks under tmp/, assembled and transcoded by the worker.
+  uploadId        String?
+  fileName        String?
+  fileKey         String?
+  fileUrl         String?
+  contentType     String?
+  sizeBytes       Int?
+  durationMs      Int?
+  source          RecordingSource       @default(UPLOAD)
+  /// Model / engine that produced an AI recording; shown with the "AI generated" label.
+  generator       String?
+  status          ReviewStatus          @default(DRAFT)
+  analysis        AnalysisStatus        @default(PENDING)
+  analysisError   String?
+  /// Step-by-step report of the analysis (what ran, what was skipped and why).
+  analysisLog     Json?
+  /// Raw transcription: { provider, text, words: [{ w, start, end }] } (seconds).
+  transcript      Json?
+  /// Transcription corrected by the language model, then by a human.
+  correctedText   String?
+  /// Songs the transcription resembles: [{ songId, index, title, score }].
+  matches         Json?
+  /// Karaoke timing: [{ line, text, startMs, endMs }] (line = index in the lyrics' sung lines).
+  alignment       Json?
+  alignmentSource String?
+  /// Melody draft (Basic Pitch) as MIDI.
+  melodyKey       String?
+  melodyUrl       String?
+  notes           String?
+  createdById     String?
+  createdBy       User?                 @relation("RecordingCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  reviewedById    String?
+  reviewedBy      User?                 @relation("RecordingReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewNote      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  samples         TranscriptionSample[]
+
+  @@index([songId])
+  @@index([status])
+}
+
+/// Duala words and spellings given to the correction model (ɛ ɔ ŋ ɓ, tones, names).
+model GlossaryTerm {
+  id        String   @id @default(uuid())
+  term      String   @unique
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+/// Validated pairs (raw machine transcription → human-corrected text), reused as examples.
+model TranscriptionSample {
+  id            String     @id @default(uuid())
+  recordingId   String?
+  recording     Recording? @relation(fields: [recordingId], references: [id], onDelete: SetNull)
+  songId        String?
+  rawText       String
+  correctedText String
+  createdAt     DateTime   @default(now())
+
+  @@index([createdAt])
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
+import { Star } from "lucide-react";
 
 const ScorePlayer = dynamic(() => import("@/components/scores/score-player").then((m) => m.ScorePlayer), { ssr: false });
 
@@ -68,7 +69,7 @@ export function ScoreList({ scores, admin = false, showTune = false }: { scores:
               <div className="flex-1 min-w-[200px]">
                 <div className="text-[14px] text-deep">
                   {s.label}
-                  {s.isDefault && <span className="ml-2 text-[10px] text-forest">★ {t("default")}</span>}
+                  {s.isDefault && <span className="ml-2 text-[10px] text-forest inline-flex items-center gap-0.5"><Star size={10} fill="currentColor" /> {t("default")}</span>}
                 </div>
                 {showTune && s.tune && (
                   <div className="text-[12px] text-text-body">

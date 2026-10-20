@@ -5,6 +5,9 @@ import { getMyScores } from "@/lib/scores";
 import { SectionLabel } from "@/components/ui/section-label";
 import { ScoreUpload } from "@/components/music/score-upload";
 import { ScoreList } from "@/components/music/score-list";
+import { listRecordings } from "@/lib/recordings";
+import { RecordingUpload } from "@/components/music/recording-upload";
+import { RecordingList } from "@/components/music/recording-list";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +16,7 @@ export default async function ContributePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/login?redirect=/dashboard/contribute");
   if (!canContribute(user)) redirect("/dashboard");
-  const [t, scores] = await Promise.all([getTranslations("contribute"), getMyScores(user)]);
+  const [t, scores, recordings] = await Promise.all([getTranslations("contribute"), getMyScores(user), listRecordings({ mine: user })]);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -24,6 +27,14 @@ export default async function ContributePage() {
       <div className="mt-10">
         <SectionLabel>{t("mine")}</SectionLabel>
         <ScoreList scores={scores} showTune admin={user.role === "ADMIN"} />
+      </div>
+      <div className="mt-10">
+        <SectionLabel>{t("sendRecording")}</SectionLabel>
+        <RecordingUpload />
+      </div>
+      <div className="mt-10">
+        <SectionLabel>{t("myRecordings")}</SectionLabel>
+        <RecordingList recordings={recordings} admin={user.role === "ADMIN"} />
       </div>
     </div>
   );

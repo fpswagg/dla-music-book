@@ -16,6 +16,8 @@ import { HymnHeader } from "@/components/songs/hymn-header";
 import { HymnActions, HymnPager } from "@/components/songs/hymn-actions";
 import { SongScores } from "@/components/scores/song-scores";
 import { getSongScores } from "@/lib/scores";
+import { getSongRecordings } from "@/lib/recordings";
+import { SongRecordings } from "@/components/music/song-recordings";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ v?: string }> };
 
@@ -42,10 +44,11 @@ export default async function SongPage({ params, searchParams }: Props) {
   if (!/^\d+$/.test(id)) permanentRedirect(`/songs/${song.index}`);
 
   const version = song.versions.find((x) => String(x.versionNumber) === v) ?? song.versions[0];
-  const [adjacent, likedMap, music] = await Promise.all([
+  const [adjacent, likedMap, music, recordings] = await Promise.all([
     getAdjacentSongs(song.index),
     user ? getUserLikedSongIds(user.id, [song.id]) : Promise.resolve({} as Record<string, boolean>),
     getSongScores(song.id, user),
+    getSongRecordings(song.id, user),
   ]);
 
   const meta = [
@@ -112,6 +115,25 @@ export default async function SongPage({ params, searchParams }: Props) {
         <section className="no-print mt-10" id="partition">
           <SectionLabel>{t("score")}</SectionLabel>
           <SongScores tune={music.tune} scores={music.scores} title={`${song.index}. ${song.title}`} />
+        </section>
+      )}
+
+      {recordings.length > 0 && (
+        <section className="no-print mt-10" id="enregistrements">
+          <SectionLabel>{t("recordings")}</SectionLabel>
+          <SongRecordings
+            recordings={recordings.map((r) => ({
+              id: r.id,
+              title: r.title,
+              performer: r.performer,
+              fileUrl: r.fileUrl ?? "",
+              durationMs: r.durationMs,
+              source: r.source,
+              generator: r.generator,
+              status: r.status,
+              alignment: r.alignment,
+            }))}
+          />
         </section>
       )}
 
