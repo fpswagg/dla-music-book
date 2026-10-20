@@ -50,6 +50,7 @@ export function RecordingList({ recordings, admin = false }: { recordings: Recor
                 <div className="text-[14px] text-deep">
                   {admin ? <Link href={`/admin/recordings/${r.id}`}>{name}</Link> : name}
                   {r.source === "AI" && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-sand text-text-body">{t("aiLabel")}</span>}
+                  {r.source === "RENDER" && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-sand text-text-body">{t("renderLabel")}</span>}
                 </div>
                 <div className="text-[12px] text-text-body">{r.song ? `#${r.song.index} ${r.song.title}` : t("hymnUnknown")}</div>
                 <div className="text-[11px] text-text-muted">

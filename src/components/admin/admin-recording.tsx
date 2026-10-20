@@ -156,6 +156,7 @@ export function AdminRecording({ recording: r, lines: initialLines }: { recordin
           <div className="text-[13px] text-text-body">
             {r.song ? <Link href={`/songs/${r.song.index}`}>#{r.song.index} {r.song.title}</Link> : t("hymnUnknown")}
             {r.source === "AI" && <span className="ml-2 text-[11px] px-1.5 py-0.5 rounded bg-sand">{t("aiLabel")}{r.generator ? ` · ${r.generator}` : ""}</span>}
+            {r.source === "RENDER" && <span className="ml-2 text-[11px] px-1.5 py-0.5 rounded bg-sand">{t("renderLabel")}</span>}
           </div>
           <div className="text-[12px] text-text-muted">
             {tm(`status.${r.status}`)} · {t(`analysis.${r.analysis}`)}

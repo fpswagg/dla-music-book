@@ -277,3 +277,13 @@ export async function recordingCounts() {
   if (!prisma) return { drafts: 0 };
   return { drafts: await prisma.recording.count({ where: { status: "DRAFT", fileUrl: { not: null } } }) };
 }
+
+export type WorkerStatus = { online: boolean; seenAt: string | null; flags: Record<string, boolean> };
+
+/** From the worker's heartbeat (written every minute; long jobs can delay it a little). */
+export async function getWorkerStatus(): Promise<WorkerStatus> {
+  if (!prisma) return { online: false, seenAt: null, flags: {} };
+  const hb = await prisma.workerHeartbeat.findUnique({ where: { id: "main" } }).catch(() => null);
+  if (!hb) return { online: false, seenAt: null, flags: {} };
+  return { online: Date.now() - hb.seenAt.getTime() < 15 * 60_000, seenAt: hb.seenAt.toISOString(), flags: (hb.flags as Record<string, boolean>) ?? {} };
+}

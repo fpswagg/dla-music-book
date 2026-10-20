@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { scoreConvert, scoreConvertFailed } from "./handlers/score-convert";
 import { recordingAnalyze, recordingAnalyzeFailed } from "./handlers/recording-analyze";
+import { recordingRender, recordingSing } from "./handlers/recording-render";
+import { flags } from "./ai";
 
 type Handler = {
   run: (payload: never) => Promise<unknown>;
@@ -18,6 +20,8 @@ type Handler = {
 const HANDLERS: Record<string, Handler> = {
   "score.convert": { run: scoreConvert, failed: scoreConvertFailed, maxAttempts: 2 },
   "recording.analyze": { run: recordingAnalyze, failed: recordingAnalyzeFailed, maxAttempts: 2 },
+  "recording.render": { run: recordingRender, maxAttempts: 2 },
+  "recording.sing": { run: recordingSing, maxAttempts: 1 },
 };
 
 const POLL_MS = 3000;
@@ -65,6 +69,16 @@ async function process1(job: JobRow) {
   }
 }
 
+/** Tells the site the worker is alive and which optional features its keys enable. */
+async function heartbeat(startedAt: Date) {
+  const f = { whisper: flags.whisper(), gemini: flags.gemini(), claude: flags.claude(), singing: flags.singing() };
+  await prisma!.workerHeartbeat.upsert({
+    where: { id: "main" },
+    update: { flags: f, seenAt: new Date(), startedAt },
+    create: { id: "main", flags: f, startedAt },
+  });
+}
+
 /** Jobs left RUNNING by a crash go back to the queue. */
 async function requeueStale() {
   await prisma!.job.updateMany({
@@ -77,9 +91,11 @@ async function main() {
   if (!prisma) throw new Error("DATABASE_URL missing");
   console.log(`[worker] started, handlers: ${Object.keys(HANDLERS).join(", ")}`);
   let lastStaleCheck = 0;
+  const startedAt = new Date();
   while (!stopping) {
     try {
       if (Date.now() - lastStaleCheck > 60_000) {
+        await heartbeat(startedAt);
         await requeueStale();
         lastStaleCheck = Date.now();
       }

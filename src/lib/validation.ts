@@ -119,8 +119,9 @@ export const tunePatch = tuneInput.partial().extend({
 export const scoreKinds = ["SATB", "MELODY", "PIANO", "OTHER"] as const;
 
 export const scoreReview = z.object({
-  action: z.enum(["publish", "reject", "unpublish", "default", "retry", "edit"]),
+  action: z.enum(["publish", "reject", "unpublish", "default", "retry", "edit", "render", "sing"]),
   note: z.string().trim().max(1000).optional(),
+  instrument: z.enum(["organ", "piano", "choir"]).optional(),
   label: z.string().trim().min(1).max(120).optional(),
   kind: z.enum(scoreKinds).optional(),
   source: optText(500),

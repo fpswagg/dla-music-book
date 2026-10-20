@@ -33,3 +33,18 @@ test("align lyric lines on transcribed words, skipping unsung lines", () => {
   assert.equal(a[2].startMs, 9000);
   assert.ok(a[0].endMs <= a[1].startMs);
 });
+
+test("MIDI instrument patch keeps events and running status", async () => {
+  const { setMidiProgram, midiPrograms } = await import("./audio/midi-program");
+  // Header (format 0, 1 track, 480 tpq) + track: program 0, note on C4, running-status note on E4, note offs, end.
+  const track = [0x00, 0xc0, 0x00, 0x00, 0x90, 60, 100, 0x00, 64, 100, 0x83, 0x60, 0x80, 60, 0, 0x00, 0x80, 64, 0, 0x00, 0xff, 0x2f, 0x00];
+  const midi = Uint8Array.from([
+    0x4d, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, 0x01, 0xe0,
+    0x4d, 0x54, 0x72, 0x6b, 0, 0, 0, track.length, ...track,
+  ]);
+  assert.deepEqual(midiPrograms(midi), [0]);
+  const organ = setMidiProgram(midi, "organ");
+  assert.deepEqual(midiPrograms(organ), [19]);
+  const notes = [...organ].filter((b, i, a) => (b & 0xf0) === 0x90 && a[i + 1] >= 60 && a[i + 1] <= 64).length;
+  assert.equal(notes, 2);
+});
