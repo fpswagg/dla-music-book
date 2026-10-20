@@ -93,3 +93,42 @@ export async function parseBody<T extends z.ZodType>(request: Request, schema: T
   if (!result.success) return { ok: false, error: z.prettifyError(result.error) };
   return { ok: true, data: result.data };
 }
+
+// ─── Music (tunes, scores) ──────────────────────────────────────────────────
+
+const optText = (max: number) => z.string().trim().max(max).nullable().optional().transform((v) => (v ? v : null));
+
+export const tuneInput = z.object({
+  name: z.string().trim().min(1).max(200),
+  key: optText(40),
+  timeSignature: optText(20),
+  metre: optText(60),
+  composer: optText(200),
+  source: optText(500),
+  license: optText(120),
+  notes: optText(2000),
+  songIds: z.array(z.string()).max(50).optional(),
+});
+
+export const tunePatch = tuneInput.partial().extend({
+  linkSongIds: z.array(z.string()).max(50).optional(),
+  unlinkSongIds: z.array(z.string()).max(50).optional(),
+  linkSongIndexes: z.array(z.number().int().positive()).max(50).optional(),
+});
+
+export const scoreKinds = ["SATB", "MELODY", "PIANO", "OTHER"] as const;
+
+export const scoreReview = z.object({
+  action: z.enum(["publish", "reject", "unpublish", "default", "retry", "edit"]),
+  note: z.string().trim().max(1000).optional(),
+  label: z.string().trim().min(1).max(120).optional(),
+  kind: z.enum(scoreKinds).optional(),
+  source: optText(500),
+  license: optText(120),
+});
+
+export const tuneProposalInput = z.object({
+  name: z.string().trim().min(1).max(200),
+  songIds: z.array(z.string()).min(1).max(50),
+  existingTuneId: z.string().optional(),
+});

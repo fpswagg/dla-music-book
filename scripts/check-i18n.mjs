@@ -4,6 +4,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const LOCALES = ["fr", "en", "duala"];
+// Duala is filled by native speakers over time; missing Duala keys fall back to French at runtime.
+const REQUIRED = ["fr", "en"];
 const messages = Object.fromEntries(LOCALES.map((l) => [l, JSON.parse(readFileSync(`src/i18n/messages/${l}.json`, "utf8"))]));
 const has = (obj, path) => path.split(".").reduce((o, k) => (o && typeof o === "object" ? o[k] : undefined), obj) !== undefined;
 
@@ -41,7 +43,7 @@ for (const file of files("src")) {
 
 let missing = 0;
 for (const [key, file] of [...used].sort()) {
-  const absent = LOCALES.filter((l) => !has(messages[l], key));
+  const absent = REQUIRED.filter((l) => !has(messages[l], key));
   if (absent.length) {
     missing++;
     console.log(`${key}  missing in ${absent.join(",")}  (${file})`);
@@ -49,7 +51,7 @@ for (const [key, file] of [...used].sort()) {
 }
 // Keys present in one locale but not the others.
 const flat = (o, p = "") => Object.entries(o).flatMap(([k, v]) => (v && typeof v === "object" ? flat(v, `${p}${k}.`) : [`${p}${k}`]));
-for (const l of LOCALES) for (const k of flat(messages[l])) for (const o of LOCALES) if (!has(messages[o], k)) { missing++; console.log(`${k}  in ${l} but missing in ${o}`); }
+for (const l of LOCALES) for (const k of flat(messages[l])) for (const o of REQUIRED) if (!has(messages[o], k)) { missing++; console.log(`${k}  in ${l} but missing in ${o}`); }
 
 if (dynamic.size) console.log(`\nDynamic keys to check by hand:\n  ${[...dynamic].join("\n  ")}`);
 console.log(`\n${used.size} keys used, ${missing} problem(s).`);

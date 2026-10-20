@@ -14,7 +14,7 @@ export async function PUT(request: Request, { params }: Ctx) {
   }
   const { id } = await params;
   const { role } = (await request.json().catch(() => ({}))) as { role?: string };
-  if (role !== "USER" && role !== "ADMIN") return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+  if (role !== "USER" && role !== "CONTRIBUTOR" && role !== "ADMIN") return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   if (admin.id === id) return NextResponse.json({ error: "Cannot change own role" }, { status: 400 });
 
   if (isMockMode()) return NextResponse.json({ id, role });

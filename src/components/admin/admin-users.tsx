@@ -122,7 +122,7 @@ export function AdminUsers({
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex px-2 py-0.5 rounded-[var(--radius-pill)] text-[10px] font-medium ${
-                        user.role === "ADMIN" ? "bg-green-light text-forest" : "bg-sand text-text-muted"
+                        user.role === "ADMIN" ? "bg-green-light text-forest" : user.role === "CONTRIBUTOR" ? "bg-linen text-deep" : "bg-sand text-text-muted"
                       }`}
                     >
                       {user.role}
@@ -136,19 +136,24 @@ export function AdminUsers({
                       <span className="text-[11px] text-text-muted">{t("you")}</span>
                     ) : (
                       <div className="flex flex-wrap gap-1">
-                        <button
-                          type="button"
+                        <select
+                          value={user.role}
                           disabled={busy === user.id}
+                          aria-label={t("changeRole")}
                           className={btn}
-                          onClick={() =>
+                          onChange={(e) =>
                             call(user.id, `/api/admin/users/${user.id}`, {
                               method: "PUT",
-                              body: JSON.stringify({ role: user.role === "ADMIN" ? "USER" : "ADMIN" }),
+                              body: JSON.stringify({ role: e.target.value }),
                             })
                           }
                         >
-                          {user.role === "ADMIN" ? t("makeUser") : t("makeAdmin")}
-                        </button>
+                          {(["USER", "CONTRIBUTOR", "ADMIN"] as const).map((r) => (
+                            <option key={r} value={r}>
+                              {t(`role.${r}`)}
+                            </option>
+                          ))}
+                        </select>
                         <button
                           type="button"
                           disabled={busy === user.id}
