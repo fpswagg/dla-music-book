@@ -37,7 +37,7 @@ export function SongRecordings({ recordings }: { recordings: SongRecording[] }) 
           {recordings.map((r) => (
             <option key={r.id} value={r.id}>
               {label(r)}
-              {r.source === "AI" ? ` (${t("aiLabel")})` : ""}
+              {r.source === "AI" ? ` (${t("aiLabel")})` : r.source === "RENDER" ? ` (${t("renderLabel")})` : ""}
             </option>
           ))}
         </select>
@@ -50,6 +50,7 @@ export function SongRecordings({ recordings }: { recordings: SongRecording[] }) 
             {rec.generator ? ` · ${rec.generator}` : ""}
           </span>
         )}
+        {rec.source === "RENDER" && <span className="px-1.5 py-0.5 rounded bg-sand text-text-body text-[11px]">{t("renderLabel")}</span>}
         {rec.status !== "PUBLISHED" && <span className="text-[11px]">({t("draftVisible")})</span>}
       </div>
       <KaraokeAudio key={rec.id} src={rec.fileUrl} lines={rec.alignment} />

@@ -451,6 +451,8 @@ model ScoreFile {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
+  recordings Recording[]
+
   @@index([tuneId])
   @@index([status])
 }
@@ -479,6 +481,8 @@ model Job {
 enum RecordingSource {
   UPLOAD
   AI
+  /// Synthesised from a score (MuseScore + FluidSynth), not sung.
+  RENDER
 }
 
 enum AnalysisStatus {
@@ -520,6 +524,9 @@ model Recording {
   /// Karaoke timing: [{ line, text, startMs, endMs }] (line = index in the lyrics' sung lines).
   alignment       Json?
   alignmentSource String?
+  /// Score a RENDER / AI recording was made from.
+  scoreId         String?
+  score           ScoreFile?            @relation(fields: [scoreId], references: [id], onDelete: SetNull)
   /// Melody draft (Basic Pitch) as MIDI.
   melodyKey       String?
   melodyUrl       String?
@@ -557,4 +564,12 @@ model TranscriptionSample {
   createdAt     DateTime   @default(now())
 
   @@index([createdAt])
+}
+
+/// The worker's last sign of life and what it can do (features depend on its API keys).
+model WorkerHeartbeat {
+  id        String   @id
+  flags     Json     @default("{}")
+  startedAt DateTime @default(now())
+  seenAt    DateTime @default(now())
 }

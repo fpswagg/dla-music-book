@@ -313,3 +313,14 @@ export async function getMyScores(user: AppUser) {
   });
   return rows.map((r) => ({ ...toView(r), tune: r.tune }));
 }
+
+/** Audio from a score, made on the server: an instrument rendering, or (experimental) an AI voice. */
+export async function queueScoreAudio(id: string, kind: "render" | "sing", user: AppUser, instrument: "organ" | "piano" | "choir" = "organ") {
+  if (!prisma) throw new Error("Database unavailable");
+  const score = await prisma.scoreFile.findUnique({ where: { id }, select: { conversion: true, tune: { select: { _count: { select: { songs: true } } } } } });
+  if (!score) throw new Error("NOT_FOUND");
+  if (score.conversion !== "READY") throw new Error("NOT_CONVERTED");
+  if (!score.tune._count.songs) throw new Error("NO_SONGS");
+  if (kind === "render") await enqueueJob("recording.render", { scoreId: id, instrument, userId: user.id });
+  else await enqueueJob("recording.sing", { scoreId: id, userId: user.id });
+}

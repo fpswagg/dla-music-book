@@ -26,7 +26,7 @@ type Tune = {
 const FIELDS = ["name", "key", "timeSignature", "metre", "composer", "source", "license"] as const;
 
 /** One tune: its details, the hymns sung to it and its scores (with moderation). */
-export function AdminTune({ tune, links }: { tune: Tune; links: Array<{ label: string; url: string }> }) {
+export function AdminTune({ tune, links, aiSinging = false }: { tune: Tune; links: Array<{ label: string; url: string }>; aiSinging?: boolean }) {
   const t = useTranslations("music");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -91,7 +91,7 @@ export function AdminTune({ tune, links }: { tune: Tune; links: Array<{ label: s
 
       <div className="mt-8">
         <SectionLabel>{t("scores")}</SectionLabel>
-        <ScoreList scores={tune.scores.map((s) => ({ ...s, tune: { id: tune.id, name: tune.name } }))} admin />
+        <ScoreList scores={tune.scores.map((s) => ({ ...s, tune: { id: tune.id, name: tune.name } }))} admin aiSinging={aiSinging} />
       </div>
 
       <div className="mt-8">

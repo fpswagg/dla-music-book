@@ -6,11 +6,13 @@ import type { Word } from "@/lib/audio/text-match";
  *   OPENAI_API_KEY      Whisper transcription with word timestamps (preferred)
  *   GEMINI_API_KEY      Gemini transcription (fallback, approximate timestamps)
  *   ANTHROPIC_API_KEY   Claude correction of the transcription (Duala spelling, glossary)
+ *   AI_SINGING_URL      experimental AI singing from a score (see singFromScore)
  */
 export const flags = {
   whisper: () => !!process.env.OPENAI_API_KEY,
   gemini: () => !!process.env.GEMINI_API_KEY,
   claude: () => !!process.env.ANTHROPIC_API_KEY,
+  singing: () => !!process.env.AI_SINGING_URL,
 };
 
 export type Transcript = { provider: string; text: string; words: Word[] };
@@ -102,4 +104,34 @@ export async function claudeCorrect(input: {
   const text = (data.content ?? []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
   if (!text) throw new Error("Claude returned no text");
   return { text, model };
+}
+
+/**
+ * AI singing (experimental). Any synthesis service behind one HTTP contract, so the provider can
+ * change without touching the worker:
+ *   AI_SINGING_URL     POST { musicxml, lyrics, language: "dua", voice } → audio bytes (audio/*)
+ *                      or JSON { audioUrl }
+ *   AI_SINGING_TOKEN   sent as "Authorization: Bearer …" (optional)
+ *   AI_SINGING_NAME    engine name shown with the "AI generated" label
+ */
+export async function singFromScore(input: { musicxml: string; lyrics: string; voice?: string }): Promise<{ audio: Uint8Array; generator: string }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (process.env.AI_SINGING_TOKEN) headers.Authorization = `Bearer ${process.env.AI_SINGING_TOKEN}`;
+  const res = await fetch(process.env.AI_SINGING_URL!, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ ...input, language: "dua" }),
+    signal: AbortSignal.timeout(20 * 60_000),
+  });
+  if (!res.ok) throw new Error(`AI singing ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  let audio: Uint8Array;
+  if ((res.headers.get("content-type") ?? "").includes("json")) {
+    const { audioUrl } = (await res.json()) as { audioUrl?: string };
+    if (!audioUrl) throw new Error("AI singing returned no audio");
+    const a = await fetch(audioUrl, { signal: AbortSignal.timeout(5 * 60_000) });
+    if (!a.ok) throw new Error(`AI singing audio ${a.status}`);
+    audio = new Uint8Array(await a.arrayBuffer());
+  } else audio = new Uint8Array(await res.arrayBuffer());
+  const generator = process.env.AI_SINGING_NAME || new URL(process.env.AI_SINGING_URL!).hostname;
+  return { audio, generator };
 }

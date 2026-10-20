@@ -34,7 +34,18 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 /** Scores with their review state. Admins get the moderation buttons; everyone can preview a converted score. */
-export function ScoreList({ scores, admin = false, showTune = false }: { scores: ScoreItem[]; admin?: boolean; showTune?: boolean }) {
+export function ScoreList({
+  scores,
+  admin = false,
+  showTune = false,
+  aiSinging = false,
+}: {
+  scores: ScoreItem[];
+  admin?: boolean;
+  showTune?: boolean;
+  /** The worker has an AI singing engine configured. */
+  aiSinging?: boolean;
+}) {
   const t = useTranslations("music");
   const tc = useTranslations("common");
   const format = useFormatter();
@@ -42,6 +53,7 @@ export function ScoreList({ scores, admin = false, showTune = false }: { scores:
   const [open, setOpen] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   const act = async (id: string, action: string, extra: Record<string, unknown> = {}) => {
     setBusy(id);
@@ -52,7 +64,10 @@ export function ScoreList({ scores, admin = false, showTune = false }: { scores:
       body: JSON.stringify({ action, ...extra }),
     });
     setBusy(null);
-    if (!res.ok) setError(res.status === 409 ? t("notConverted") : tc("error"));
+    if (!res.ok) {
+      const code = ((await res.json().catch(() => ({}))) as { error?: string }).error;
+      setError(code === "NO_SONGS" ? t("noSongsForAudio") : res.status === 409 ? t("notConverted") : tc("error"));
+    } else if (res.status === 202) setNotice(t("audioQueued"));
     router.refresh();
   };
 
@@ -62,6 +77,11 @@ export function ScoreList({ scores, admin = false, showTune = false }: { scores:
   return (
     <div className="font-ui">
       {error && <p role="alert" className="text-[12px] text-danger mb-2">{error}</p>}
+      {notice && (
+        <p role="status" className="text-[12px] text-forest mb-2">
+          {notice} <Link href="/admin/recordings">{t("seeRecordings")}</Link>
+        </p>
+      )}
       <ul className="list-none p-0 m-0 flex flex-col gap-2">
         {scores.map((s) => (
           <li key={s.id} className="bg-parchment border-[0.5px] border-stone rounded-[var(--radius-lg)] px-4 py-3">
@@ -128,6 +148,33 @@ export function ScoreList({ scores, admin = false, showTune = false }: { scores:
                   {s.status === "PUBLISHED" && !s.isDefault && (
                     <button type="button" disabled={busy === s.id} className={btn} onClick={() => act(s.id, "default")}>
                       {t("makeDefault")}
+                    </button>
+                  )}
+                  {s.conversion === "READY" && (
+                    <select
+                      aria-label={t("renderAudio")}
+                      disabled={busy === s.id}
+                      value=""
+                      onChange={(e) => e.target.value && act(s.id, "render", { instrument: e.target.value })}
+                      className={`${btn} pr-6`}
+                    >
+                      <option value="">{t("renderAudio")}</option>
+                      {(["organ", "piano", "choir"] as const).map((i) => (
+                        <option key={i} value={i}>
+                          {t(`instrument.${i}`)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  {s.conversion === "READY" && (
+                    <button
+                      type="button"
+                      disabled={busy === s.id || !aiSinging}
+                      className={btn}
+                      title={aiSinging ? t("aiSingHint") : t("aiSingOff")}
+                      onClick={() => confirm(t("aiSingConfirm")) && act(s.id, "sing")}
+                    >
+                      {t("aiSing")}
                     </button>
                   )}
                   {s.conversion === "FAILED" && (

@@ -751,7 +751,20 @@
     "noTuneField": "No tune given.",
     "linkTo": "Link to “{name}”",
     "allTunes": "All tunes",
-    "scoresQueue": "Scores to review"
+    "scoresQueue": "Scores to review",
+    "renderAudio": "Generate audio…",
+    "instrument": {
+      "organ": "Organ",
+      "piano": "Piano",
+      "choir": "Choir (synth)"
+    },
+    "aiSing": "AI singing (experimental)",
+    "aiSingHint": "An AI voice sings the score with the hymn's lyrics. The result is labelled “AI generated” and waits for your approval.",
+    "aiSingOff": "No AI singing engine is configured on the server.",
+    "aiSingConfirm": "Generate an AI-sung version? It will be labelled “AI generated” and stay a draft until you approve it.",
+    "audioQueued": "Audio is being prepared on the server; it will appear as a draft in the linked hymns' recordings.",
+    "seeRecordings": "See recordings",
+    "noSongsForAudio": "Link the tune to at least one hymn first."
   },
   "contribute": {
     "title": "Contribute",
@@ -851,6 +864,15 @@
     "glossaryEmpty": "Glossary is empty.",
     "term": "Word",
     "termNote": "Note (optional)",
-    "allList": "All recordings"
+    "allList": "All recordings",
+    "renderLabel": "Instrumental rendering",
+    "workerOnline": "Analysis server online",
+    "workerOffline": "Analysis server offline",
+    "missingKey": "missing key: {keys}",
+    "feature": {
+      "transcription": "Transcription",
+      "correction": "AI correction",
+      "singing": "AI singing"
+    }
   }
 }

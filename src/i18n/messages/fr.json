@@ -751,7 +751,20 @@
     "noTuneField": "Aucune mélodie indiquée.",
     "linkTo": "Lier à « {name} »",
     "allTunes": "Toutes les mélodies",
-    "scoresQueue": "Partitions à vérifier"
+    "scoresQueue": "Partitions à vérifier",
+    "renderAudio": "Générer l’audio…",
+    "instrument": {
+      "organ": "Orgue",
+      "piano": "Piano",
+      "choir": "Chœur (synthèse)"
+    },
+    "aiSing": "Chant IA (expérimental)",
+    "aiSingHint": "Une voix IA chante la partition avec les paroles du cantique. Le résultat est marqué « Généré par IA » et attend votre validation.",
+    "aiSingOff": "Aucun moteur de chant IA configuré sur le serveur.",
+    "aiSingConfirm": "Générer une version chantée par IA ? Elle sera marquée « Généré par IA » et restera en brouillon jusqu’à votre validation.",
+    "audioQueued": "Audio en préparation sur le serveur ; il apparaîtra en brouillon dans les enregistrements des cantiques liés.",
+    "seeRecordings": "Voir les enregistrements",
+    "noSongsForAudio": "Liez d’abord la mélodie à au moins un cantique."
   },
   "contribute": {
     "title": "Contribuer",
@@ -851,6 +864,15 @@
     "glossaryEmpty": "Glossaire vide.",
     "term": "Mot",
     "termNote": "Note (facultatif)",
-    "allList": "Tous les enregistrements"
+    "allList": "Tous les enregistrements",
+    "renderLabel": "Rendu instrumental",
+    "workerOnline": "Serveur d’analyse en ligne",
+    "workerOffline": "Serveur d’analyse hors ligne",
+    "missingKey": "clé manquante : {keys}",
+    "feature": {
+      "transcription": "Transcription",
+      "correction": "Correction IA",
+      "singing": "Chant IA"
+    }
   }
 }
