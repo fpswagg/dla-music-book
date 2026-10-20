@@ -67,7 +67,8 @@ export async function createBackup(): Promise<{ filename: string; size: number }
 
   if (hasSaStorage()) {
     try {
-      await uploadFile(`${BACKUP_DIR}${filename}`, json, "application/json");
+      // Backups hold user emails: never public.
+      await uploadFile(`${BACKUP_DIR}${filename}`, json, "application/json", "private");
     } catch (error) {
       console.error("Backup upload failed:", error);
       return null;

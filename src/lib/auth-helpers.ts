@@ -8,7 +8,7 @@ import { getMockCurrentUser } from "@/lib/mock/provider";
 export type AppUser = {
   id: string;
   displayName: string;
-  role: "USER" | "ADMIN";
+  role: "USER" | "CONTRIBUTOR" | "ADMIN";
   email?: string;
   emailVerified?: boolean;
   image?: string | null;
@@ -32,7 +32,7 @@ export const getCurrentUser = cache(async (): Promise<AppUser | null> => {
   return {
     id: u.id,
     displayName: u.displayName,
-    role: u.role === "ADMIN" ? "ADMIN" : "USER",
+    role: u.role,
     email: u.email,
     emailVerified: u.emailVerified,
     image: u.image ?? null,
@@ -48,5 +48,14 @@ export async function requireAuth(): Promise<AppUser> {
 export async function requireAdmin(): Promise<AppUser> {
   const user = await requireAuth();
   if (user.role !== "ADMIN") throw new Error("FORBIDDEN");
+  return user;
+}
+
+/** Admins and contributors (choir directors, musicians): may submit scores and recordings. */
+export const canContribute = (user: AppUser | null | undefined) => user?.role === "ADMIN" || user?.role === "CONTRIBUTOR";
+
+export async function requireContributor(): Promise<AppUser> {
+  const user = await requireAuth();
+  if (!canContribute(user)) throw new Error("FORBIDDEN");
   return user;
 }

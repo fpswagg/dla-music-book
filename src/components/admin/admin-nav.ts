@@ -10,6 +10,8 @@ import {
   Database,
   BookMarked,
   Upload,
+  ListMusic,
+  Inbox,
 } from "lucide-react";
 
 export type AdminNavEntry = {
@@ -25,13 +27,17 @@ export type AdminNavEntry = {
     | "collections"
     | "users"
     | "analytics"
-    | "backups";
+    | "backups"
+    | "tunes"
+    | "moderation";
 };
 
 export const ADMIN_NAV: AdminNavEntry[] = [
   { href: "/admin", icon: LayoutDashboard, labelKey: "overview" },
   { href: "/admin/songs", icon: Music, labelKey: "songs" },
   { href: "/admin/import", icon: Upload, labelKey: "import" },
+  { href: "/admin/tunes", icon: ListMusic, labelKey: "tunes" },
+  { href: "/admin/moderation", icon: Inbox, labelKey: "moderation" },
   { href: "/admin/hymnals", icon: BookMarked, labelKey: "hymnals" },
   { href: "/admin/authors", icon: Pen, labelKey: "authors" },
   { href: "/admin/tags", icon: Tag, labelKey: "tags" },

@@ -23,7 +23,8 @@
     "closeMenu": "Close navigation menu",
     "siteNavigation": "Site navigation",
     "hymnals": "Sources",
-    "programmes": "Service programmes"
+    "programmes": "Service programmes",
+    "contribute": "Contribute"
   },
   "footer": {
     "description": "Myenge ma bonakristo — Christian hymn book for worship and fellowship."
@@ -106,7 +107,8 @@
       "ORIGINAL": "original",
       "DEMO": "demo",
       "REWRITE": "rewrite"
-    }
+    },
+    "score": "Score"
   },
   "collections": {
     "backToCollections": "Back to collections",
@@ -364,6 +366,13 @@
         "on": "Audio and backups on.",
         "off": "Not configured: no audio upload or backups."
       }
+    },
+    "tunes": "Tunes",
+    "moderation": "Moderation",
+    "role": {
+      "USER": "User",
+      "CONTRIBUTOR": "Contributor",
+      "ADMIN": "Admin"
     }
   },
   "pagination": {
@@ -604,5 +613,147 @@
     "text": "This hymn or page does not exist, or is not online yet.",
     "goto": "Go to a number",
     "browse": "All hymns"
+  },
+  "score": {
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "staff": "Staff",
+    "solfa": "Sol-fa",
+    "rehearse": "Rehearse",
+    "voices": "Voices",
+    "voice": {
+      "S": "Soprano",
+      "A": "Alto",
+      "T": "Tenor",
+      "B": "Bass"
+    },
+    "voiceN": "Voice {n}",
+    "solo": "Solo",
+    "mute": "Mute",
+    "volume": "Volume",
+    "tempo": "Tempo",
+    "key": "Key",
+    "minor": "minor",
+    "asWritten": "as written",
+    "sound": "Sound",
+    "instrument": {
+      "organ": "Organ",
+      "piano": "Piano",
+      "choir": "Choir (synthetic voices)"
+    },
+    "loop": "Loop",
+    "loopFrom": "From bar",
+    "loopTo": "To bar",
+    "measureN": "Bar {n}",
+    "verse": "Verse",
+    "zoom": "Size",
+    "zoomIn": "Larger",
+    "zoomOut": "Smaller",
+    "pdf": "PDF",
+    "keyIs": "Key: {key}",
+    "tapToStart": "tap a note to start there",
+    "loading": "Loading score…",
+    "loadError": "Could not load the score.",
+    "noteNames": "C,C♯,D,E♭,E,F,F♯,G,A♭,A,B♭,B",
+    "doh": "Doh = {note}",
+    "open": "Open the score",
+    "version": "Version",
+    "draft": "draft",
+    "draftNotice": "Draft waiting for review: only you and the admins can see it."
+  },
+  "music": {
+    "tune": "Tune",
+    "newTune": "new",
+    "change": "change",
+    "searchTune": "Search a tune (e.g. Nun danket)",
+    "createTune": "Create the tune “{name}”",
+    "hymnCount": "{count, plural, =0 {no hymns} one {# hymn} other {# hymns}}",
+    "file": "File",
+    "formats": "MusicXML, MXL, ABC, MEI, MIDI or MuseScore (.mscz), 4 MB max. MIDI and MuseScore are converted on the server.",
+    "label": "Version name",
+    "labelHint": "e.g. SATB, Melody only",
+    "kind": "Type",
+    "kinds": {
+      "SATB": "SATB choir",
+      "MELODY": "Melody only",
+      "PIANO": "Piano / organ",
+      "OTHER": "Other"
+    },
+    "source": "Source",
+    "sourceHint": "e.g. hymnary.org, hymnal, transcription",
+    "license": "Licence",
+    "licenseHint": "e.g. Public domain, CC BY-SA",
+    "send": "Send",
+    "sending": "Sending…",
+    "sent": "Received! The score is waiting for an admin to review it.",
+    "sentConverting": "Received! Converting, then an admin will review it.",
+    "tooBig": "File too large (4 MB max).",
+    "badFormat": "Unrecognised format.",
+    "storageDown": "Storage unavailable, try again later.",
+    "default": "default",
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "REJECTED": "Rejected"
+    },
+    "converting": "Converting…",
+    "conversionFailed": "Conversion failed: {error}",
+    "preview": "Preview",
+    "hide": "Hide",
+    "original": "Original file",
+    "publish": "Publish",
+    "reject": "Reject",
+    "rejectReason": "Reason (optional):",
+    "unpublish": "Back to draft",
+    "makeDefault": "Make default",
+    "retry": "Retry conversion",
+    "notConverted": "The score must be converted first.",
+    "noScores": "No scores yet.",
+    "tunesTitle": "Tunes",
+    "tunesIntro": "A tune can be shared by several hymns; its scores show on each of them.",
+    "tunesTab": "Tunes ({count})",
+    "proposalsTab": "Proposals ({count})",
+    "newTuneName": "New tune",
+    "addTune": "Add",
+    "noTunes": "No tunes yet.",
+    "scoreCount": "{count, plural, =0 {no scores} one {# score} other {# scores}}",
+    "proposalsIntro": "Groups built from the hymns’ “Tune” field. Check the name and the hymns, then confirm. Links open a search on free score sites.",
+    "existing": "already exists",
+    "linkHymns": "Link hymns",
+    "createAndLink": "Create and link",
+    "saved": "Saved",
+    "field": {
+      "name": "Name",
+      "key": "Key",
+      "timeSignature": "Time signature",
+      "metre": "Metre",
+      "composer": "Composer",
+      "source": "Source",
+      "license": "Licence",
+      "notes": "Notes"
+    },
+    "hymns": "Hymns sung to this tune",
+    "unlink": "Remove",
+    "noHymns": "No linked hymns.",
+    "linkByNumber": "Link by numbers",
+    "link": "Link",
+    "scores": "Scores",
+    "addScore": "Add a score",
+    "findOnline": "Search online:",
+    "moderationTitle": "Moderation",
+    "moderationIntro": "Scores sent and not published yet.",
+    "tuneAndScores": "Tune and scores",
+    "suggested": "Tune given: {name}",
+    "ownMelody": "Own melody (“Eigene Melodie”).",
+    "noTuneField": "No tune given.",
+    "linkTo": "Link to “{name}”",
+    "allTunes": "All tunes"
+  },
+  "contribute": {
+    "title": "Contribute",
+    "intro": "Send scores (digital files). Each one stays a draft until an admin reviews it.",
+    "send": "Send a score",
+    "mine": "My submissions"
   }
 }

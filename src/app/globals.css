@@ -232,3 +232,11 @@ html:not([data-refrain="short"]) .refrain-repeat .refrain-short { display: none;
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* ── Score player (Verovio SVG) ─────────────────────────────────────── */
+.score-svg svg { display: block; max-width: 100%; height: auto; margin: 0 auto 8px; }
+.score-svg svg { color: var(--color-deep); }
+.score-svg g.note, .score-svg g.measure { cursor: pointer; }
+.score-svg g.is-playing, .score-svg g.is-playing * { fill: var(--color-forest) !important; stroke: var(--color-forest); }
+.score-svg g.is-playing .notehead use, .score-svg g.is-playing use { filter: drop-shadow(0 0 2px var(--color-green-light)); }
+html[data-theme="dark"] .score-svg svg { filter: invert(0.9) hue-rotate(180deg); }

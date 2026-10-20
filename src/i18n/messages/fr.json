@@ -23,7 +23,8 @@
     "closeMenu": "Fermer le menu de navigation",
     "siteNavigation": "Navigation du site",
     "hymnals": "Sources",
-    "programmes": "Programmes du culte"
+    "programmes": "Programmes du culte",
+    "contribute": "Contribuer"
   },
   "footer": {
     "description": "Myenge ma bonakristo — recueil de cantiques chrétiens pour le culte et le partage."
@@ -106,7 +107,8 @@
       "ORIGINAL": "original",
       "DEMO": "démo",
       "REWRITE": "réécriture"
-    }
+    },
+    "score": "Partition"
   },
   "collections": {
     "backToCollections": "Retour aux collections",
@@ -364,6 +366,13 @@
         "on": "Audio et sauvegardes activés.",
         "off": "Non configuré : pas d'envoi audio ni de sauvegardes."
       }
+    },
+    "tunes": "Mélodies",
+    "moderation": "Modération",
+    "role": {
+      "USER": "Utilisateur",
+      "CONTRIBUTOR": "Contributeur",
+      "ADMIN": "Admin"
     }
   },
   "pagination": {
@@ -604,5 +613,147 @@
     "text": "Ce cantique ou cette page n'existe pas, ou n'est pas encore en ligne.",
     "goto": "Aller à un numéro",
     "browse": "Tous les cantiques"
+  },
+  "score": {
+    "play": "Lire",
+    "pause": "Pause",
+    "stop": "Arrêter",
+    "staff": "Portée",
+    "solfa": "Sol-fa",
+    "rehearse": "Répétition",
+    "voices": "Voix",
+    "voice": {
+      "S": "Soprano",
+      "A": "Alto",
+      "T": "Ténor",
+      "B": "Basse"
+    },
+    "voiceN": "Voix {n}",
+    "solo": "Solo",
+    "mute": "Couper",
+    "volume": "Volume",
+    "tempo": "Tempo",
+    "key": "Tonalité",
+    "minor": "mineur",
+    "asWritten": "original",
+    "sound": "Son",
+    "instrument": {
+      "organ": "Orgue",
+      "piano": "Piano",
+      "choir": "Chœur (voix synthétiques)"
+    },
+    "loop": "Boucle",
+    "loopFrom": "Depuis la mesure",
+    "loopTo": "Jusqu’à la mesure",
+    "measureN": "Mes. {n}",
+    "verse": "Couplet",
+    "zoom": "Taille",
+    "zoomIn": "Agrandir",
+    "zoomOut": "Réduire",
+    "pdf": "PDF",
+    "keyIs": "Tonalité : {key}",
+    "tapToStart": "touchez une note pour démarrer là",
+    "loading": "Chargement de la partition…",
+    "loadError": "Impossible de charger la partition.",
+    "noteNames": "Do,Do♯,Ré,Mi♭,Mi,Fa,Fa♯,Sol,La♭,La,Si♭,Si",
+    "doh": "Do = {note}",
+    "open": "Ouvrir la partition",
+    "version": "Version",
+    "draft": "brouillon",
+    "draftNotice": "Brouillon en attente de validation : visible seulement par vous et les admins."
+  },
+  "music": {
+    "tune": "Mélodie",
+    "newTune": "nouvelle",
+    "change": "changer",
+    "searchTune": "Chercher une mélodie (ex. Nun danket)",
+    "createTune": "Créer la mélodie « {name} »",
+    "hymnCount": "{count, plural, =0 {aucun cantique} one {# cantique} other {# cantiques}}",
+    "file": "Fichier",
+    "formats": "MusicXML, MXL, ABC, MEI, MIDI ou MuseScore (.mscz), 4 Mo max. MIDI et MuseScore sont convertis sur le serveur.",
+    "label": "Nom de la version",
+    "labelHint": "ex. SATB, Mélodie seule",
+    "kind": "Type",
+    "kinds": {
+      "SATB": "Chœur SATB",
+      "MELODY": "Mélodie seule",
+      "PIANO": "Piano / orgue",
+      "OTHER": "Autre"
+    },
+    "source": "Source",
+    "sourceHint": "ex. hymnary.org, recueil, transcription",
+    "license": "Licence",
+    "licenseHint": "ex. Domaine public, CC BY-SA",
+    "send": "Envoyer",
+    "sending": "Envoi…",
+    "sent": "Reçu ! La partition attend la validation d’un admin.",
+    "sentConverting": "Reçu ! Conversion en cours, puis validation par un admin.",
+    "tooBig": "Fichier trop gros (4 Mo max).",
+    "badFormat": "Format non reconnu.",
+    "storageDown": "Stockage indisponible, réessayez plus tard.",
+    "default": "par défaut",
+    "status": {
+      "DRAFT": "Brouillon",
+      "PUBLISHED": "Publiée",
+      "REJECTED": "Refusée"
+    },
+    "converting": "Conversion en cours…",
+    "conversionFailed": "Échec de la conversion : {error}",
+    "preview": "Aperçu",
+    "hide": "Masquer",
+    "original": "Fichier d’origine",
+    "publish": "Publier",
+    "reject": "Refuser",
+    "rejectReason": "Motif du refus (facultatif) :",
+    "unpublish": "Repasser en brouillon",
+    "makeDefault": "Par défaut",
+    "retry": "Relancer la conversion",
+    "notConverted": "La partition doit d’abord être convertie.",
+    "noScores": "Aucune partition pour le moment.",
+    "tunesTitle": "Mélodies",
+    "tunesIntro": "Une mélodie peut servir à plusieurs cantiques ; ses partitions apparaissent sur chacun d’eux.",
+    "tunesTab": "Mélodies ({count})",
+    "proposalsTab": "Propositions ({count})",
+    "newTuneName": "Nouvelle mélodie",
+    "addTune": "Ajouter",
+    "noTunes": "Aucune mélodie pour le moment.",
+    "scoreCount": "{count, plural, =0 {aucune partition} one {# partition} other {# partitions}}",
+    "proposalsIntro": "Regroupements tirés du champ « Mélodie » des cantiques. Vérifiez le nom et les cantiques, puis validez. Les liens ouvrent une recherche sur les sites de partitions libres.",
+    "existing": "existe déjà",
+    "linkHymns": "Lier les cantiques",
+    "createAndLink": "Créer et lier",
+    "saved": "Enregistré",
+    "field": {
+      "name": "Nom",
+      "key": "Tonalité",
+      "timeSignature": "Mesure",
+      "metre": "Mètre",
+      "composer": "Compositeur",
+      "source": "Source",
+      "license": "Licence",
+      "notes": "Notes"
+    },
+    "hymns": "Cantiques sur cette mélodie",
+    "unlink": "Retirer",
+    "noHymns": "Aucun cantique lié.",
+    "linkByNumber": "Lier par numéros",
+    "link": "Lier",
+    "scores": "Partitions",
+    "addScore": "Ajouter une partition",
+    "findOnline": "Chercher en ligne :",
+    "moderationTitle": "Modération",
+    "moderationIntro": "Partitions envoyées et pas encore publiées.",
+    "tuneAndScores": "Mélodie et partitions",
+    "suggested": "Mélodie indiquée : {name}",
+    "ownMelody": "Mélodie propre (« Eigene Melodie »).",
+    "noTuneField": "Aucune mélodie indiquée.",
+    "linkTo": "Lier à « {name} »",
+    "allTunes": "Toutes les mélodies"
+  },
+  "contribute": {
+    "title": "Contribuer",
+    "intro": "Envoyez des partitions (fichiers numériques). Chaque envoi reste en brouillon jusqu’à sa validation par un admin.",
+    "send": "Envoyer une partition",
+    "mine": "Mes envois"
   }
 }

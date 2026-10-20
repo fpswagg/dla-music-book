@@ -46,16 +46,22 @@ export function publicFileUrl(fullKey: string): string {
   return `${baseUrl()}/files/${encodeKey(fullKey)}`;
 }
 
-/** Upload a file. `key` is relative to the token prefix. Returns the stored object. */
+/**
+ * Upload a file. `key` is relative to the token prefix. Returns the stored object.
+ * Media for the public site are uploaded "public" (readable at /files/<key>); backups pass "private".
+ */
 export async function uploadFile(
   key: string,
-  body: Blob | string,
+  body: Blob | string | Uint8Array,
   contentType = "application/octet-stream",
+  visibility: "public" | "private" = "public",
 ): Promise<StoredFile> {
   const form = new FormData();
-  const blob = typeof body === "string" ? new Blob([body], { type: contentType }) : body;
+  const blob =
+    typeof body === "string" ? new Blob([body], { type: contentType }) : body instanceof Uint8Array ? new Blob([body as BlobPart], { type: contentType }) : body;
   form.append("file", blob, key.split("/").pop() || "file");
   form.append("key", key);
+  form.append("visibility", visibility);
   const res = await api("/api/files", { method: "POST", body: form });
   const { object } = (await res.json()) as { object: StoredFile };
   return object;
@@ -81,10 +87,64 @@ export async function listFiles(prefix = ""): Promise<StoredFile[]> {
   return out;
 }
 
-/** Download an object's text content (full key) through the public route. */
+/** A time-limited link to a file, public or private (default 10 minutes). */
+export async function signedFileUrl(fullKey: string, expiresIn = 600): Promise<string> {
+  const res = await api("/api/files/sign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: fullKey, expiresIn }),
+  });
+  return ((await res.json()) as { url: string }).url;
+}
+
+/** Download an object's text content (full key). Works for private files (signed link). */
 export async function downloadText(fullKey: string): Promise<string | null> {
-  const res = await fetch(publicFileUrl(fullKey), { cache: "no-store" });
+  const res = await fetch(await signedFileUrl(fullKey), { cache: "no-store" });
   return res.ok ? await res.text() : null;
+}
+
+/** Download an object's bytes (full key), public or private. */
+export async function downloadBytes(fullKey: string): Promise<Uint8Array | null> {
+  const res = await fetch(await signedFileUrl(fullKey), { cache: "no-store" });
+  return res.ok ? new Uint8Array(await res.arrayBuffer()) : null;
+}
+
+/** Change the visibility of every file under a prefix (relative to the token prefix). */
+export async function setVisibility(prefix: string, visibility: "public" | "private"): Promise<void> {
+  const me = (await (await api("/api/me")).json()) as { keyPrefix?: string | null };
+  await api("/api/files/visibility", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix: `${me.keyPrefix ?? ""}${prefix}`, visibility }),
+  });
+}
+
+/**
+ * Upload big files (past the ~4.5 MB serverless body limit): the server asks SA Storage for a
+ * presigned URL, PUTs the bytes to the bucket itself, then registers the file.
+ */
+export async function uploadLargeFile(
+  key: string,
+  bytes: Uint8Array,
+  contentType: string,
+  visibility: "public" | "private" = "public",
+): Promise<StoredFile> {
+  const fileName = key.split("/").pop() || "file";
+  const pre = (await (
+    await api("/api/files/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName, key, contentType, visibility }),
+    })
+  ).json()) as { url: string };
+  const put = await fetch(pre.url, { method: "PUT", body: bytes as BodyInit, headers: { "Content-Type": contentType } });
+  if (!put.ok) throw new Error(`SA Storage upload failed (${put.status})`);
+  const res = await api("/api/files/complete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fileName, key, visibility }),
+  });
+  return ((await res.json()) as { object: StoredFile }).object;
 }
 
 export async function deleteFile(fullKey: string): Promise<void> {

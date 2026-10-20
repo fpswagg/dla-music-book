@@ -14,6 +14,8 @@ import { LikeButton } from "@/components/songs/like-button";
 import { LyricsView } from "@/components/songs/lyrics-view";
 import { HymnHeader } from "@/components/songs/hymn-header";
 import { HymnActions, HymnPager } from "@/components/songs/hymn-actions";
+import { SongScores } from "@/components/scores/song-scores";
+import { getSongScores } from "@/lib/scores";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ v?: string }> };
 
@@ -40,9 +42,10 @@ export default async function SongPage({ params, searchParams }: Props) {
   if (!/^\d+$/.test(id)) permanentRedirect(`/songs/${song.index}`);
 
   const version = song.versions.find((x) => String(x.versionNumber) === v) ?? song.versions[0];
-  const [adjacent, likedMap] = await Promise.all([
+  const [adjacent, likedMap, music] = await Promise.all([
     getAdjacentSongs(song.index),
     user ? getUserLikedSongIds(user.id, [song.id]) : Promise.resolve({} as Record<string, boolean>),
+    getSongScores(song.id, user),
   ]);
 
   const meta = [
@@ -104,6 +107,13 @@ export default async function SongPage({ params, searchParams }: Props) {
           </div>
         )}
       </div>
+
+      {music.tune && music.scores.length > 0 && (
+        <section className="no-print mt-10" id="partition">
+          <SectionLabel>{t("score")}</SectionLabel>
+          <SongScores tune={music.tune} scores={music.scores} title={`${song.index}. ${song.title}`} />
+        </section>
+      )}
 
       {version && version.previews.length > 0 && (
         <section className="no-print mt-10">
