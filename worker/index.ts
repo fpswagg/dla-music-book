@@ -7,6 +7,7 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { scoreConvert, scoreConvertFailed } from "./handlers/score-convert";
+import { recordingAnalyze, recordingAnalyzeFailed } from "./handlers/recording-analyze";
 
 type Handler = {
   run: (payload: never) => Promise<unknown>;
@@ -16,6 +17,7 @@ type Handler = {
 
 const HANDLERS: Record<string, Handler> = {
   "score.convert": { run: scoreConvert, failed: scoreConvertFailed, maxAttempts: 2 },
+  "recording.analyze": { run: recordingAnalyze, failed: recordingAnalyzeFailed, maxAttempts: 2 },
 };
 
 const POLL_MS = 3000;

@@ -12,6 +12,7 @@ import {
   Upload,
   ListMusic,
   Inbox,
+  AudioLines,
 } from "lucide-react";
 
 export type AdminNavEntry = {
@@ -29,7 +30,8 @@ export type AdminNavEntry = {
     | "analytics"
     | "backups"
     | "tunes"
-    | "moderation";
+    | "moderation"
+    | "recordings";
 };
 
 export const ADMIN_NAV: AdminNavEntry[] = [
@@ -37,6 +39,7 @@ export const ADMIN_NAV: AdminNavEntry[] = [
   { href: "/admin/songs", icon: Music, labelKey: "songs" },
   { href: "/admin/import", icon: Upload, labelKey: "import" },
   { href: "/admin/tunes", icon: ListMusic, labelKey: "tunes" },
+  { href: "/admin/recordings", icon: AudioLines, labelKey: "recordings" },
   { href: "/admin/moderation", icon: Inbox, labelKey: "moderation" },
   { href: "/admin/hymnals", icon: BookMarked, labelKey: "hymnals" },
   { href: "/admin/authors", icon: Pen, labelKey: "authors" },

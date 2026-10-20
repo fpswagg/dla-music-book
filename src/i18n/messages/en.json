@@ -108,7 +108,8 @@
       "DEMO": "demo",
       "REWRITE": "rewrite"
     },
-    "score": "Score"
+    "score": "Score",
+    "recordings": "Recordings"
   },
   "collections": {
     "backToCollections": "Back to collections",
@@ -373,7 +374,8 @@
       "USER": "User",
       "CONTRIBUTOR": "Contributor",
       "ADMIN": "Admin"
-    }
+    },
+    "recordings": "Recordings"
   },
   "pagination": {
     "prev": "Previous",
@@ -748,12 +750,107 @@
     "ownMelody": "Own melody (“Eigene Melodie”).",
     "noTuneField": "No tune given.",
     "linkTo": "Link to “{name}”",
-    "allTunes": "All tunes"
+    "allTunes": "All tunes",
+    "scoresQueue": "Scores to review"
   },
   "contribute": {
     "title": "Contribute",
-    "intro": "Send scores (digital files). Each one stays a draft until an admin reviews it.",
+    "intro": "Send scores (digital files) and hymn recordings. Each submission stays a draft until an admin approves it.",
     "send": "Send a score",
-    "mine": "My submissions"
+    "mine": "My submissions",
+    "sendRecording": "Send a recording",
+    "myRecordings": "My recordings"
+  },
+  "recordings": {
+    "adminTitle": "Recordings",
+    "adminIntro": "Hymn recordings sent by choirs. The server analyses them (transcription, hymn recognition, karaoke timing, melody draft); an admin checks before publishing.",
+    "upload": "Send a recording",
+    "all": "Recordings to review",
+    "none": "No recordings yet.",
+    "untitled": "Untitled",
+    "recording": "Recording",
+    "file": "Audio file",
+    "formats": "MP3, M4A, WAV, OGG, FLAC or video (the sound is extracted), 150 MB max.",
+    "hymnNumber": "Hymn number",
+    "hymnNumberHint": "optional, otherwise recognised automatically",
+    "title": "Title",
+    "titleHint": "e.g. Easter service 2026",
+    "performer": "Performer",
+    "performerHint": "e.g. Bonaku choir",
+    "send": "Send",
+    "sending": "Sending… {pct}%",
+    "sent": "Received! The server is analysing it, then an admin will review it.",
+    "tooBig": "File too large (150 MB max).",
+    "badFormat": "This is not an audio file.",
+    "unknownHymn": "This hymn number does not exist.",
+    "storageDown": "Storage unavailable, try again later.",
+    "uploadFailed": "Upload failed. Check your connection and try again.",
+    "aiLabel": "AI generated",
+    "hymnUnknown": "Hymn not identified",
+    "choose": "Choose a recording",
+    "draftVisible": "draft, only visible to you",
+    "noTiming": "The lyrics are not synchronised with this recording yet.",
+    "analysis": {
+      "PENDING": "Analysis pending",
+      "RUNNING": "Analysing…",
+      "DONE": "Analysis done",
+      "FAILED": "Analysis failed"
+    },
+    "saved": "Saved",
+    "queued": "New analysis queued",
+    "reanalyze": "Analyse again",
+    "tap": "Tap",
+    "noAudioYet": "The audio file is still being prepared.",
+    "details": "Details",
+    "setHymn": "Link",
+    "matches": "Recognised hymns",
+    "noMatches": "No matches (no transcription).",
+    "notes": "Internal notes",
+    "timing": "Karaoke timing",
+    "timingHelp": "Start playback and tap (Tap button or space bar) at the start of each line. You can also fix a time (m:ss.s) or resume tapping from a line with the crosshair.",
+    "alignmentSource": {
+      "auto": "automatic timing",
+      "manual": "manual timing"
+    },
+    "startOf": "Start of line {n}",
+    "playFrom": "Play from this line",
+    "tapFromHere": "Resume tapping here",
+    "saveTiming": "Save timing",
+    "clearTiming": "Clear all",
+    "pickHymnFirst": "Link the hymn first.",
+    "transcription": "Transcription",
+    "rawTranscript": "Raw transcription",
+    "correctedTranscript": "Corrected transcription",
+    "correctionHelp": "Corrected by AI when available, then by you. Each validated correction is used as an example for the next ones.",
+    "validateCorrection": "Validate correction",
+    "noTranscript": "No transcription (service not configured or analysis not done yet).",
+    "melody": "Melody (draft)",
+    "downloadMidi": "Download MIDI",
+    "melodyToScore": "Create a draft score",
+    "scoreDraftCreated": "Draft score created, converting.",
+    "needsTune": "Link the hymn to a tune first.",
+    "noMelody": "No melody extracted yet.",
+    "analysisReport": "Analysis report",
+    "steps": {
+      "audio": "Audio",
+      "transcription": "Transcription",
+      "match": "Recognition",
+      "correction": "Correction",
+      "alignment": "Timing",
+      "melody": "Melody"
+    },
+    "errors": {
+      "NOT_READY": "An audio file and a linked hymn are needed before publishing.",
+      "NO_MELODY": "No melody extracted.",
+      "NO_TUNE": "The hymn is not linked to a tune.",
+      "UNKNOWN_SONG": "This hymn number does not exist.",
+      "FAILED": "The action failed."
+    },
+    "glossary": "Duala glossary",
+    "glossaryHelp": "Words the transcription should know (names, rare words, spelling). They are given to the transcription and to the correction.",
+    "glossaryEmpty": "Glossary is empty.",
+    "term": "Word",
+    "termNote": "Note (optional)",
+    "allList": "All recordings"
   }
 }
